@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { Item } from '../types';
-
-type AnimPhase = 'idle' | 'checkbox-pop' | 'text-strike' | 'row-exit';
 
 interface ItemRowProps {
   item: Item;
@@ -13,15 +11,14 @@ interface ItemRowProps {
 
 export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransitioning }: ItemRowProps) {
   const hasNote = !!item.note;
-  const [phase, setPhase] = useState<AnimPhase>('idle');
-  const prevChecked = useRef(item.checked);
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const wasTransitioning = useRef(false);
-  const [isEntering, setIsEntering] = useState(false);
 
-  // Swipe state
+  // Refs for DOM manipulation
   const rowRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const swipeWrapRef = useRef<HTMLDivElement>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const prevTransitioning = useRef(isTransitioning);
+
   const pointerState = useRef({
     startX: 0, startY: 0, dx: 0, dy: 0,
     isH: null as boolean | null,
@@ -37,29 +34,14 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     return () => { timers.current.forEach(clearTimeout); };
   }, []);
 
-  // Detect check/uncheck change → start animation phases
+  // Detect entrance (transitioning -> not transitioning = item arrived in new section)
   useEffect(() => {
-    if (item.checked !== prevChecked.current) {
-      prevChecked.current = item.checked;
-      if (isTransitioning) {
-        timers.current.forEach(clearTimeout);
-        timers.current = [];
-        setPhase('checkbox-pop');
-        timers.current.push(setTimeout(() => setPhase('text-strike'), 200));
-        timers.current.push(setTimeout(() => setPhase('row-exit'), item.checked ? 500 : 500));
-        timers.current.push(setTimeout(() => setPhase('idle'), item.checked ? 700 : 700));
-      }
+    if (prevTransitioning.current && !isTransitioning && swipeWrapRef.current) {
+      swipeWrapRef.current.setAttribute('data-animating', 'enter');
+      const t = setTimeout(() => swipeWrapRef.current?.removeAttribute('data-animating'), 350);
+      timers.current.push(t);
     }
-  }, [item.checked, isTransitioning]);
-
-  // Detect entrance (transitioning → not transitioning)
-  useEffect(() => {
-    if (wasTransitioning.current && !isTransitioning) {
-      setIsEntering(true);
-      const t = setTimeout(() => setIsEntering(false), 300);
-      return () => clearTimeout(t);
-    }
-    wasTransitioning.current = isTransitioning;
+    prevTransitioning.current = isTransitioning;
   }, [isTransitioning]);
 
   // Ripple effect
@@ -87,6 +69,24 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
   function handleCheckboxClick(e: React.MouseEvent) {
     e.stopPropagation();
     createRipple();
+
+    const wrapper = swipeWrapRef.current;
+    if (!wrapper) { onToggleCheck(); return; }
+
+    // Clear any previous animation timers
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+
+    if (!item.checked) {
+      // CHECKING: fade -> collapse -> disappear from unchecked section
+      timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'check-fade'), 150));
+      timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'check-exit'), 400));
+    } else {
+      // UNCHECKING: restore -> collapse -> disappear from checked section
+      wrapper.setAttribute('data-animating', 'uncheck-restore');
+      timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'uncheck-exit'), 500));
+    }
+
     onToggleCheck();
   }
 
@@ -148,9 +148,9 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     // Horizontal swipe: stretch delete
     if (s.isH && rowRef.current && wrapRef.current) {
       e.preventDefault();
-      const swipeDx = Math.max(0, s.dx); // RTL: positive = visual left swipe
+      const swipeDx = Math.max(0, s.dx);
       const row = rowRef.current;
-      const wrap = rowRef.current.closest('[data-swipe-wrap]') as HTMLElement;
+      const wrap = row.closest('[data-swipe-wrap]') as HTMLElement;
       row.style.transition = 'none';
       row.style.transform = `translateX(${swipeDx}px)`;
 
@@ -213,38 +213,14 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     s.isV = null;
   }
 
-  // Row wrapper style based on animation phase
-  const wrapStyle: React.CSSProperties = (() => {
-    const base: React.CSSProperties = {
-      maxHeight: 100,
-      opacity: 1,
-      marginBottom: 2,
-      transition: 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease',
-      overflow: 'hidden',
-    };
-    if (phase === 'text-strike' && item.checked) {
-      return { ...base, opacity: 0.2 };
-    }
-    if (phase === 'row-exit') {
-      return { ...base, opacity: 0, maxHeight: 0, marginBottom: 0 };
-    }
-    return base;
-  })();
-
-  const textClass =
-    phase === 'text-strike' || phase === 'row-exit'
-      ? item.checked
-        ? 'line-through text-gray-400 transition-all duration-200'
-        : 'no-underline text-gray-900 transition-all duration-200'
-      : item.checked
-        ? 'line-through text-gray-500'
-        : '';
+  const textClass = item.checked ? 'line-through text-gray-500' : '';
 
   return (
     <div
+      ref={swipeWrapRef}
       data-swipe-wrap
-      className={`relative rounded-xl ${isEntering ? 'row-entering' : ''}`}
-      style={wrapStyle}
+      className="relative rounded-xl"
+      style={{ maxHeight: 100, marginBottom: 2, overflow: 'hidden' }}
     >
       {/* Delete background */}
       <div className="absolute inset-0 bg-red-500/0">
@@ -279,13 +255,13 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
           onClick={handleCheckboxClick}
         >
           {item.checked ? (
-            <div className={`w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center ${phase === 'checkbox-pop' ? 'checkbox-pop' : ''}`}>
+            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
           ) : (
-            <div className={`w-7 h-7 border-2 border-gray-300 rounded-lg hover:border-amber-400 transition-colors duration-100 ${phase === 'checkbox-pop' ? 'checkbox-pop' : ''}`} />
+            <div className="w-7 h-7 border-2 border-gray-300 rounded-lg hover:border-amber-400 transition-colors duration-100" />
           )}
         </div>
 

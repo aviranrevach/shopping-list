@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
@@ -37,9 +38,14 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     });
     fetchItemImages(itemId).then(setImages);
 
-    // Animate in — slight delay lets React render the sheet before transitioning
-    const openTimer = setTimeout(() => setIsOpen(true), 16);
-    return () => clearTimeout(openTimer);
+    // Double rAF to ensure the browser has painted the initial (closed) state
+    // before transitioning to open — this prevents the sheet from appearing
+    // already in its final position without animating.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setIsOpen(true);
+      });
+    });
   }, [itemId]);
 
   useEffect(() => {
@@ -109,7 +115,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
 
   const timeStr = new Date(item.created_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
@@ -211,6 +217,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

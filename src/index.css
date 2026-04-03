@@ -32,13 +32,46 @@ body {
   100% { transform: scale(5); opacity: 0; }
 }
 
-/* Row slide-in entrance (used for new items, uncheck reappear, merge) */
-@keyframes row-enter {
+/* === Check/uncheck animation phases (DOM-driven via data attributes) === */
+
+/* Checking: fade phase */
+[data-animating="check-fade"] {
+  opacity: 0.2 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+/* Checking: exit/collapse phase */
+[data-animating="check-exit"] {
+  opacity: 0 !important;
+  max-height: 0px !important;
+  margin-bottom: 0px !important;
+  overflow: hidden !important;
+  transition: opacity 0.2s ease, max-height 0.3s ease, margin-bottom 0.3s ease !important;
+}
+
+/* Unchecking: restore opacity */
+[data-animating="uncheck-restore"] {
+  opacity: 1 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+/* Unchecking: exit/collapse phase */
+[data-animating="uncheck-exit"] {
+  opacity: 0 !important;
+  max-height: 0px !important;
+  margin-bottom: 0px !important;
+  overflow: hidden !important;
+  transition: opacity 0.2s ease, max-height 0.3s ease, margin-bottom 0.3s ease !important;
+}
+
+/* Entrance when item appears in new section */
+[data-animating="enter"] {
+  animation: row-slide-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes row-slide-in {
   0% { opacity: 0; transform: translateY(8px); }
   100% { opacity: 1; transform: translateY(0); }
-}
-.row-entering {
-  animation: row-enter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 /* Row with amber glow that settles */
