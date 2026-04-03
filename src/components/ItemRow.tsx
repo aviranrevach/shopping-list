@@ -8,9 +8,10 @@ interface ItemRowProps {
   onOpenDetail: () => void;
   isTransitioning: boolean;
   shouldAnimateEntrance: boolean;
+  skipExitAnimation?: boolean;
 }
 
-export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransitioning: _isTransitioning, shouldAnimateEntrance }: ItemRowProps) {
+export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransitioning: _isTransitioning, shouldAnimateEntrance, skipExitAnimation }: ItemRowProps) {
   const hasNote = !!item.note;
 
   // Refs for DOM manipulation
@@ -76,14 +77,16 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     timers.current.forEach(clearTimeout);
     timers.current = [];
 
-    if (!item.checked) {
-      // CHECKING: fade -> collapse -> disappear from unchecked section
-      timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'check-fade'), 150));
-      timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'check-exit'), 400));
-    } else {
-      // UNCHECKING: restore -> collapse -> disappear from checked section
-      wrapper.setAttribute('data-animating', 'uncheck-restore');
-      timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'uncheck-exit'), 500));
+    if (!skipExitAnimation) {
+      if (!item.checked) {
+        // CHECKING: fade -> collapse -> disappear from unchecked section
+        timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'check-fade'), 150));
+        timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'check-exit'), 400));
+      } else {
+        // UNCHECKING: restore -> collapse -> disappear from checked section
+        wrapper.setAttribute('data-animating', 'uncheck-restore');
+        timers.current.push(setTimeout(() => wrapper.setAttribute('data-animating', 'uncheck-exit'), 500));
+      }
     }
 
     onToggleCheck();

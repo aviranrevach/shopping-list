@@ -12,9 +12,10 @@ interface CategoryGroupProps {
   transitioningIds: Set<string>;
   recentlyTransitionedIds: Set<string>;
   categoryEmoji?: string;
+  skipExitAnimation?: boolean;
 }
 
-export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds, categoryEmoji }: CategoryGroupProps) {
+export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds, categoryEmoji, skipExitAnimation }: CategoryGroupProps) {
   const { t } = useI18n();
 
   const emoji = categoryEmoji ?? DEFAULT_CATEGORY_EMOJIS[category];
@@ -33,6 +34,7 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
             item={item}
             isTransitioning={transitioningIds.has(item.id)}
             shouldAnimateEntrance={recentlyTransitionedIds.has(item.id)}
+            skipExitAnimation={skipExitAnimation}
             onToggleCheck={() => onToggleCheck(item.id)}
             onDelete={() => onDelete(item.id)}
             onOpenDetail={() => onOpenDetail(item.id)}

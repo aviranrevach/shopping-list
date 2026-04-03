@@ -258,6 +258,7 @@ export function ListDetailScreen() {
                   onOpenDetail={handleOpenDetail}
                   transitioningIds={transitioningIds}
                   recentlyTransitionedIds={recentlyTransitionedIds}
+                  skipExitAnimation={viewAll}
                 />
               ))}
               {!viewAll && checked.length > 0 && (
