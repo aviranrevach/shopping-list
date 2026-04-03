@@ -57,6 +57,16 @@ export async function fetchListWithCounts(groupId: string): Promise<
   return results;
 }
 
+export async function fetchListById(listId: string): Promise<List> {
+  const { data, error } = await supabase
+    .from('lists')
+    .select('*')
+    .eq('id', listId)
+    .single();
+  if (error) throw error;
+  return data as List;
+}
+
 export async function createList(
   groupId: string,
   userId: string,

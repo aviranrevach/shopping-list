@@ -1,11 +1,12 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
 import { useRealtimeItems } from '../hooks/useRealtimeItems';
 import { toggleItemChecked, deleteItem, createItem } from '../data/items';
-import { updateList } from '../data/lists';
+import { updateList, fetchListById } from '../data/lists';
+import type { List } from '../types';
 import { CategoryGroup } from '../components/CategoryGroup';
 import { BottomNav } from '../components/BottomNav';
 import { AddZone } from '../components/AddZone';
@@ -20,6 +21,7 @@ export function ListDetailScreen() {
   const { group } = useGroup(user?.id);
   const { items, loading, optimisticToggle, optimisticDelete, optimisticAdd } = useRealtimeItems(listId);
   const navigate = useNavigate();
+  const [list, setList] = useState<List | null>(null);
   const [search, setSearch] = useState('');
   const [isAddMode, setIsAddMode] = useState(false);
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -35,6 +37,15 @@ export function ListDetailScreen() {
   const transitionTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [hideChecked, setHideChecked] = useState(() => localStorage.getItem('hideChecked') === 'true');
   const [viewAll, setViewAll] = useState(() => localStorage.getItem('viewAll') === 'true');
+
+  // Fetch list metadata
+  useEffect(() => {
+    if (!listId) return;
+    fetchListById(listId).then(setList).catch(console.error);
+  }, [listId]);
+
+  const listName = list?.name ?? 'List';
+  const listIcon = list?.icon ?? '📋';
 
   const filteredItems = useMemo(() => {
     if (!search) return items;
@@ -86,39 +97,41 @@ export function ListDetailScreen() {
     // 1. Optimistic update
     optimisticToggle(itemId, newChecked, newChecked ? user.id : null);
 
-    // 2. Mark as transitioning
-    setTransitioningIds((prev) => new Set(prev).add(itemId));
+    // 2. In "view all" mode, skip the transition animation — item stays in place
+    if (!viewAll) {
+      // Mark as transitioning (keeps item in current section during animation)
+      setTransitioningIds((prev) => new Set(prev).add(itemId));
 
-    // Cancel previous timer for this item
-    const existing = transitionTimers.current.get(itemId);
-    if (existing) clearTimeout(existing);
+      // Cancel previous timer for this item
+      const existing = transitionTimers.current.get(itemId);
+      if (existing) clearTimeout(existing);
 
-    // 3. Remove from transitioning after animation, mark as recently transitioned for entrance
-    const timer = setTimeout(() => {
-      setTransitioningIds((prev) => {
-        const next = new Set(prev);
-        next.delete(itemId);
-        return next;
-      });
-      setRecentlyTransitionedIds((prev) => new Set(prev).add(itemId));
-      // Clear recently transitioned after entrance animation completes
-      setTimeout(() => {
-        setRecentlyTransitionedIds((prev) => {
+      // Remove from transitioning after animation, mark as recently transitioned for entrance
+      const timer = setTimeout(() => {
+        setTransitioningIds((prev) => {
           const next = new Set(prev);
           next.delete(itemId);
           return next;
         });
-      }, 500);
-      transitionTimers.current.delete(itemId);
-    }, newChecked ? 950 : 750);
-    transitionTimers.current.set(itemId, timer);
+        setRecentlyTransitionedIds((prev) => new Set(prev).add(itemId));
+        setTimeout(() => {
+          setRecentlyTransitionedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(itemId);
+            return next;
+          });
+        }, 500);
+        transitionTimers.current.delete(itemId);
+      }, newChecked ? 950 : 750);
+      transitionTimers.current.set(itemId, timer);
+    }
 
-    // 4. Fire-and-forget to Supabase
+    // 3. Fire-and-forget to Supabase
     toggleItemChecked(itemId, newChecked, user.id).catch((err) => {
       console.error('Toggle failed, reverting', err);
       optimisticToggle(itemId, !newChecked, !newChecked ? user.id : null);
     });
-  }, [user, items, optimisticToggle]);
+  }, [user, items, optimisticToggle, viewAll]);
 
   const handleDelete = useCallback((itemId: string) => {
     optimisticDelete(itemId);
@@ -185,7 +198,7 @@ export function ListDetailScreen() {
 
             {/* Center: list name — tap to open menu */}
             <button onClick={() => setShowMenu(true)} className="flex-1 text-center font-semibold text-[17px] text-gray-900 truncate">
-              🕯️ List
+              {listIcon} {listName}
             </button>
 
             {/* RTL end (left side): menu and back */}
@@ -296,8 +309,8 @@ export function ListDetailScreen() {
       {showInviteSheet && listId && (
         <InviteSheet
           listId={listId}
-          listName="List"
-          listIcon="🕯️"
+          listName={listName}
+          listIcon={listIcon}
           onClose={() => setShowInviteSheet(false)}
         />
       )}
@@ -338,7 +351,7 @@ export function ListDetailScreen() {
 
               {/* Edit name */}
               <button
-                onClick={() => { setShowMenu(false); setEditNameValue(''); setShowEditName(true); }}
+                onClick={() => { setShowMenu(false); setEditNameValue(listName); setShowEditName(true); }}
                 className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
               >
                 <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -396,7 +409,7 @@ export function ListDetailScreen() {
               <button
                 onClick={() => {
                   if (editNameValue.trim() && listId) {
-                    updateList(listId, { name: editNameValue.trim() });
+                    updateList(listId, { name: editNameValue.trim() }).then((updated) => setList(updated));
                     setShowEditName(false);
                   }
                 }}

@@ -58,7 +58,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
 
   function handleClose() {
     setIsOpen(false);
-    // Let the CSS transition play (sheet slides back to translateX(100%)) before unmounting
+    // Let the CSS transition play (sheet slides back to translateX(-100%)) before unmounting
     setTimeout(onClose, 350);
   }
 
