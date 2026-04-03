@@ -6,12 +6,14 @@ export async function getOrCreateGroup(userId: string, displayName: string): Pro
   member: GroupMember;
 }> {
   // Check if user already belongs to a group
-  const { data: existingMember } = await supabase
+  const { data: existingMember, error: fetchError } = await supabase
     .from('group_members')
     .select('*, group:groups(*)')
     .eq('user_id', userId)
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  console.log('[groups] fetch existing member:', { existingMember, fetchError });
 
   if (existingMember) {
     return {
@@ -20,27 +22,31 @@ export async function getOrCreateGroup(userId: string, displayName: string): Pro
     };
   }
 
-  // Create new group + add user as admin
-  const { data: group, error: groupError } = await supabase
-    .from('groups')
-    .insert({ name: 'My Group' })
-    .select()
-    .single();
+  // Create new group via RPC to bypass RLS circular dependency
+  // We use a database function that creates group + member in one transaction
+  const { data: rpcResult, error: rpcError } = await supabase.rpc('create_group_with_member', {
+    group_name: 'My Group',
+    member_user_id: userId,
+    member_display_name: displayName,
+  });
 
-  if (groupError || !group) throw groupError ?? new Error('Failed to create group');
+  console.log('[groups] rpc create_group_with_member:', { rpcResult, rpcError });
 
-  const { data: member, error: memberError } = await supabase
+  if (rpcError) throw rpcError;
+
+  // Now fetch the member with group join (user is now in group, so RLS allows it)
+  const { data: newMember, error: fetchNewError } = await supabase
     .from('group_members')
-    .insert({
-      group_id: group.id,
-      user_id: userId,
-      role: 'admin',
-      display_name: displayName,
-    })
-    .select()
+    .select('*, group:groups(*)')
+    .eq('user_id', userId)
+    .limit(1)
     .single();
 
-  if (memberError || !member) throw memberError ?? new Error('Failed to create member');
+  console.log('[groups] fetch new member:', { newMember, fetchNewError });
+  if (fetchNewError || !newMember) throw fetchNewError ?? new Error('Failed to fetch new member');
 
-  return { group: group as Group, member: member as GroupMember };
+  return {
+    group: newMember.group as Group,
+    member: newMember as GroupMember,
+  };
 }

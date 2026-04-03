@@ -9,7 +9,11 @@ import { ItemDetailScreen } from './screens/ItemDetailScreen';
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
-  const { loading: groupLoading } = useGroup(user?.id);
+  const { loading: groupLoading, error: groupError } = useGroup(user?.id);
+
+  if (groupError) {
+    console.error('[App] group error:', groupError);
+  }
 
   if (authLoading || (user && groupLoading)) {
     return (
