@@ -13,7 +13,9 @@
     "title": "הרשימות שלי",
     "new_list": "רשימה חדשה",
     "items_count": "{{count}} פריטים",
-    "checked_count": "{{count}} סומנו"
+    "checked_count": "{{count}} סומנו",
+    "remaining": "{{count}} נותרו",
+    "greeting": "שלום {{name}} 👋"
   },
   "list_detail": {
     "search_placeholder": "חיפוש...",

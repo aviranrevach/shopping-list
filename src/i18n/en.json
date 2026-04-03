@@ -13,7 +13,9 @@
     "title": "My Lists",
     "new_list": "New list",
     "items_count": "{{count}} items",
-    "checked_count": "{{count}} checked"
+    "checked_count": "{{count}} checked",
+    "remaining": "{{count}} remaining",
+    "greeting": "Hello {{name}} 👋"
   },
   "list_detail": {
     "search_placeholder": "Search...",

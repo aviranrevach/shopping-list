@@ -8,7 +8,6 @@ import { toggleItemChecked, deleteItem, createItem } from '../data/items';
 import { updateList, fetchListById } from '../data/lists';
 import type { List } from '../types';
 import { CategoryGroup } from '../components/CategoryGroup';
-import { BottomNav } from '../components/BottomNav';
 import { AddZone } from '../components/AddZone';
 import { ItemDetailSheet } from '../components/ItemDetailSheet';
 import { InviteSheet } from '../components/InviteSheet';
@@ -298,8 +297,6 @@ export function ListDetailScreen() {
           )}
         </div>
       </div>
-
-      {!isAddMode && <BottomNav />}
 
       {/* Item detail sheet */}
       {detailItemId && (
