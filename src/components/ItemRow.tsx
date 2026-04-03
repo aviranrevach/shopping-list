@@ -170,7 +170,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     }
   }
 
-  function handlePointerUp(e: React.PointerEvent) {
+  function handlePointerUp(_e: React.PointerEvent) {
     const s = pointerState.current;
     if (s.longTimer) { clearTimeout(s.longTimer); s.longTimer = null; }
     s.pressing = false;
