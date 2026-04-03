@@ -15,7 +15,7 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
 
   return (
     <div className="mb-4">
-      <div className="text-sm text-gray-400 font-medium mb-1.5 px-1">
+      <div className="text-[15px] text-gray-400 font-medium mb-2 px-1">
         {t(`categories.${category}`)}
       </div>
       <div className="space-y-1.5">

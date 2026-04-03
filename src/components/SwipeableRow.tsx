@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
 interface SwipeableRowProps {
   children: React.ReactNode;
-  onSwipeLeft?: () => void;   // delete
-  onSwipeRight?: () => void;  // open detail
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
   onCheck?: () => void;
   leftActions?: React.ReactNode;
   rightActions?: React.ReactNode;
@@ -20,63 +20,65 @@ export function SwipeableRow({
   const startY = useRef(0);
   const swiping = useRef(false);
   const isHorizontal = useRef<boolean | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  function handleTouchStart(e: React.TouchEvent) {
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX;
     startY.current = e.touches[0].clientY;
     swiping.current = true;
     isHorizontal.current = null;
-  }
+  }, []);
 
-  function handleTouchMove(e: React.TouchEvent) {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!swiping.current) return;
     const dx = e.touches[0].clientX - startX.current;
     const dy = e.touches[0].clientY - startY.current;
 
-    // Determine direction on first significant movement
-    if (isHorizontal.current === null && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+    if (isHorizontal.current === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
       isHorizontal.current = Math.abs(dx) > Math.abs(dy);
     }
 
-    if (!isHorizontal.current) return;
-    // Prevent page from scrolling/bouncing during horizontal swipe
-    e.preventDefault();
-    setOffset(dx);
-  }
+    if (isHorizontal.current === false) return;
+    if (isHorizontal.current === true) {
+      e.preventDefault();
+      e.stopPropagation();
+      setOffset(dx);
+    }
+  }, []);
 
-  function handleTouchEnd() {
+  const handleTouchEnd = useCallback(() => {
     swiping.current = false;
-    // Threshold: 80px to trigger action
     if (offset > 80 && onSwipeRight) {
       onSwipeRight();
     }
     setOffset(0);
     isHorizontal.current = null;
-  }
+  }, [offset, onSwipeRight]);
 
   return (
-    <div className="relative overflow-hidden rounded-xl" style={{ touchAction: 'pan-y' }}>
-      {/* Left actions (revealed on swipe right) */}
+    <div
+      className="relative overflow-hidden rounded-xl"
+      style={{ touchAction: 'pan-y', overscrollBehavior: 'none' }}
+    >
       {leftActions && (
         <div className="absolute inset-0 flex items-stretch">
           {leftActions}
           <div className="flex-1" />
         </div>
       )}
-      {/* Right actions (revealed on swipe left) */}
       {rightActions && (
         <div className="absolute inset-0 flex items-stretch">
           <div className="flex-1" />
           {rightActions}
         </div>
       )}
-      {/* Content */}
       <div
-        className="relative bg-gray-50 transition-transform"
+        ref={contentRef}
+        className="relative bg-gray-50"
         style={{
-          transform: offset !== 0 ? `translateX(${offset}px)` : undefined,
+          transform: offset !== 0 ? `translateX(${offset}px)` : 'translateX(0)',
           transition: swiping.current ? 'none' : 'transform 0.2s ease-out',
-          touchAction: 'pan-y',
+          willChange: 'transform',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

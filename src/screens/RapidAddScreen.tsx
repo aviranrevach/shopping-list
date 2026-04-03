@@ -89,7 +89,7 @@ export function RapidAddScreen() {
         {addedItems.map((item) => (
           <div key={item.id} className="flex items-center gap-2 py-2.5 border-b border-gray-100">
             <div className="w-5 h-5 border-2 border-gray-300 rounded-md flex-shrink-0" />
-            <span className="text-base text-gray-500">{item.name}</span>
+            <span className="text-[17px] text-gray-500">{item.name}</span>
             <QuantityPill
               quantity={item.quantity}
               onChange={(q) => handleQuantityChange(item.id, q)}
@@ -122,7 +122,7 @@ export function RapidAddScreen() {
               }
             }}
             placeholder={t('rapid_add.input_placeholder')}
-            className="flex-1 text-base outline-none bg-transparent text-gray-900 placeholder:text-gray-300"
+            className="flex-1 text-[17px] outline-none bg-transparent text-gray-900 placeholder:text-gray-300"
           />
         </div>
       </div>
