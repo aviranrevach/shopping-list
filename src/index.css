@@ -94,6 +94,12 @@ body {
   background: transparent;
 }
 
+/* Menu slide down from top */
+@keyframes menu-slide-down {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
 /* Add zone collapse */
 .add-zone-exit {
   transition: opacity 0.25s ease, max-height 0.35s ease 0.1s;

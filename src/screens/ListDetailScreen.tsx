@@ -4,7 +4,8 @@ import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
 import { useRealtimeItems } from '../hooks/useRealtimeItems';
-import { toggleItemChecked, deleteItem } from '../data/items';
+import { toggleItemChecked, deleteItem, createItem } from '../data/items';
+import { updateList } from '../data/lists';
 import { CategoryGroup } from '../components/CategoryGroup';
 import { BottomNav } from '../components/BottomNav';
 import { AddZone } from '../components/AddZone';
@@ -23,6 +24,11 @@ export function ListDetailScreen() {
   const [isAddMode, setIsAddMode] = useState(false);
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [showInviteSheet, setShowInviteSheet] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showEditName, setShowEditName] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [editNameValue, setEditNameValue] = useState('');
+  const [importText, setImportText] = useState('');
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
   const [recentlyTransitionedIds, setRecentlyTransitionedIds] = useState<Set<string>>(new Set());
@@ -182,13 +188,13 @@ export function ListDetailScreen() {
               🕯️ List
             </span>
 
-            {/* RTL end (left side): share and back */}
+            {/* RTL end (left side): menu and back */}
             <button
-              onClick={() => setShowInviteSheet(true)}
+              onClick={() => setShowMenu(true)}
               className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+                <circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none" />
               </svg>
             </button>
             <button onClick={() => navigate('/lists')} className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400">
@@ -230,22 +236,6 @@ export function ListDetailScreen() {
             </div>
           ) : (
             <>
-              {/* View toggle: all items vs unchecked only */}
-              <div className="flex gap-2 mb-3">
-                <button
-                  onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${!viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
-                >
-                  לקנות
-                </button>
-                <button
-                  onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
-                >
-                  הכל
-                </button>
-              </div>
-
               {Array.from(groupedByCategory.entries()).map(([category, catItems]) => (
                 <CategoryGroup
                   key={category}
@@ -310,6 +300,151 @@ export function ListDetailScreen() {
           listIcon="🕯️"
           onClose={() => setShowInviteSheet(false)}
         />
+      )}
+
+      {/* Three-dot menu — slides down from top */}
+      {showMenu && (
+        <>
+          <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowMenu(false)} />
+          <div className="fixed top-0 left-0 right-0 z-[51] bg-white rounded-b-2xl shadow-2xl safe-area-top"
+            style={{ animation: 'menu-slide-down 0.25s ease-out' }}>
+            <div className="p-4 space-y-1">
+              {/* View toggle */}
+              <div className="flex gap-2 mb-2">
+                <button
+                  onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
+                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${!viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  🛒 לקנות
+                </button>
+                <button
+                  onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
+                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  📋 הכל
+                </button>
+              </div>
+
+              {/* Share */}
+              <button
+                onClick={() => { setShowMenu(false); setShowInviteSheet(true); }}
+                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+                </svg>
+                שתף רשימה
+              </button>
+
+              {/* Edit name */}
+              <button
+                onClick={() => { setShowMenu(false); setEditNameValue(''); setShowEditName(true); }}
+                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                שנה שם רשימה
+              </button>
+
+              {/* Import */}
+              <button
+                onClick={() => { setShowMenu(false); setImportText(''); setShowImport(true); }}
+                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                ייבוא רשימה
+              </button>
+
+              {/* Close */}
+              <button
+                onClick={() => setShowMenu(false)}
+                className="w-full py-3 rounded-xl text-[15px] font-medium text-gray-400 mt-1"
+              >
+                סגור
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Edit list name modal */}
+      {showEditName && listId && (
+        <>
+          <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowEditName(false)} />
+          <div className="fixed top-1/3 left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5">
+            <h3 className="text-[17px] font-semibold text-center mb-4">שנה שם רשימה</h3>
+            <input
+              autoFocus
+              value={editNameValue}
+              onChange={(e) => setEditNameValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && editNameValue.trim()) {
+                  updateList(listId, { name: editNameValue.trim() });
+                  setShowEditName(false);
+                }
+              }}
+              placeholder="שם חדש"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 text-center"
+            />
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setShowEditName(false)} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
+                ביטול
+              </button>
+              <button
+                onClick={() => {
+                  if (editNameValue.trim() && listId) {
+                    updateList(listId, { name: editNameValue.trim() });
+                    setShowEditName(false);
+                  }
+                }}
+                className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white"
+              >
+                שמור
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Import list modal */}
+      {showImport && listId && user && (
+        <>
+          <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowImport(false)} />
+          <div className="fixed top-[15%] left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5">
+            <h3 className="text-[17px] font-semibold text-center mb-2">ייבוא רשימה</h3>
+            <p className="text-sm text-gray-400 text-center mb-4">הדבק רשימת פריטים — כל שורה פריט אחד</p>
+            <textarea
+              autoFocus
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+              placeholder={"עגבניות\nמלפפונים\nחלב\nלחם"}
+              rows={6}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 resize-none"
+            />
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setShowImport(false)} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
+                ביטול
+              </button>
+              <button
+                onClick={async () => {
+                  const lines = importText.split('\n').map(l => l.trim()).filter(Boolean);
+                  if (lines.length === 0 || !listId || !user) return;
+                  for (const name of lines) {
+                    const item = await createItem(listId, user.id, name);
+                    optimisticAdd(item);
+                  }
+                  setShowImport(false);
+                }}
+                className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white"
+              >
+                ייבא {importText.split('\n').filter(l => l.trim()).length} פריטים
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
