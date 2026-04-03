@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
 import { useRealtimeItems } from '../hooks/useRealtimeItems';
 import { toggleItemChecked, deleteItem, createItem } from '../data/items';
-import { updateList, fetchListById } from '../data/lists';
+import { updateList, fetchListById, deleteList as deleteListApi } from '../data/lists';
 import type { List } from '../types';
 import { CategoryGroup } from '../components/CategoryGroup';
 import { AddZone } from '../components/AddZone';
@@ -372,6 +372,24 @@ export function ListDetailScreen() {
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
                 ייבוא רשימה
+              </button>
+
+              {/* Delete list */}
+              <button
+                onClick={() => {
+                  if (window.confirm('למחוק את הרשימה? הפעולה לא ניתנת לביטול.')) {
+                    setShowMenu(false);
+                    if (listId) {
+                      deleteListApi(listId).then(() => navigate('/lists'));
+                    }
+                  }
+                }}
+                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-red-500 active:bg-red-50"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                </svg>
+                מחק רשימה
               </button>
 
               {/* Close */}
