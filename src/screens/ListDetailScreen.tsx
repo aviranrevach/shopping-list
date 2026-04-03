@@ -374,6 +374,40 @@ export function ListDetailScreen() {
                 ייבוא רשימה
               </button>
 
+              {/* Remove duplicates */}
+              <button
+                onClick={async () => {
+                  if (!listId || !user) return;
+                  const seen = new Map<string, string>(); // name → first item id
+                  const dupeIds: string[] = [];
+                  for (const item of items) {
+                    const key = item.name.trim().toLowerCase();
+                    if (seen.has(key)) {
+                      dupeIds.push(item.id);
+                    } else {
+                      seen.set(key, item.id);
+                    }
+                  }
+                  if (dupeIds.length === 0) {
+                    alert('אין כפילויות');
+                    return;
+                  }
+                  if (window.confirm(`נמצאו ${dupeIds.length} כפילויות. למחוק?`)) {
+                    for (const id of dupeIds) {
+                      optimisticDelete(id);
+                      deleteItem(id).catch(console.error);
+                    }
+                    setShowMenu(false);
+                  }
+                }}
+                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2" /><rect x="8" y="8" width="12" height="12" rx="2" />
+                </svg>
+                הסר כפילויות
+              </button>
+
               {/* Delete list */}
               <button
                 onClick={() => {
