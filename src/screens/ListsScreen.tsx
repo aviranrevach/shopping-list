@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
@@ -24,12 +24,13 @@ export function ListsScreen() {
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [editName, setEditName] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const nameSaved = useRef(false); // prevent re-triggering after save
 
   const displayName = member?.display_name ?? user?.email?.split('@')[0] ?? '';
 
   // Prompt for name on first use (when display_name is still the default "User")
   useEffect(() => {
-    if (member && member.display_name === 'User') {
+    if (member && member.display_name === 'User' && !nameSaved.current) {
       setShowNamePrompt(true);
       setEditName('');
     }
@@ -38,9 +39,15 @@ export function ListsScreen() {
 
   async function handleSaveName() {
     if (!member || !editName.trim()) return;
-    await updateMemberName(member.id, editName.trim());
-    refreshMember();
-    setShowNamePrompt(false);
+    nameSaved.current = true;   // block re-trigger before async work
+    setShowNamePrompt(false);   // close immediately
+    try {
+      await updateMemberName(member.id, editName.trim());
+      refreshMember();
+    } catch {
+      nameSaved.current = false; // allow retry if save failed
+      setShowNamePrompt(true);
+    }
   }
 
   async function handleCreateList() {
