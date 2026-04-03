@@ -4,8 +4,6 @@ import { useGroup } from './hooks/useGroup';
 import { LoginScreen } from './screens/LoginScreen';
 import { ListsScreen } from './screens/ListsScreen';
 import { ListDetailScreen } from './screens/ListDetailScreen';
-import { RapidAddScreen } from './screens/RapidAddScreen';
-import { ItemDetailScreen } from './screens/ItemDetailScreen';
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
@@ -36,19 +34,15 @@ function AppRoutes() {
     <Routes>
       <Route path="/lists" element={<ListsScreen />} />
       <Route path="/lists/:listId" element={<ListDetailScreen />} />
-      <Route path="/lists/:listId/add" element={<RapidAddScreen />} />
-      <Route path="/lists/:listId/items/:itemId" element={<ItemDetailScreen />} />
       <Route path="*" element={<Navigate to="/lists" replace />} />
     </Routes>
   );
 }
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <AppRoutes />
     </BrowserRouter>
   );
 }
-
-export default App;
