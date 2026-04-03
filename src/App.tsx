@@ -4,6 +4,7 @@ import { useGroup } from './hooks/useGroup';
 import { LoginScreen } from './screens/LoginScreen';
 import { ListsScreen } from './screens/ListsScreen';
 import { ListDetailScreen } from './screens/ListDetailScreen';
+import { JoinScreen } from './screens/JoinScreen';
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
@@ -21,20 +22,23 @@ function AppRoutes() {
     );
   }
 
-  if (!user) {
-    return (
-      <Routes>
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    );
-  }
-
   return (
     <Routes>
-      <Route path="/lists" element={<ListsScreen />} />
-      <Route path="/lists/:listId" element={<ListDetailScreen />} />
-      <Route path="*" element={<Navigate to="/lists" replace />} />
+      {/* Public route — invite join page */}
+      <Route path="/join/:token" element={<JoinScreen />} />
+
+      {!user ? (
+        <>
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </>
+      ) : (
+        <>
+          <Route path="/lists" element={<ListsScreen />} />
+          <Route path="/lists/:listId" element={<ListDetailScreen />} />
+          <Route path="*" element={<Navigate to="/lists" replace />} />
+        </>
+      )}
     </Routes>
   );
 }

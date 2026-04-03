@@ -9,6 +9,7 @@ import { CategoryGroup } from '../components/CategoryGroup';
 import { BottomNav } from '../components/BottomNav';
 import { AddZone } from '../components/AddZone';
 import { ItemDetailSheet } from '../components/ItemDetailSheet';
+import { InviteSheet } from '../components/InviteSheet';
 import { CATEGORIES } from '../types';
 
 export function ListDetailScreen() {
@@ -20,6 +21,8 @@ export function ListDetailScreen() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [isAddMode, setIsAddMode] = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [showInviteSheet, setShowInviteSheet] = useState(false);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
   const [recentlyTransitionedIds, setRecentlyTransitionedIds] = useState<Set<string>>(new Set());
@@ -122,43 +125,69 @@ export function ListDetailScreen() {
     <div className="h-screen flex flex-col bg-stone-50 overflow-hidden safe-area-top">
       {/* Top bar */}
       {!isAddMode && (
-        <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-2 flex-shrink-0">
-          {/* RTL order: + button (right) → search → title → back (left) */}
-          <button
-            onClick={() => {
-              setIsAddMode(true);
-              // iOS requires focus to be called synchronously from a user gesture.
-              // We use a minimal timeout so the AddZone has rendered but the call
-              // still originates within the same user-interaction task queue slot.
-              setTimeout(() => {
-                const input = document.querySelector('[data-add-input]') as HTMLInputElement;
-                input?.focus();
-              }, 50);
-            }}
-            className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0"
-          >
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-          <div className="flex-1 bg-gray-100 rounded-lg px-3 py-1.5 flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+        isSearchMode ? (
+          <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-2 flex-shrink-0">
             <input
+              autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('list_detail.search_placeholder')}
-              className="bg-transparent text-base outline-none flex-1 text-gray-700 placeholder:text-gray-300"
+              className="flex-1 bg-gray-100 rounded-lg px-3 py-2 text-base outline-none text-gray-700 placeholder:text-gray-300"
             />
-          </div>
-          <span className="font-semibold text-base text-gray-900 whitespace-nowrap">🕯️ List</span>
-          <button onClick={() => navigate('/lists')} className="p-1 text-gray-400">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-        </header>
+            <button
+              onClick={() => { setIsSearchMode(false); setSearch(''); }}
+              className="text-amber-600 font-semibold text-sm whitespace-nowrap"
+            >
+              {t('invite.search_cancel')}
+            </button>
+          </header>
+        ) : (
+          <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-1.5 flex-shrink-0">
+            {/* RTL start (right side): + and search */}
+            <button
+              onClick={() => {
+                setIsAddMode(true);
+                setTimeout(() => {
+                  const input = document.querySelector('[data-add-input]') as HTMLInputElement;
+                  input?.focus();
+                }, 50);
+              }}
+              className="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
+              <svg className="w-[18px] h-[18px] text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setIsSearchMode(true)}
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+
+            {/* Center: list name */}
+            <span className="flex-1 text-center font-semibold text-[17px] text-gray-900 truncate">
+              🕯️ List
+            </span>
+
+            {/* RTL end (left side): share and back */}
+            <button
+              onClick={() => setShowInviteSheet(true)}
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+              </svg>
+            </button>
+            <button onClick={() => navigate('/lists')} className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          </header>
+        )
       )}
 
       {/* Items */}
@@ -229,6 +258,15 @@ export function ListDetailScreen() {
       {/* Item detail sheet */}
       {detailItemId && (
         <ItemDetailSheet itemId={detailItemId} onClose={() => setDetailItemId(null)} />
+      )}
+
+      {showInviteSheet && listId && (
+        <InviteSheet
+          listId={listId}
+          listName="List"
+          listIcon="🕯️"
+          onClose={() => setShowInviteSheet(false)}
+        />
       )}
     </div>
   );
