@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
 
 export function LoginScreen() {
   const { t } = useI18n();
-  const { sendMagicLink } = useAuth();
+  const { sendMagicLink, verifyOtp } = useAuth();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const codeInputRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,11 +19,32 @@ export function LoginScreen() {
     try {
       await sendMagicLink(email);
       setSent(true);
+      setTimeout(() => codeInputRef.current?.focus(), 100);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (code.length !== 6) return;
+    setError('');
+    setLoading(true);
+    try {
+      await verifyOtp(email, code);
+      // auth state change handled by useAuth subscription
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid code');
+      setLoading(false);
+    }
+  }
+
+  function handleCodeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setCode(val);
+    setError('');
   }
 
   return (
@@ -37,11 +60,7 @@ export function LoginScreen() {
           <p className="text-sm text-gray-400 mt-1">{t('login.subtitle')}</p>
         </div>
 
-        {sent ? (
-          <div className="text-center bg-green-50 border border-green-200 rounded-xl p-4">
-            <p className="text-green-800 font-medium">{t('login.link_sent')}</p>
-          </div>
-        ) : (
+        {!sent ? (
           <form onSubmit={handleSubmit}>
             <label className="block text-sm text-gray-500 mb-1.5">{t('login.email_label')}</label>
             <input
@@ -65,6 +84,48 @@ export function LoginScreen() {
               {loading ? '...' : t('login.send_link')}
             </button>
             <p className="text-center text-xs text-gray-400 mt-4">{t('login.link_hint')}</p>
+          </form>
+        ) : (
+          <form onSubmit={handleVerify} dir="rtl">
+            <p className="text-center text-sm text-gray-500 mb-6">
+              {t('login.code_sent_to')} <span className="font-medium text-gray-800" dir="ltr">{email}</span>
+            </p>
+
+            <label className="block text-sm text-gray-500 mb-1.5">{t('login.code_label')}</label>
+            <input
+              ref={codeInputRef}
+              type="tel"
+              inputMode="numeric"
+              value={code}
+              onChange={handleCodeChange}
+              placeholder="000000"
+              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-4 text-3xl font-bold tracking-[0.4em] outline-none transition text-center"
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-light)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+              dir="ltr"
+              autoComplete="one-time-code"
+            />
+
+            {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={loading || code.length !== 6}
+              className="w-full mt-4 text-white font-semibold rounded-xl px-4 py-3 text-base transition disabled:opacity-50"
+              style={{ background: 'var(--color-primary)' }}
+            >
+              {loading ? '...' : t('login.verify_code')}
+            </button>
+
+            <p className="text-center text-xs text-gray-400 mt-4">{t('login.code_hint')}</p>
+
+            <button
+              type="button"
+              onClick={() => { setSent(false); setCode(''); setError(''); }}
+              className="w-full mt-2 py-2 text-sm text-gray-400"
+            >
+              {t('login.change_email')}
+            </button>
           </form>
         )}
       </div>

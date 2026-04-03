@@ -5,9 +5,14 @@
     "subtitle": "רשימת קניות",
     "email_label": "Email",
     "email_placeholder": "your@email.com",
-    "send_link": "Send me a link",
-    "link_sent": "Link sent to your email",
-    "link_hint": "A one-time link will be sent to your email"
+    "send_link": "Send me a code",
+    "link_sent": "Code sent to your email",
+    "link_hint": "A one-time code will be sent to your email",
+    "code_sent_to": "Code sent to",
+    "code_label": "Verification code (6 digits)",
+    "verify_code": "Sign in",
+    "code_hint": "A sign-in link was also included in the email",
+    "change_email": "Change email address"
   },
   "lists": {
     "title": "My Lists",

@@ -5,9 +5,14 @@
     "subtitle": "Shopping List",
     "email_label": "אימייל",
     "email_placeholder": "your@email.com",
-    "send_link": "שלח לי קישור",
-    "link_sent": "קישור נשלח למייל שלך",
-    "link_hint": "קישור חד-פעמי יישלח למייל שלך"
+    "send_link": "שלח לי קוד",
+    "link_sent": "קוד נשלח למייל שלך",
+    "link_hint": "קוד חד-פעמי יישלח למייל שלך",
+    "code_sent_to": "קוד נשלח לכתובת",
+    "code_label": "קוד אימות (6 ספרות)",
+    "verify_code": "כניסה",
+    "code_hint": "בדוק גם קישור ישיר שנשלח למייל",
+    "change_email": "שנה כתובת מייל"
   },
   "lists": {
     "title": "הרשימות שלי",

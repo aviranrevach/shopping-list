@@ -34,10 +34,15 @@ export function useAuth() {
     if (error) throw error;
   }
 
+  async function verifyOtp(email: string, token: string) {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+    if (error) throw error;
+  }
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   }
 
-  return { ...state, sendMagicLink, signOut };
+  return { ...state, sendMagicLink, verifyOtp, signOut };
 }
