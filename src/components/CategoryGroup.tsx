@@ -9,9 +9,10 @@ interface CategoryGroupProps {
   onDelete: (itemId: string) => void;
   onOpenDetail: (itemId: string) => void;
   transitioningIds: Set<string>;
+  recentlyTransitionedIds: Set<string>;
 }
 
-export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds }: CategoryGroupProps) {
+export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds }: CategoryGroupProps) {
   const { t } = useI18n();
 
   return (
@@ -25,6 +26,7 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
             key={item.id}
             item={item}
             isTransitioning={transitioningIds.has(item.id)}
+            shouldAnimateEntrance={recentlyTransitionedIds.has(item.id)}
             onToggleCheck={() => onToggleCheck(item.id)}
             onDelete={() => onDelete(item.id)}
             onOpenDetail={() => onOpenDetail(item.id)}

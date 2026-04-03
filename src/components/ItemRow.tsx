@@ -7,9 +7,10 @@ interface ItemRowProps {
   onDelete: () => void;
   onOpenDetail: () => void;
   isTransitioning: boolean;
+  shouldAnimateEntrance: boolean;
 }
 
-export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransitioning }: ItemRowProps) {
+export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransitioning: _isTransitioning, shouldAnimateEntrance }: ItemRowProps) {
   const hasNote = !!item.note;
 
   // Refs for DOM manipulation
@@ -17,7 +18,6 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
   const wrapRef = useRef<HTMLDivElement>(null);
   const swipeWrapRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const prevTransitioning = useRef(isTransitioning);
 
   const pointerState = useRef({
     startX: 0, startY: 0, dx: 0, dy: 0,
@@ -34,15 +34,21 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     return () => { timers.current.forEach(clearTimeout); };
   }, []);
 
-  // Detect entrance (transitioning -> not transitioning = item arrived in new section)
+  // Animate entrance on mount if this item just arrived in a new section
   useEffect(() => {
-    if (prevTransitioning.current && !isTransitioning && swipeWrapRef.current) {
-      swipeWrapRef.current.setAttribute('data-animating', 'enter');
-      const t = setTimeout(() => swipeWrapRef.current?.removeAttribute('data-animating'), 350);
-      timers.current.push(t);
-    }
-    prevTransitioning.current = isTransitioning;
-  }, [isTransitioning]);
+    if (!shouldAnimateEntrance || !swipeWrapRef.current) return;
+    const wrapper = swipeWrapRef.current;
+    wrapper.style.opacity = '0';
+    wrapper.style.transform = 'translateY(8px)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        wrapper.style.transition = 'opacity 0.35s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        wrapper.style.opacity = '1';
+        wrapper.style.transform = 'translateY(0)';
+        setTimeout(() => { wrapper.style.transition = ''; }, 400);
+      });
+    });
+  }, []); // runs once on mount
 
   // Ripple effect
   function createRipple() {

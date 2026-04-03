@@ -111,9 +111,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     }
   }
 
-  if (!item) return null;
-
-  const timeStr = new Date(item.created_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+  const timeStr = item ? new Date(item.created_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '';
 
   return createPortal(
     <>
@@ -144,7 +142,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
             {addedBy && <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />}
             <span className="text-xs text-gray-300">{timeStr}</span>
           </div>
-          <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item.name}</h2>
+          <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item?.name ?? ''}</h2>
           <button onClick={handleClose} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
             <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -154,6 +152,12 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
 
         {/* Body */}
         <div data-sheet-body className="p-4 space-y-4 overflow-y-auto" style={{ touchAction: 'pan-y' }}>
+        {!item ? (
+          <div className="flex justify-center py-12">
+            <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <>
           {/* Quantity + Unit */}
           <div className="flex gap-3">
             <div className="flex-1">
@@ -215,6 +219,8 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
               <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
             </div>
           </div>
+          </>
+        )}
         </div>
       </div>
     </>,

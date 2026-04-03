@@ -22,6 +22,7 @@ export function ListDetailScreen() {
   const [isAddMode, setIsAddMode] = useState(false);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
+  const [recentlyTransitionedIds, setRecentlyTransitionedIds] = useState<Set<string>>(new Set());
   const transitionTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const filteredItems = useMemo(() => {
@@ -73,13 +74,22 @@ export function ListDetailScreen() {
     const existing = transitionTimers.current.get(itemId);
     if (existing) clearTimeout(existing);
 
-    // 3. Remove from transitioning after animation
+    // 3. Remove from transitioning after animation, mark as recently transitioned for entrance
     const timer = setTimeout(() => {
       setTransitioningIds((prev) => {
         const next = new Set(prev);
         next.delete(itemId);
         return next;
       });
+      setRecentlyTransitionedIds((prev) => new Set(prev).add(itemId));
+      // Clear recently transitioned after entrance animation completes
+      setTimeout(() => {
+        setRecentlyTransitionedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(itemId);
+          return next;
+        });
+      }, 500);
       transitionTimers.current.delete(itemId);
     }, newChecked ? 950 : 750);
     transitionTimers.current.set(itemId, timer);
@@ -181,6 +191,7 @@ export function ListDetailScreen() {
                   onDelete={handleDelete}
                   onOpenDetail={handleOpenDetail}
                   transitioningIds={transitioningIds}
+                  recentlyTransitionedIds={recentlyTransitionedIds}
                 />
               ))}
               {checked.length > 0 && (
@@ -191,6 +202,7 @@ export function ListDetailScreen() {
                   onDelete={handleDelete}
                   onOpenDetail={handleOpenDetail}
                   transitioningIds={transitioningIds}
+                  recentlyTransitionedIds={recentlyTransitionedIds}
                 />
               )}
               {items.length === 0 && !isAddMode && (
