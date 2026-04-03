@@ -22,11 +22,9 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
   const pointerState = useRef({
     startX: 0, startY: 0, dx: 0, dy: 0,
     isH: null as boolean | null,
-    isV: null as boolean | null,
     pressing: false,
-    longTimer: null as ReturnType<typeof setTimeout> | null,
-    longFired: false,
     pointerId: 0,
+    detailTriggered: false,
   });
 
   // Clean up timers on unmount
@@ -34,21 +32,16 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     return () => { timers.current.forEach(clearTimeout); };
   }, []);
 
-  // Animate entrance on mount if this item just arrived in a new section
+  // Entrance animation: CSS animation via inline style is more reliable than
+  // DOM manipulation because it runs regardless of timing / batching issues.
+  // We use a data attribute so we can control when it fires.
   useEffect(() => {
     if (!shouldAnimateEntrance || !swipeWrapRef.current) return;
-    const wrapper = swipeWrapRef.current;
-    wrapper.style.opacity = '0';
-    wrapper.style.transform = 'translateY(8px)';
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        wrapper.style.transition = 'opacity 0.35s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        wrapper.style.opacity = '1';
-        wrapper.style.transform = 'translateY(0)';
-        setTimeout(() => { wrapper.style.transition = ''; }, 400);
-      });
-    });
-  }, []); // runs once on mount
+    const el = swipeWrapRef.current;
+    el.style.animation = 'item-appear 0.35s ease forwards';
+    const t = setTimeout(() => { el.style.animation = ''; }, 400);
+    return () => clearTimeout(t);
+  }, []); // runs once on mount — shouldAnimateEntrance is captured at mount time
 
   // Ripple effect
   function createRipple() {
@@ -96,27 +89,21 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     onToggleCheck();
   }
 
-  // Pointer handlers for swipe-to-delete + long-press
+  // Pointer handlers:
+  //   Swipe RIGHT (dx > 0) → delete zone (red background, slide right to confirm)
+  //   Swipe LEFT  (dx < 0) → open detail when threshold reached (-80px)
   function handlePointerDown(e: React.PointerEvent) {
     if ((e.target as HTMLElement).closest('[data-checkbox]')) return;
     const s = pointerState.current;
     s.startX = e.clientX;
     s.startY = e.clientY;
     s.dx = 0; s.dy = 0;
-    s.isH = null; s.isV = null;
-    s.longFired = false;
+    s.isH = null;
     s.pressing = true;
+    s.detailTriggered = false;
     s.pointerId = e.pointerId;
 
     rowRef.current?.setPointerCapture(e.pointerId);
-    if (rowRef.current) rowRef.current.style.backgroundColor = '#f5f0e5';
-
-    s.longTimer = setTimeout(() => {
-      if (!s.pressing || s.isH) return;
-      s.longFired = true;
-      rowRef.current?.classList.remove('bg-amber-50');
-      onOpenDetail();
-    }, 400);
   }
 
   function handlePointerMove(e: React.PointerEvent) {
@@ -125,35 +112,39 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     s.dx = e.clientX - s.startX;
     s.dy = e.clientY - s.startY;
 
-    if (Math.abs(s.dx) > 5 || Math.abs(s.dy) > 5) {
-      if (s.longTimer) { clearTimeout(s.longTimer); s.longTimer = null; }
-      if (rowRef.current) rowRef.current.style.backgroundColor = '';
+    // Determine axis once we have enough movement
+    if (s.isH === null && (Math.abs(s.dx) > 8 || Math.abs(s.dy) > 8)) {
+      s.isH = Math.abs(s.dx) > Math.abs(s.dy);
     }
 
-    if (s.isH === null && s.isV === null && (Math.abs(s.dx) > 8 || Math.abs(s.dy) > 8)) {
-      if (Math.abs(s.dx) > Math.abs(s.dy)) {
-        s.isH = true;
-      } else {
-        s.isV = true;
-        if (s.dy > 30 && !s.longFired) {
-          s.longFired = true;
-          s.pressing = false;
-          onOpenDetail();
-          return;
-        }
+    if (!s.isH) return; // vertical scroll — let browser handle
+
+    e.preventDefault();
+
+    // Swipe LEFT → detail (negative dx)
+    if (s.dx < 0 && !s.detailTriggered) {
+      if (rowRef.current) {
+        // Slide row slightly left to give haptic-like visual feedback
+        const clampedDx = Math.max(s.dx, -100);
+        rowRef.current.style.transition = 'none';
+        rowRef.current.style.transform = `translateX(${clampedDx}px)`;
       }
-    }
 
-    if (s.isV && s.dy > 30 && !s.longFired) {
-      s.longFired = true;
-      s.pressing = false;
-      onOpenDetail();
+      if (s.dx <= -80) {
+        s.detailTriggered = true;
+        // Snap row back
+        if (rowRef.current) {
+          rowRef.current.style.transition = 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          rowRef.current.style.transform = 'translateX(0)';
+        }
+        s.pressing = false;
+        onOpenDetail();
+      }
       return;
     }
 
-    // Horizontal swipe: stretch delete
-    if (s.isH && rowRef.current && wrapRef.current) {
-      e.preventDefault();
+    // Swipe RIGHT → delete zone (positive dx)
+    if (s.dx > 0 && rowRef.current && wrapRef.current) {
       const swipeDx = Math.max(0, s.dx);
       const row = rowRef.current;
       const wrap = row.closest('[data-swipe-wrap]') as HTMLElement;
@@ -178,11 +169,17 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
 
   function handlePointerUp(_e: React.PointerEvent) {
     const s = pointerState.current;
-    if (s.longTimer) { clearTimeout(s.longTimer); s.longTimer = null; }
     s.pressing = false;
-    if (rowRef.current) rowRef.current.style.backgroundColor = '';
 
-    if (s.isH && rowRef.current) {
+    // Snap back left-swipe if detail wasn't triggered yet
+    if (s.dx < 0 && !s.detailTriggered && rowRef.current) {
+      rowRef.current.style.transition = 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      rowRef.current.style.transform = 'translateX(0)';
+      s.isH = null;
+      return;
+    }
+
+    if (s.isH && s.dx > 0 && rowRef.current) {
       const swipeDx = Math.max(0, s.dx);
       const screenW = window.innerWidth;
       const row = rowRef.current;
@@ -216,7 +213,6 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     }
 
     s.isH = null;
-    s.isV = null;
   }
 
   const textClass = item.checked ? 'line-through text-gray-500' : '';

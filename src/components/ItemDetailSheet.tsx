@@ -28,7 +28,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   const [uploading, setUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Drag-to-dismiss
+  // Drag-to-dismiss (swipe right to close, since sheet slides in from left)
   const dragStart = useRef(0);
   const dragging = useRef(false);
 
@@ -39,8 +39,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     fetchItemImages(itemId).then(setImages);
 
     // Double rAF to ensure the browser has painted the initial (closed) state
-    // before transitioning to open — this prevents the sheet from appearing
-    // already in its final position without animating.
+    // before transitioning to open — prevents the sheet appearing without animation.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setIsOpen(true);
@@ -84,18 +83,20 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     setImages((prev) => prev.filter((i) => i.id !== img.id));
   }
 
+  // Drag-to-dismiss: swipe right to close (back gesture), like iOS push navigation
   function handleSheetPointerDown(e: React.PointerEvent) {
     if ((e.target as HTMLElement).closest('[data-sheet-body]')) return;
-    dragStart.current = e.clientY;
+    dragStart.current = e.clientX;
     dragging.current = true;
     if (sheetRef.current) sheetRef.current.style.transition = 'none';
   }
 
   function handleSheetPointerMove(e: React.PointerEvent) {
     if (!dragging.current || !sheetRef.current) return;
-    const dy = e.clientY - dragStart.current;
-    if (dy > 0) {
-      sheetRef.current.style.transform = `translateY(${dy}px)`;
+    const dx = e.clientX - dragStart.current;
+    // Only allow dragging to the right (positive dx = closing direction)
+    if (dx > 0) {
+      sheetRef.current.style.transform = `translateX(${dx}px)`;
     }
   }
 
@@ -103,8 +104,8 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     if (!dragging.current || !sheetRef.current) return;
     dragging.current = false;
     sheetRef.current.style.transition = '';
-    const dy = e.clientY - dragStart.current;
-    if (dy > 100) {
+    const dx = e.clientX - dragStart.current;
+    if (dx > 100) {
       handleClose();
     } else {
       sheetRef.current.style.transform = '';
@@ -122,32 +123,36 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
         onClick={handleClose}
       />
 
-      {/* Sheet */}
+      {/* Side sheet — slides in from the LEFT (like iOS push navigation) */}
       <div
         ref={sheetRef}
-        className={`fixed left-0 right-0 bottom-0 z-[51] bg-white rounded-t-2xl ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}
-        style={{ transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)', minHeight: '70vh', maxHeight: '90vh', overflowY: 'auto' }}
+        className={`fixed top-0 left-0 bottom-0 z-[51] bg-white shadow-2xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{
+          width: '100%',
+          maxWidth: '480px',
+          transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          overflowY: 'auto',
+          paddingTop: 'env(safe-area-inset-top)',
+        }}
         onPointerDown={handleSheetPointerDown}
         onPointerMove={handleSheetPointerMove}
         onPointerUp={handleSheetPointerUp}
       >
-        {/* Handle */}
-        <div className="flex justify-center pt-2 pb-1">
-          <div className="w-9 h-1 bg-gray-300 rounded-full" />
-        </div>
-
         {/* Header */}
-        <div className="flex items-center px-4 py-2 border-b border-gray-100">
-          <div className="flex items-center gap-1.5 min-w-[60px]">
+        <div className="flex items-center px-4 py-3 border-b border-gray-100 sticky top-0 bg-white z-10">
+          {/* Close button (left side, acts as "back") */}
+          <button onClick={handleClose} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item?.name ?? ''}</h2>
+
+          <div className="flex items-center gap-1.5 min-w-[60px] justify-end">
             {addedBy && <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />}
             <span className="text-xs text-gray-300">{timeStr}</span>
           </div>
-          <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item?.name ?? ''}</h2>
-          <button onClick={handleClose} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
         </div>
 
         {/* Body */}

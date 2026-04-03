@@ -74,6 +74,12 @@ body {
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* Entrance animation for items appearing in a new section after check/uncheck */
+@keyframes item-appear {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 /* Row with amber glow that settles */
 .row-glow {
   background: rgba(245, 158, 11, 0.08);

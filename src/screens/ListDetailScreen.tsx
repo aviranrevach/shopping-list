@@ -119,13 +119,22 @@ export function ListDetailScreen() {
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
   return (
-    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}>
       {/* Top bar */}
       {!isAddMode && (
         <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-2 flex-shrink-0">
           {/* RTL order: + button (right) → search → title → back (left) */}
           <button
-            onClick={() => setIsAddMode(true)}
+            onClick={() => {
+              setIsAddMode(true);
+              // iOS requires focus to be called synchronously from a user gesture.
+              // We use a minimal timeout so the AddZone has rendered but the call
+              // still originates within the same user-interaction task queue slot.
+              setTimeout(() => {
+                const input = document.querySelector('[data-add-input]') as HTMLInputElement;
+                input?.focus();
+              }, 50);
+            }}
             className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0"
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useI18n } from '../i18n';
 import { useItemSuggestions } from '../hooks/useItemSuggestions';
 import { createItem } from '../data/items';
@@ -29,10 +29,8 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
   const zoneRef = useRef<HTMLDivElement>(null);
   const suggestions = useItemSuggestions(groupId, input);
 
-  useEffect(() => {
-    // Small delay to ensure DOM is ready
-    setTimeout(() => inputRef.current?.focus(), 100);
-  }, []);
+  // Focus is triggered by the parent button handler for iOS compatibility
+  // (synchronous from user gesture context, not from a child useEffect).
 
   // Live category based on best match
   const liveCategory = (() => {
@@ -132,6 +130,7 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
           <div className="w-5 h-5 border-2 border-gray-200 rounded-md flex-shrink-0 opacity-30" />
           <input
             ref={inputRef}
+            data-add-input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
