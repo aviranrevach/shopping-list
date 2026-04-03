@@ -81,5 +81,13 @@
     "items_count": "{{count}} items",
     "cancel": "Cancel",
     "search_cancel": "Cancel"
+  },
+  "categories_ui": {
+    "new_category": "New Category",
+    "save_category": "Save Category",
+    "category_name_placeholder": "Category name",
+    "choose_emoji": "Choose emoji",
+    "cancel": "Cancel",
+    "add_new": "+ New"
   }
 }

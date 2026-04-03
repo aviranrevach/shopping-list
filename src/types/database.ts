@@ -71,3 +71,12 @@ export interface ListMember {
   role: 'owner' | 'member';
   joined_at: string;
 }
+
+export interface CustomCategory {
+  id: string;
+  group_id: string;
+  name: string;
+  emoji: string;
+  sort_order: number;
+  created_at: string;
+}

@@ -1,8 +1,11 @@
 import { useState, useRef } from 'react';
 import { useI18n } from '../i18n';
 import { useItemSuggestions } from '../hooks/useItemSuggestions';
-import { createItem } from '../data/items';
+import { useCategories } from '../hooks/useCategories';
+import { createItem, updateItem } from '../data/items';
+import { createCustomCategory } from '../data/categories';
 import { SuggestionChips } from './SuggestionChips';
+import { CategoryPicker } from './CategoryPicker';
 import type { Item } from '../types';
 
 interface AddedItem {
@@ -25,9 +28,11 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
   const [input, setInput] = useState('');
   const [addedItems, setAddedItems] = useState<AddedItem[]>([]);
   const [isCollapsing, setIsCollapsing] = useState(false);
+  const [editingCategoryForItem, setEditingCategoryForItem] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const zoneRef = useRef<HTMLDivElement>(null);
   const suggestions = useItemSuggestions(groupId, input);
+  const { allCategories, addCategory, getCategoryEmoji } = useCategories(groupId);
 
   // Focus is triggered by the parent button handler for iOS compatibility
   // (synchronous from user gesture context, not from a child useEffect).
@@ -78,11 +83,39 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
     setTimeout(() => onDone(addedItems), 350);
   }
 
+  async function handleCategorySelect(itemId: string, categoryKey: string) {
+    setAddedItems((prev) =>
+      prev.map((i) => (i.id === itemId ? { ...i, category: categoryKey } : i))
+    );
+    setEditingCategoryForItem(null);
+    await updateItem(itemId, { category: categoryKey });
+  }
+
+  async function handleCreateCategory(itemId: string, name: string, emoji: string) {
+    try {
+      const newCat = await createCustomCategory(groupId, name, emoji);
+      addCategory(newCat);
+      await handleCategorySelect(itemId, newCat.name);
+    } catch (err) {
+      console.error('Failed to create category', err);
+    }
+  }
+
   // Mark suggestions that are already on the list
   const enrichedSuggestions = suggestions.map((s) => ({
     ...s,
     onList: existingItemNames.includes(s.name),
   }));
+
+  function getCategoryLabel(cat: string): string {
+    if (cat === 'other') return 'לא ממוין';
+    // Try built-in i18n key
+    const key = `categories.${cat}`;
+    const translated = t(key);
+    // If translation returns the key itself, it's a custom category — show as-is
+    if (translated && translated !== key) return translated;
+    return cat;
+  }
 
   return (
     <>
@@ -108,20 +141,39 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
           </div>
         )}
         {addedItems.map((item, i) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100/50 row-glow"
-            style={{ animationDelay: `${i * 50}ms` }}
-            ref={(el) => { if (el) setTimeout(() => el.classList.add('settled'), 100); }}
-          >
-            <div className="w-5 h-5 border-2 border-gray-300 rounded-md flex-shrink-0" />
-            <span className="text-[17px] text-gray-500">{item.name}</span>
-            <div className="flex-1" />
-            <span className={`text-sm px-2.5 py-0.5 rounded-lg ${
-              item.category === 'other' ? 'bg-gray-200 text-gray-400' : 'bg-gray-200 text-gray-500'
-            }`}>
-              {item.category === 'other' ? 'לא ממוין' : t(`categories.${item.category}`)}
-            </span>
+          <div key={item.id}>
+            <div
+              className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100/50 row-glow"
+              style={{ animationDelay: `${i * 50}ms` }}
+              ref={(el) => { if (el) setTimeout(() => el.classList.add('settled'), 100); }}
+            >
+              <div className="w-5 h-5 border-2 border-gray-300 rounded-md flex-shrink-0" />
+              <span className="text-[17px] text-gray-500">{item.name}</span>
+              <div className="flex-1" />
+              <button
+                onClick={() =>
+                  setEditingCategoryForItem(
+                    editingCategoryForItem === item.id ? null : item.id
+                  )
+                }
+                className={`text-sm px-2.5 py-0.5 rounded-lg flex items-center gap-1 ${
+                  item.category === 'other'
+                    ? 'bg-gray-200 text-gray-400'
+                    : 'bg-amber-100 text-amber-700'
+                }`}
+              >
+                <span>{getCategoryEmoji(item.category)}</span>
+                <span>{getCategoryLabel(item.category)}</span>
+              </button>
+            </div>
+            {editingCategoryForItem === item.id && (
+              <CategoryPicker
+                categories={allCategories}
+                selected={item.category}
+                onSelect={(key) => handleCategorySelect(item.id, key)}
+                onCreateNew={(name, emoji) => handleCreateCategory(item.id, name, emoji)}
+              />
+            )}
           </div>
         ))}
 

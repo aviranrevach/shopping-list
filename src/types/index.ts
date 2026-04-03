@@ -1,4 +1,16 @@
-export type { Group, GroupMember, List, Item, ItemImage, GroupInvite, ListInvite, ListMember } from './database';
+export type { Group, GroupMember, List, Item, ItemImage, GroupInvite, ListInvite, ListMember, CustomCategory } from './database';
+
+export const DEFAULT_CATEGORY_EMOJIS: Record<string, string> = {
+  produce: '🥬',
+  dairy: '🥛',
+  meat_fish: '🥩',
+  bakery: '🍞',
+  frozen: '🧊',
+  canned: '🥫',
+  snacks: '🍿',
+  household: '🧹',
+  other: '📦',
+};
 
 export const CATEGORIES = [
   'produce',

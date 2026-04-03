@@ -1,4 +1,5 @@
 import { useI18n } from '../i18n';
+import { DEFAULT_CATEGORY_EMOJIS } from '../types';
 import type { Item } from '../types';
 import { ItemRow } from './ItemRow';
 
@@ -10,15 +11,20 @@ interface CategoryGroupProps {
   onOpenDetail: (itemId: string) => void;
   transitioningIds: Set<string>;
   recentlyTransitionedIds: Set<string>;
+  categoryEmoji?: string;
 }
 
-export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds }: CategoryGroupProps) {
+export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds, categoryEmoji }: CategoryGroupProps) {
   const { t } = useI18n();
+
+  const emoji = categoryEmoji ?? DEFAULT_CATEGORY_EMOJIS[category];
 
   return (
     <div className="mb-4">
       <div className="text-[15px] text-gray-400 font-medium mb-2 px-1">
-        {category === 'checked_section' ? t('list_detail.checked_section') : t(`categories.${category}`)}
+        {category === 'checked_section'
+          ? t('list_detail.checked_section')
+          : `${emoji ? emoji + ' ' : ''}${t(`categories.${category}`)}`}
       </div>
       <div className="space-y-0.5">
         {items.map((item) => (

@@ -213,7 +213,7 @@ export function ListDetailScreen() {
           )}
         </div>
 
-        <div className="p-4">
+        <div className="p-4" onClick={() => { if (isAddMode) { setIsAddMode(false); } }}>
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />

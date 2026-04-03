@@ -81,5 +81,13 @@
     "items_count": "{{count}} פריטים",
     "cancel": "ביטול",
     "search_cancel": "ביטול"
+  },
+  "categories_ui": {
+    "new_category": "קטגוריה חדשה",
+    "save_category": "שמור קטגוריה",
+    "category_name_placeholder": "שם קטגוריה",
+    "choose_emoji": "בחר אימוג׳י",
+    "cancel": "ביטול",
+    "add_new": "+ חדשה"
   }
 }
