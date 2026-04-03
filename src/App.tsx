@@ -9,7 +9,7 @@ import { ItemDetailScreen } from './screens/ItemDetailScreen';
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
-  const { group, loading: groupLoading } = useGroup(user?.id);
+  const { loading: groupLoading } = useGroup(user?.id);
 
   if (authLoading || (user && groupLoading)) {
     return (
