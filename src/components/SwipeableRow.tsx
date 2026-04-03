@@ -39,6 +39,8 @@ export function SwipeableRow({
     }
 
     if (!isHorizontal.current) return;
+    // Prevent page from scrolling/bouncing during horizontal swipe
+    e.preventDefault();
     setOffset(dx);
   }
 
@@ -53,7 +55,7 @@ export function SwipeableRow({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div className="relative overflow-hidden rounded-xl" style={{ touchAction: 'pan-y' }}>
       {/* Left actions (revealed on swipe right) */}
       {leftActions && (
         <div className="absolute inset-0 flex items-stretch">

@@ -2,4 +2,11 @@
 
 html, body {
   overscroll-behavior: none;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent horizontal bounce on all screens */
+#root {
+  overflow-x: hidden;
 }
