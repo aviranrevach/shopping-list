@@ -49,20 +49,20 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail }: ItemRow
       }
     >
       <div
-        className={`flex items-center gap-2.5 px-3.5 py-3 ${item.checked ? 'opacity-40' : ''}`}
+        className={`flex items-center gap-2.5 px-3.5 py-3 transition-opacity duration-200 ${item.checked ? 'opacity-40' : ''}`}
       >
         <button onClick={onToggleCheck} className="flex-shrink-0">
           {item.checked ? (
-            <div className="w-6 h-6 bg-amber-500 rounded-md flex items-center justify-center">
+            <div className="w-6 h-6 bg-amber-500 rounded-md flex items-center justify-center transition-all duration-200 scale-110">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
           ) : (
-            <div className="w-6 h-6 border-2 border-gray-300 rounded-md" />
+            <div className="w-6 h-6 border-2 border-gray-300 rounded-md transition-all duration-200" />
           )}
         </button>
-        <span className={`text-sm text-gray-900 ${item.checked ? 'line-through' : ''}`}>
+        <span className={`text-base text-gray-900 ${item.checked ? 'line-through' : ''}`}>
           {item.name}
         </span>
         {item.quantity > 1 && (

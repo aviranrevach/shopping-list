@@ -1,20 +1,21 @@
-import { useState } from 'react';
 import { useI18n } from '../i18n';
 import { CATEGORIES } from '../types';
 
 interface CategoryPillProps {
   category: string;
   onChange: (category: string) => void;
+  expanded?: boolean;
+  onExpand?: () => void;
+  onCollapse?: () => void;
 }
 
-export function CategoryPill({ category, onChange }: CategoryPillProps) {
+export function CategoryPill({ category, onChange, expanded = false, onExpand, onCollapse }: CategoryPillProps) {
   const { t } = useI18n();
-  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="flex flex-col gap-1">
       <button
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => (expanded ? onCollapse?.() : onExpand?.())}
         className="bg-gray-200 text-gray-500 text-xs px-2.5 py-0.5 rounded-lg flex items-center gap-1"
       >
         {t(`categories.${category}`)}
@@ -27,7 +28,7 @@ export function CategoryPill({ category, onChange }: CategoryPillProps) {
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
-              onClick={() => { onChange(cat); setExpanded(false); }}
+              onClick={() => { onChange(cat); onCollapse?.(); }}
               className={`text-xs px-3 py-1.5 rounded-lg transition ${
                 cat === category
                   ? 'bg-amber-500 text-white'

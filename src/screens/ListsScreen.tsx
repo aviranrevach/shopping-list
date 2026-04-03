@@ -68,7 +68,7 @@ export function ListsScreen() {
                 <span className="text-2xl">{list.icon}</span>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-gray-900">{list.name}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">
+                  <div className="text-sm text-gray-400 mt-0.5">
                     {t('lists.items_count', { count: list.item_count })}
                     {list.checked_count > 0 && ` · ${t('lists.checked_count', { count: list.checked_count })}`}
                     {list.last_activity && ` · ${formatActivity(list.last_activity)}`}

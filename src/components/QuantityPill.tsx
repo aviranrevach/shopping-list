@@ -1,18 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface QuantityPillProps {
   quantity: number;
   onChange: (quantity: number) => void;
+  expanded?: boolean;
+  onExpand?: () => void;
+  onCollapse?: () => void;
 }
 
-export function QuantityPill({ quantity, onChange }: QuantityPillProps) {
-  const [expanded, setExpanded] = useState(false);
+export function QuantityPill({ quantity, onChange, expanded = false, onExpand, onCollapse }: QuantityPillProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!expanded) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        onCollapse?.();
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [expanded, onCollapse]);
 
   if (expanded) {
     return (
-      <div className="flex flex-col gap-1">
+      <div ref={containerRef} className="flex flex-col gap-1">
         <button
-          onClick={() => setExpanded(true)}
+          onClick={() => onCollapse?.()}
           className="bg-amber-500 text-white text-xs px-2.5 py-0.5 rounded-lg font-medium"
         >
           x{quantity}
@@ -44,7 +62,7 @@ export function QuantityPill({ quantity, onChange }: QuantityPillProps) {
   if (quantity <= 1) {
     return (
       <button
-        onClick={() => { onChange(2); setExpanded(true); }}
+        onClick={() => { onChange(2); onExpand?.(); }}
         className="bg-gray-200 text-gray-400 text-xs px-2.5 py-0.5 rounded-lg flex items-center gap-1"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -57,7 +75,7 @@ export function QuantityPill({ quantity, onChange }: QuantityPillProps) {
 
   return (
     <button
-      onClick={() => setExpanded(true)}
+      onClick={() => onExpand?.()}
       className="bg-gray-300 text-gray-700 text-xs px-2.5 py-0.5 rounded-lg font-medium"
     >
       x{quantity}

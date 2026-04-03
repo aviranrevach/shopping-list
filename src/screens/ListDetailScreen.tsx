@@ -70,7 +70,7 @@ export function ListDetailScreen() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('list_detail.search_placeholder')}
-            className="bg-transparent text-sm outline-none flex-1 text-gray-700 placeholder:text-gray-300"
+            className="bg-transparent text-base outline-none flex-1 text-gray-700 placeholder:text-gray-300"
           />
         </div>
         <button

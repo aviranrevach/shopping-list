@@ -74,6 +74,7 @@ export function SwipeableRow({
         style={{
           transform: offset !== 0 ? `translateX(${offset}px)` : undefined,
           transition: swiping.current ? 'none' : 'transform 0.2s ease-out',
+          touchAction: 'pan-y',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
