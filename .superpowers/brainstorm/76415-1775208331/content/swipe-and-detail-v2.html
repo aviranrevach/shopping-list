@@ -1,0 +1,157 @@
+<h2>Refined Swipe + Item Detail</h2>
+<p class="subtitle">Updated per feedback: delete first, inline icons, full-width images</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">List Items — Refined</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:16px;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:420px;display:flex;flex-direction:column;gap:12px;">
+
+      <!-- Normal item, no extras -->
+      <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+        <span style="font-size:14px;">מלפפונים</span>
+      </div>
+
+      <!-- Item with quantity + note + image indicators inline -->
+      <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+        <span style="font-size:14px;">גבינה צהובה</span>
+        <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x2</span>
+        <span style="opacity:0.3;font-size:13px;">📝</span>
+        <span style="opacity:0.3;font-size:13px;">📷</span>
+      </div>
+
+      <!-- Item with just quantity -->
+      <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+        <span style="font-size:14px;">עגבניות</span>
+        <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x3</span>
+      </div>
+
+      <!-- Item with just note -->
+      <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+        <span style="font-size:14px;">בצל</span>
+        <span style="opacity:0.3;font-size:13px;">📝</span>
+      </div>
+
+      <!-- Swipe LEFT: delete first, then check -->
+      <div style="font-size:11px;opacity:0.3;margin:8px 0 -6px;">← החלקה שמאלה</div>
+      <div style="position:relative;border-radius:10px;overflow:hidden;">
+        <div style="position:absolute;inset:0;display:flex;align-items:stretch;">
+          <div style="flex:1;"></div>
+          <div style="background:#e74c3c;display:flex;align-items:center;justify-content:center;width:68px;">
+            <span style="font-size:18px;">🗑</span>
+          </div>
+          <div style="background:#6c5ce7;display:flex;align-items:center;justify-content:center;width:68px;border-radius:0 10px 10px 0;">
+            <span style="font-size:18px;">✓</span>
+          </div>
+        </div>
+        <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;transform:translateX(-80px);position:relative;">
+          <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+          <span style="font-size:14px;">עגבניות</span>
+          <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x3</span>
+        </div>
+      </div>
+
+      <!-- Swipe RIGHT: detail -->
+      <div style="font-size:11px;opacity:0.3;margin:8px 0 -6px;">→ החלקה ימינה — פרטים</div>
+      <div style="position:relative;border-radius:10px;overflow:hidden;">
+        <div style="position:absolute;inset:0;display:flex;align-items:stretch;">
+          <div style="background:#3498db;display:flex;align-items:center;justify-content:center;width:68px;border-radius:10px 0 0 10px;">
+            <span style="font-size:16px;">📄</span>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+        <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;transform:translateX(68px);position:relative;">
+          <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+          <span style="font-size:14px;">גבינה צהובה</span>
+          <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x2</span>
+          <span style="opacity:0.3;font-size:13px;">📝</span>
+          <span style="opacity:0.3;font-size:13px;">📷</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Item Detail — Full Screen (swipe back to close)</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:0;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:420px;display:flex;flex-direction:column;">
+      <!-- Header -->
+      <div style="background:#12122a;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #2a2a4a;">
+        <span style="opacity:0.4;font-size:16px;">‹</span>
+        <span style="font-weight:600;font-size:16px;flex:1;">גבינה צהובה</span>
+      </div>
+
+      <div style="flex:1;overflow-y:auto;">
+        <!-- Full-width scrollable images -->
+        <div style="display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;">
+          <div style="min-width:100%;height:180px;background:#2a2a4a;display:flex;align-items:center;justify-content:center;font-size:48px;scroll-snap-align:start;">🧀</div>
+          <div style="min-width:100%;height:180px;background:#333355;display:flex;align-items:center;justify-content:center;font-size:48px;scroll-snap-align:start;">📸</div>
+          <div style="min-width:100%;height:180px;background:#2a2a4a;display:flex;align-items:center;justify-content:center;scroll-snap-align:start;">
+            <div style="width:48px;height:48px;border:2px dashed #555;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;opacity:0.4;">+</div>
+          </div>
+        </div>
+        <!-- Dots indicator -->
+        <div style="display:flex;justify-content:center;gap:6px;padding:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#6c5ce7;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#444;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#444;"></div>
+        </div>
+
+        <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:14px;">
+          <!-- Quantity + Unit -->
+          <div style="display:flex;gap:10px;">
+            <div style="flex:1;">
+              <div style="font-size:11px;opacity:0.35;margin-bottom:4px;letter-spacing:1px;">כמות</div>
+              <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:18px;opacity:0.5;">−</span>
+                <span style="font-size:18px;font-weight:600;">2</span>
+                <span style="font-size:18px;opacity:0.5;">+</span>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:11px;opacity:0.35;margin-bottom:4px;letter-spacing:1px;">יחידה</div>
+              <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;">יח׳</div>
+            </div>
+          </div>
+
+          <!-- Category — searchable/typeable -->
+          <div>
+            <div style="font-size:11px;opacity:0.35;margin-bottom:4px;letter-spacing:1px;">קטגוריה</div>
+            <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+              <span>מוצרי חלב</span>
+              <span style="opacity:0.3;font-size:12px;">▾</span>
+            </div>
+            <div style="font-size:10px;opacity:0.25;margin-top:3px;">הקלד או בחר מהרשימה</div>
+          </div>
+
+          <!-- Note -->
+          <div>
+            <div style="font-size:11px;opacity:0.35;margin-bottom:4px;letter-spacing:1px;">הערה</div>
+            <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;min-height:40px;line-height:1.5;">
+              הצהובה של תנובה, לא עמק. אם אין - אמנטל.
+            </div>
+          </div>
+
+          <!-- Meta -->
+          <div style="font-size:11px;opacity:0.2;">
+            נוסף ע״י אבירן · 2 באפריל
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Changes from previous version</h3>
+  <ul>
+    <li><strong>Delete first</strong> on left swipe (🗑 then ✓) — more destructive action requires longer swipe</li>
+    <li><strong>Icons inline</strong> — 📝 and 📷 appear as subtle icons after the quantity pill, not a text label</li>
+    <li><strong>Category</strong> — combo field: type to search or tap to open a dropdown of predefined categories</li>
+    <li><strong>Images</strong> — full-width horizontal scroll with snap, dot indicators, + to add more</li>
+    <li><strong>Swipe back</strong> (iOS-style edge swipe) closes the detail page</li>
+  </ul>
+</div>

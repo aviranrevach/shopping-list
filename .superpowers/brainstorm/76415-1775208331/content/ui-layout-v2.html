@@ -1,0 +1,82 @@
+<h2>Revised Mobile Layout</h2>
+<p class="subtitle">FAB only appears on the List Detail screen (where adding items is frequent). Lists screen gets a simple "New List" row.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Lists Screen</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:16px;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:320px;display:flex;flex-direction:column;">
+      <div style="text-align:center;font-weight:600;margin-bottom:14px;font-size:16px;">🛒 רשימת קניות</div>
+      <div style="background:#2a2a4a;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">🕯️</span>
+        <div style="flex:1;">
+          <div style="font-weight:600;">שבת</div>
+          <div style="font-size:11px;opacity:0.6;">8 פריטים · 3 סומנו</div>
+        </div>
+        <span style="opacity:0.4;font-size:16px;">›</span>
+      </div>
+      <div style="background:#2a2a4a;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">📋</span>
+        <div style="flex:1;">
+          <div style="font-weight:600;">שבועי</div>
+          <div style="font-size:11px;opacity:0.6;">12 פריטים</div>
+        </div>
+        <span style="opacity:0.4;font-size:16px;">›</span>
+      </div>
+      <div style="background:#2a2a4a;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;opacity:0.6;border:1px dashed #555;">
+        <span style="font-size:20px;">+</span>
+        <div style="font-weight:500;">רשימה חדשה</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;justify-content:space-around;padding-top:10px;border-top:1px solid #333;font-size:11px;opacity:0.7;">
+        <span style="opacity:1;color:#6c5ce7;">📋 רשימות</span>
+        <span>⚙️ הגדרות</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">List Detail (FAB lives here)</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:16px;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:320px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;margin-bottom:14px;">
+        <span style="opacity:0.5;margin-left:4px;">‹</span>
+        <span style="font-weight:600;font-size:16px;flex:1;text-align:center;">🕯️ שבת</span>
+        <span style="font-size:12px;opacity:0.5;">⋮</span>
+      </div>
+      <div style="font-size:11px;text-transform:uppercase;opacity:0.5;margin-bottom:6px;letter-spacing:1px;">ירקות ופירות</div>
+      <div style="background:#2a2a4a;border-radius:8px;padding:10px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+        <span style="width:20px;height:20px;border:2px solid #555;border-radius:4px;display:inline-block;"></span>
+        <span>עגבניות</span>
+        <span style="margin-right:auto;font-size:11px;opacity:0.5;">×3</span>
+      </div>
+      <div style="background:#2a2a4a;border-radius:8px;padding:10px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+        <span style="width:20px;height:20px;border:2px solid #555;border-radius:4px;display:inline-block;"></span>
+        <span>מלפפונים</span>
+        <span style="margin-right:auto;font-size:11px;opacity:0.5;">×5</span>
+      </div>
+      <div style="font-size:11px;text-transform:uppercase;opacity:0.5;margin:10px 0 6px;letter-spacing:1px;">מוצרי חלב</div>
+      <div style="background:#2a2a4a;border-radius:8px;padding:10px;margin-bottom:4px;display:flex;align-items:center;gap:8px;text-decoration:line-through;opacity:0.4;">
+        <span style="width:20px;height:20px;background:#6c5ce7;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;">✓</span>
+        <span>חלב</span>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="position:relative;height:56px;">
+        <div style="position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:52px;height:52px;background:#6c5ce7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 14px rgba(108,92,231,0.4);color:white;">+</div>
+      </div>
+      <div style="display:flex;justify-content:space-around;padding-top:10px;border-top:1px solid #333;font-size:11px;opacity:0.7;">
+        <span>📋 רשימות</span>
+        <span>⚙️ הגדרות</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Key changes</h3>
+  <ul>
+    <li><strong>Lists screen</strong>: "New list" is a subtle dashed row at the bottom — secondary action, not a FAB</li>
+    <li><strong>List Detail</strong>: FAB for adding items — this is the high-frequency action while shopping</li>
+    <li>Items grouped by category with section headers</li>
+    <li>Checked items show with strikethrough and sink to bottom of their category</li>
+    <li>Tap a list card to drill in, back arrow to return</li>
+  </ul>
+</div>

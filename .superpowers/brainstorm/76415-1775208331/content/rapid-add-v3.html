@@ -1,0 +1,109 @@
+<h2>Rapid Add — Item Row Detail</h2>
+<p class="subtitle">Each added item has +/- quantity controls and a tappable category pill</p>
+
+<div class="mockup" style="max-width:360px;margin:0 auto;">
+  <div class="mockup-header">+ Rapid Add Canvas</div>
+  <div class="mockup-body" style="background:#1a1a2e;padding:0;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:480px;display:flex;flex-direction:column;">
+    <!-- Header -->
+    <div style="background:#12122a;padding:12px 16px;display:flex;align-items:center;border-bottom:1px solid #2a2a4a;">
+      <span style="font-weight:600;font-size:15px;flex:1;">הוספת פריטים</span>
+      <span style="color:#6c5ce7;font-size:13px;font-weight:600;cursor:pointer;">סיום</span>
+    </div>
+
+    <!-- Canvas -->
+    <div style="flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:0;">
+
+      <!-- Added item 1 — with quantity and category -->
+      <div style="padding:10px 0;border-bottom:1px solid #222240;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="font-size:14px;opacity:0.6;">חלב</span>
+        <div style="background:#333;border-radius:12px;padding:3px 10px;font-size:11px;opacity:0.5;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          מוצרי חלב
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="opacity:0.4;cursor:pointer;"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span style="font-size:14px;font-weight:600;min-width:16px;text-align:center;">1</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="opacity:0.4;cursor:pointer;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>
+
+      <!-- Added item 2 — quantity bumped up -->
+      <div style="padding:10px 0;border-bottom:1px solid #222240;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="font-size:14px;opacity:0.6;">ביצים</span>
+        <div style="background:#333;border-radius:12px;padding:3px 10px;font-size:11px;opacity:0.5;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          אחר
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="opacity:0.4;cursor:pointer;"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span style="font-size:14px;font-weight:600;min-width:16px;text-align:center;">2</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="opacity:0.4;cursor:pointer;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>
+
+      <!-- Added item 3 — from suggestion, got category auto -->
+      <div style="padding:10px 0;border-bottom:1px solid #222240;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="font-size:14px;opacity:0.6;">לחם</span>
+        <div style="background:#333;border-radius:12px;padding:3px 10px;font-size:11px;opacity:0.5;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          מאפים
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="opacity:0.4;cursor:pointer;"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span style="font-size:14px;font-weight:600;min-width:16px;text-align:center;">1</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="opacity:0.4;cursor:pointer;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>
+
+      <!-- Category pill tapped — open state -->
+      <div style="margin:12px 0;background:#222240;border-radius:10px;padding:10px;border:1px solid #444;">
+        <div style="font-size:11px;opacity:0.3;margin-bottom:8px;">בחר קטגוריה עבור "ביצים"</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">ירקות ופירות</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">מוצרי חלב</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">בשר ודגים</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">מאפים</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">קפואים</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">משקאות</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">חטיפים</div>
+          <div style="background:#333;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;">משק בית</div>
+          <div style="background:#6c5ce7;border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;color:white;">אחר</div>
+        </div>
+      </div>
+
+      <!-- Current typing line -->
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 0;">
+        <span style="width:16px;height:16px;display:inline-block;flex-shrink:0;"></span>
+        <span style="font-size:14px;">שוק</span>
+        <span style="display:inline-block;width:2px;height:16px;background:#6c5ce7;"></span>
+      </div>
+
+      <div style="flex:1;"></div>
+    </div>
+
+    <!-- Suggestion chips above keyboard -->
+    <div style="background:#222240;border-top:1px solid #333;padding:8px 12px;display:flex;gap:8px;overflow-x:auto;">
+      <div style="background:#2a2a4a;border-radius:16px;padding:6px 14px;font-size:12px;white-space:nowrap;border:1px solid #444;">שוקולד</div>
+      <div style="background:#2a2a4a;border-radius:16px;padding:6px 14px;font-size:12px;white-space:nowrap;border:1px solid #444;">שוקולד מריר</div>
+      <div style="background:#2a2a4a;border-radius:16px;padding:6px 14px;font-size:12px;white-space:nowrap;border:1px solid #444;">שוק. חלב</div>
+    </div>
+
+    <!-- Fake keyboard -->
+    <div style="background:#2a2a4a;padding:10px;display:flex;justify-content:center;gap:4px;border-top:1px solid #444;">
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+      <div style="background:#444;border-radius:4px;width:28px;height:28px;"></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<h2>Architecture Approach</h2>
+<p class="subtitle">How should we structure the MVP given we're deferring family settings, roles, and offline editing?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Full Schema, Minimal UI (Recommended)</h3>
+      <p>Build the complete Supabase schema (families, members, lists, items) with RLS from day 1. But only build 3 screens: <strong>Login, Lists, List Detail</strong>. Family setup is a one-time guided flow after first login. No settings screen yet.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>No schema migration later</li><li>RLS security from the start</li><li>Real-time works properly with family scoping</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More upfront DB work</li><li>Family creation flow needed even for MVP</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Flat Start, Migrate Later</h3>
+      <p>Start with just <strong>lists</strong> and <strong>items</strong> tables. No family concept. All lists tied to a single user, shared via link. Add families/members when you need multi-user features.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Fastest to build</li><li>Simplest data model</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Schema migration needed later</li><li>No real multi-user scoping</li><li>RLS harder to retrofit</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Middle Ground — Family Implicit</h3>
+      <p>Build families + items tables, but <strong>auto-create a family on first login</strong>. No explicit family management UI. Invite link adds members to the auto-created family. Expand UI later.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Correct schema without extra UI</li><li>Zero-friction onboarding</li><li>Invite link still works</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Family name defaults to something generic</li><li>Slightly more backend logic for auto-creation</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

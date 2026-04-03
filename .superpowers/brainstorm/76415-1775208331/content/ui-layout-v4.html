@@ -1,0 +1,113 @@
+<h2>Inline Top Bar — Search + Add</h2>
+<p class="subtitle">Search bar integrated into the header. Compact, always accessible.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Idle — Ready to Search</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:0;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:380px;display:flex;flex-direction:column;">
+      <!-- Top bar -->
+      <div style="background:#12122a;padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a4a;">
+        <span style="opacity:0.5;font-size:16px;">‹</span>
+        <span style="font-weight:600;font-size:15px;white-space:nowrap;">🕯️ שבת</span>
+        <div style="flex:1;background:#2a2a4a;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:6px;border:1.5px solid #333;">
+          <span style="opacity:0.35;font-size:13px;">🔍</span>
+          <span style="opacity:0.35;font-size:12px;">חיפוש פריט...</span>
+        </div>
+        <div style="width:34px;height:34px;background:#6c5ce7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:300;color:white;flex-shrink:0;">+</div>
+        <span style="opacity:0.4;font-size:16px;">⋮</span>
+      </div>
+      <!-- Items -->
+      <div style="padding:14px 14px 0;">
+        <div style="font-size:11px;text-transform:uppercase;opacity:0.4;margin-bottom:6px;letter-spacing:1px;">ירקות ופירות</div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+          <span style="width:22px;height:22px;border:2px solid #555;border-radius:5px;display:inline-block;flex-shrink:0;"></span>
+          <span style="flex:1;">עגבניות</span>
+          <span style="font-size:11px;opacity:0.4;">×3</span>
+        </div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+          <span style="width:22px;height:22px;border:2px solid #555;border-radius:5px;display:inline-block;flex-shrink:0;"></span>
+          <span style="flex:1;">מלפפונים</span>
+          <span style="font-size:11px;opacity:0.4;">×5</span>
+        </div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+          <span style="width:22px;height:22px;border:2px solid #555;border-radius:5px;display:inline-block;flex-shrink:0;"></span>
+          <span style="flex:1;">בצל</span>
+          <span style="font-size:11px;opacity:0.4;">×2</span>
+        </div>
+        <div style="font-size:11px;text-transform:uppercase;opacity:0.4;margin:12px 0 6px;letter-spacing:1px;">מוצרי חלב</div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;display:flex;align-items:center;gap:8px;text-decoration:line-through;opacity:0.4;">
+          <span style="width:22px;height:22px;background:#6c5ce7;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">✓</span>
+          <span style="flex:1;">חלב</span>
+        </div>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;justify-content:space-around;padding:10px;border-top:1px solid #2a2a4a;font-size:11px;opacity:0.6;">
+        <span>📋 רשימות</span>
+        <span>⚙️ הגדרות</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Typing — Suggestions Dropdown</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:0;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:380px;display:flex;flex-direction:column;">
+      <!-- Top bar (active) -->
+      <div style="background:#12122a;padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:none;">
+        <span style="opacity:0.5;font-size:16px;">‹</span>
+        <span style="font-weight:600;font-size:15px;white-space:nowrap;">🕯️ שבת</span>
+        <div style="flex:1;background:#2a2a4a;border-radius:8px 8px 0 0;padding:8px 12px;display:flex;align-items:center;gap:6px;border:1.5px solid #6c5ce7;border-bottom:none;">
+          <span style="opacity:0.5;font-size:13px;">🔍</span>
+          <span style="font-size:12px;">חל</span>
+          <span style="display:inline-block;width:2px;height:14px;background:#6c5ce7;"></span>
+        </div>
+        <div style="width:34px;height:34px;background:#6c5ce7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:300;color:white;flex-shrink:0;">+</div>
+        <span style="opacity:0.4;font-size:16px;">⋮</span>
+      </div>
+      <!-- Dropdown attached to search -->
+      <div style="margin:0 60px 0 14px;">
+        <div style="background:#2a2a4a;border:1.5px solid #6c5ce7;border-top:1px solid #444;border-radius:0 0 8px 8px;overflow:hidden;">
+          <div style="padding:11px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #333;">
+            <span style="flex:1;">חלב</span>
+            <span style="font-size:10px;opacity:0.4;background:#333;padding:2px 6px;border-radius:4px;">מוצרי חלב</span>
+          </div>
+          <div style="padding:11px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #333;">
+            <span style="flex:1;">חלה</span>
+            <span style="font-size:10px;opacity:0.4;background:#333;padding:2px 6px;border-radius:4px;">מאפים</span>
+          </div>
+          <div style="padding:11px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #333;">
+            <span style="flex:1;">חלב שוקו</span>
+            <span style="font-size:10px;opacity:0.4;background:#333;padding:2px 6px;border-radius:4px;">מוצרי חלב</span>
+          </div>
+          <div style="padding:11px 14px;display:flex;align-items:center;gap:8px;background:rgba(108,92,231,0.12);">
+            <span style="font-size:14px;">➕</span>
+            <span>הוסף <strong>"חל"</strong> כפריט חדש</span>
+          </div>
+        </div>
+      </div>
+      <!-- Items faded -->
+      <div style="padding:14px;opacity:0.2;">
+        <div style="font-size:11px;text-transform:uppercase;opacity:0.4;margin-bottom:6px;">ירקות ופירות</div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;">עגבניות ×3</div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;">מלפפונים ×5</div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:11px;margin-bottom:4px;">בצל ×2</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;justify-content:space-around;padding:10px;border-top:1px solid #2a2a4a;font-size:11px;opacity:0.6;">
+        <span>📋 רשימות</span>
+        <span>⚙️ הגדרות</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Flow</h3>
+  <ul>
+    <li><strong>Top bar</strong>: back arrow · list title · inline search · <code>+</code> button · overflow menu</li>
+    <li><strong>Search</strong>: type to filter from family item history (with remembered categories)</li>
+    <li><strong>Tap suggestion</strong> → instantly adds to list with its category</li>
+    <li><strong>"Add new"</strong> row at bottom of dropdown → creates new item (pick category)</li>
+    <li><strong><code>+</code> button</strong>: tapping it focuses the search bar (shortcut to start typing)</li>
+    <li>No modals, no FAB, no extra screens — everything from the top bar</li>
+  </ul>
+</div>

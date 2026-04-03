@@ -1,0 +1,139 @@
+<h2>Swipe Gestures + Item Detail</h2>
+<p class="subtitle">Swipe left for actions, swipe right to open item detail page</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Swipe Interactions</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:16px;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:420px;display:flex;flex-direction:column;gap:12px;">
+
+      <!-- Normal item -->
+      <div style="font-size:11px;opacity:0.3;margin-bottom:-6px;">רגיל — לפני החלקה</div>
+      <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+        <span style="font-size:14px;">עגבניות</span>
+        <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x3</span>
+        <span style="flex:1;"></span>
+        <span style="opacity:0.2;font-size:10px;">⟵ ⟶</span>
+      </div>
+
+      <!-- Swipe LEFT: check/delete -->
+      <div style="font-size:11px;opacity:0.3;margin-bottom:-6px;">← החלקה שמאלה — סימון / מחיקה</div>
+      <div style="position:relative;border-radius:10px;overflow:hidden;">
+        <div style="position:absolute;inset:0;display:flex;align-items:stretch;">
+          <div style="flex:1;"></div>
+          <div style="background:#6c5ce7;display:flex;align-items:center;justify-content:center;width:72px;">
+            <span style="font-size:20px;">✓</span>
+          </div>
+          <div style="background:#e74c3c;display:flex;align-items:center;justify-content:center;width:72px;border-radius:0 10px 10px 0;">
+            <span style="font-size:18px;">🗑</span>
+          </div>
+        </div>
+        <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;transform:translateX(-80px);position:relative;">
+          <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+          <span style="font-size:14px;">עגבניות</span>
+          <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x3</span>
+        </div>
+      </div>
+
+      <!-- Swipe RIGHT: detail -->
+      <div style="font-size:11px;opacity:0.3;margin-bottom:-6px;">→ החלקה ימינה — כניסה לפרטי פריט</div>
+      <div style="position:relative;border-radius:10px;overflow:hidden;">
+        <div style="position:absolute;inset:0;display:flex;align-items:stretch;">
+          <div style="background:#3498db;display:flex;align-items:center;justify-content:center;width:72px;border-radius:10px 0 0 10px;gap:4px;">
+            <span style="font-size:16px;">📄</span>
+            <span style="font-size:11px;">פרטים</span>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+        <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;transform:translateX(72px);position:relative;">
+          <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+          <span style="font-size:14px;">עגבניות</span>
+          <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x3</span>
+        </div>
+      </div>
+
+      <!-- Item with description indicator -->
+      <div style="font-size:11px;opacity:0.3;margin-bottom:-6px;">פריט עם תיאור / תמונה — אינדיקטור</div>
+      <div style="background:#2a2a4a;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border:2px solid #444;border-radius:6px;display:inline-block;flex-shrink:0;"></span>
+        <div style="flex:1;">
+          <span style="font-size:14px;">גבינה צהובה</span>
+          <div style="font-size:11px;opacity:0.35;margin-top:2px;display:flex;align-items:center;gap:4px;">
+            <span>📎</span> תמונה + הערה
+          </div>
+        </div>
+        <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x2</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Item Detail — Full Screen</div>
+    <div class="mockup-body" style="background:#1a1a2e;padding:0;font-family:system-ui;color:#e0e0e0;font-size:13px;min-height:420px;display:flex;flex-direction:column;">
+      <!-- Header -->
+      <div style="background:#12122a;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #2a2a4a;">
+        <span style="opacity:0.4;font-size:16px;">‹</span>
+        <span style="font-weight:600;font-size:16px;flex:1;">גבינה צהובה</span>
+        <span style="background:#555;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;">x2</span>
+      </div>
+
+      <div style="padding:16px;flex:1;display:flex;flex-direction:column;gap:16px;">
+        <!-- Category -->
+        <div>
+          <div style="font-size:11px;opacity:0.35;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">קטגוריה</div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;font-size:14px;">מוצרי חלב</div>
+        </div>
+
+        <!-- Quantity + Unit -->
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;">
+            <div style="font-size:11px;opacity:0.35;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">כמות</div>
+            <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;font-size:14px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:18px;opacity:0.5;cursor:pointer;">−</span>
+              <span style="font-size:18px;font-weight:600;">2</span>
+              <span style="font-size:18px;opacity:0.5;cursor:pointer;">+</span>
+            </div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:11px;opacity:0.35;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">יחידה</div>
+            <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;font-size:14px;">יח׳</div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <div style="font-size:11px;opacity:0.35;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">הערה</div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:10px 14px;font-size:13px;min-height:40px;line-height:1.5;">
+            הצהובה של תנובה, לא עמק. אם אין - אמנטל.
+          </div>
+        </div>
+
+        <!-- Attached image -->
+        <div>
+          <div style="font-size:11px;opacity:0.35;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">תמונה</div>
+          <div style="background:#2a2a4a;border-radius:10px;overflow:hidden;display:flex;gap:8px;padding:8px;">
+            <div style="width:80px;height:80px;background:#3a3a5a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🧀</div>
+            <div style="width:80px;height:80px;background:#3a3a5a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:0.4;border:2px dashed #555;flex-shrink:0;">+</div>
+          </div>
+        </div>
+
+        <!-- Added by -->
+        <div style="font-size:11px;opacity:0.25;margin-top:auto;">
+          נוסף ע״י אבירן · 2 באפריל
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Swipe Summary</h3>
+  <ul>
+    <li><strong>Swipe left (←)</strong>: reveals check ✓ and delete 🗑 actions</li>
+    <li><strong>Swipe right (→)</strong>: opens full-screen item detail page</li>
+    <li><strong>Tap checkbox</strong>: still works for quick check/uncheck</li>
+    <li><strong>Detail page</strong>: name, category, quantity stepper, unit, free-text note, attached photos</li>
+    <li><strong>📎 indicator</strong>: items with notes or images show a subtle hint on the list row</li>
+  </ul>
+</div>
