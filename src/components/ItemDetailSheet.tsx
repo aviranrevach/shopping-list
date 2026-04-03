@@ -56,7 +56,8 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
 
   function handleClose() {
     setIsOpen(false);
-    setTimeout(onClose, 300);
+    // Let the CSS transition play (translateX(100%)) before unmounting
+    setTimeout(onClose, 350);
   }
 
   async function handleUpdate(updates: Partial<Item>) {
@@ -83,7 +84,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     setImages((prev) => prev.filter((i) => i.id !== img.id));
   }
 
-  // Drag-to-dismiss: swipe right to close (back gesture), like iOS push navigation
+  // Drag-to-dismiss: swipe towards right (positive dx) to close — sheet slides back out
   function handleSheetPointerDown(e: React.PointerEvent) {
     if ((e.target as HTMLElement).closest('[data-sheet-body]')) return;
     dragStart.current = e.clientX;
@@ -94,7 +95,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   function handleSheetPointerMove(e: React.PointerEvent) {
     if (!dragging.current || !sheetRef.current) return;
     const dx = e.clientX - dragStart.current;
-    // Only allow dragging to the right (positive dx = closing direction)
+    // Positive dx = dragging right = closing direction (sheet slides right to exit)
     if (dx > 0) {
       sheetRef.current.style.transform = `translateX(${dx}px)`;
     }
@@ -103,12 +104,12 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   function handleSheetPointerUp(e: React.PointerEvent) {
     if (!dragging.current || !sheetRef.current) return;
     dragging.current = false;
-    sheetRef.current.style.transition = '';
     const dx = e.clientX - dragStart.current;
     if (dx > 100) {
       handleClose();
     } else {
-      sheetRef.current.style.transform = '';
+      sheetRef.current.style.transition = 'transform 0.25s ease';
+      sheetRef.current.style.transform = 'translateX(0%)';
     }
   }
 
@@ -123,16 +124,15 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
         onClick={handleClose}
       />
 
-      {/* Side sheet — slides in from the LEFT (like iOS push navigation) */}
+      {/* Full-screen sheet — slides in from the right (start side in RTL) */}
       <div
         ref={sheetRef}
-        className={`fixed top-0 left-0 bottom-0 z-[51] bg-white shadow-2xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className="fixed inset-0 z-[51] bg-white"
         style={{
-          width: '100%',
-          maxWidth: '480px',
+          transform: isOpen ? 'translateX(0%)' : 'translateX(100%)',
           transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           overflowY: 'auto',
-          paddingTop: 'env(safe-area-inset-top)',
+          paddingTop: 'env(safe-area-inset-top, 20px)',
         }}
         onPointerDown={handleSheetPointerDown}
         onPointerMove={handleSheetPointerMove}

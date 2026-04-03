@@ -121,18 +121,16 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
 
     e.preventDefault();
 
-    // Swipe LEFT → detail (negative dx)
-    if (s.dx < 0 && !s.detailTriggered) {
+    // Swipe RIGHT (positive dx, towards right side of screen) → open DETAIL
+    if (s.dx > 0 && !s.detailTriggered) {
       if (rowRef.current) {
-        // Slide row slightly left to give haptic-like visual feedback
-        const clampedDx = Math.max(s.dx, -100);
+        const clampedDx = Math.min(s.dx, 100);
         rowRef.current.style.transition = 'none';
         rowRef.current.style.transform = `translateX(${clampedDx}px)`;
       }
 
-      if (s.dx <= -80) {
+      if (s.dx >= 80) {
         s.detailTriggered = true;
-        // Snap row back
         if (rowRef.current) {
           rowRef.current.style.transition = 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
           rowRef.current.style.transform = 'translateX(0)';
@@ -143,13 +141,13 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       return;
     }
 
-    // Swipe RIGHT → delete zone (positive dx)
-    if (s.dx > 0 && rowRef.current && wrapRef.current) {
-      const swipeDx = Math.max(0, s.dx);
+    // Swipe LEFT (negative dx, towards left side of screen) → DELETE zone
+    if (s.dx < 0 && rowRef.current && wrapRef.current) {
+      const swipeDx = Math.abs(s.dx);
       const row = rowRef.current;
       const wrap = row.closest('[data-swipe-wrap]') as HTMLElement;
       row.style.transition = 'none';
-      row.style.transform = `translateX(${swipeDx}px)`;
+      row.style.transform = `translateX(${s.dx}px)`;
 
       if (wrap) {
         const screenW = window.innerWidth;
@@ -171,24 +169,25 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     const s = pointerState.current;
     s.pressing = false;
 
-    // Snap back left-swipe if detail wasn't triggered yet
-    if (s.dx < 0 && !s.detailTriggered && rowRef.current) {
+    // Snap back right-swipe (detail) if not triggered yet
+    if (s.dx > 0 && !s.detailTriggered && rowRef.current) {
       rowRef.current.style.transition = 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
       rowRef.current.style.transform = 'translateX(0)';
       s.isH = null;
       return;
     }
 
-    if (s.isH && s.dx > 0 && rowRef.current) {
-      const swipeDx = Math.max(0, s.dx);
+    // Left swipe (delete direction)
+    if (s.isH && s.dx < 0 && rowRef.current) {
+      const swipeDx = Math.abs(s.dx);
       const screenW = window.innerWidth;
       const row = rowRef.current;
       const wrap = row.closest('[data-swipe-wrap]') as HTMLElement;
 
       if (swipeDx > screenW * 0.55) {
-        // Delete — slide out then collapse height
+        // Delete — slide out left then collapse height
         row.style.transition = 'transform 0.2s ease';
-        row.style.transform = `translateX(${screenW}px)`;
+        row.style.transform = `translateX(${-screenW}px)`;
         setTimeout(() => {
           const swipeWrap = row.closest('[data-swipe-wrap]') as HTMLElement;
           if (swipeWrap) {
@@ -224,11 +223,11 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       className="relative rounded-xl"
       style={{ maxHeight: 100, marginBottom: 2, overflow: 'hidden' }}
     >
-      {/* Delete background */}
+      {/* Delete background — revealed on the right side (end side) when swiping left */}
       <div className="absolute inset-0 bg-red-500/0">
         <div
           data-delete-label
-          className="absolute top-0 bottom-0 left-5 flex items-center gap-2 text-white font-semibold text-[15px]"
+          className="absolute top-0 bottom-0 right-5 flex items-center gap-2 text-white font-semibold text-[15px]"
           style={{ opacity: 0, transition: 'opacity 0.15s, transform 0.15s', transform: 'scale(1)' }}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>

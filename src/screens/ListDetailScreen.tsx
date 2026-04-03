@@ -119,7 +119,7 @@ export function ListDetailScreen() {
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
   return (
-    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}>
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden safe-area-top">
       {/* Top bar */}
       {!isAddMode && (
         <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-2 flex-shrink-0">

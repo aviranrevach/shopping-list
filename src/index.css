@@ -16,6 +16,11 @@ body {
   overflow: hidden;
 }
 
+/* iOS safe area — always reserve space for the notch/dynamic island */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
 /* Checkbox spring pop */
 @keyframes checkbox-spring {
   0% { transform: scale(0.7); }
