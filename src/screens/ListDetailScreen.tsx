@@ -28,6 +28,7 @@ export function ListDetailScreen() {
   const [recentlyTransitionedIds, setRecentlyTransitionedIds] = useState<Set<string>>(new Set());
   const transitionTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [hideChecked, setHideChecked] = useState(() => localStorage.getItem('hideChecked') === 'true');
+  const [viewAll, setViewAll] = useState(() => localStorage.getItem('viewAll') === 'true');
 
   const filteredItems = useMemo(() => {
     if (!search) return items;
@@ -55,12 +56,20 @@ export function ListDetailScreen() {
 
   const groupedByCategory = useMemo(() => {
     const groups = new Map<string, typeof unchecked>();
+    const sourceItems = viewAll ? filteredItems : unchecked;
     for (const cat of CATEGORIES) {
-      const catItems = unchecked.filter((i) => i.category === cat);
+      const catItems = sourceItems.filter((i) => i.category === cat);
+      if (catItems.length > 0) groups.set(cat, catItems);
+    }
+    // Also include custom categories
+    const knownCats = new Set(CATEGORIES as readonly string[]);
+    const customCats = new Set(sourceItems.map(i => i.category).filter(c => !knownCats.has(c)));
+    for (const cat of customCats) {
+      const catItems = sourceItems.filter((i) => i.category === cat);
       if (catItems.length > 0) groups.set(cat, catItems);
     }
     return groups;
-  }, [unchecked]);
+  }, [unchecked, filteredItems, viewAll]);
 
   const handleToggleCheck = useCallback((itemId: string) => {
     if (!user) return;
@@ -221,6 +230,22 @@ export function ListDetailScreen() {
             </div>
           ) : (
             <>
+              {/* View toggle: all items vs unchecked only */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${!viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  לקנות
+                </button>
+                <button
+                  onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  הכל
+                </button>
+              </div>
+
               {Array.from(groupedByCategory.entries()).map(([category, catItems]) => (
                 <CategoryGroup
                   key={category}
@@ -233,7 +258,7 @@ export function ListDetailScreen() {
                   recentlyTransitionedIds={recentlyTransitionedIds}
                 />
               ))}
-              {checked.length > 0 && (
+              {!viewAll && checked.length > 0 && (
                 <>
                   <button
                     onClick={() => {
