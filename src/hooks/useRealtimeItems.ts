@@ -18,13 +18,20 @@ export function useRealtimeItems(listId: string | undefined) {
 
   const refresh = useCallback(async () => {
     if (!listId) return;
+
+    // Skip refresh if there are recent pending updates (animation in progress)
+    const now = Date.now();
+    for (const pending of pendingUpdates.current.values()) {
+      if (now - pending.timestamp < 2000) return;
+    }
+
     const fetched = await fetchItems(listId);
 
     // Merge with pending optimistic updates
-    const now = Date.now();
+    const mergeNow = Date.now();
     const merged = fetched.map((item) => {
       const pending = pendingUpdates.current.get(item.id);
-      if (pending && now - pending.timestamp < PENDING_TTL) {
+      if (pending && mergeNow - pending.timestamp < PENDING_TTL) {
         // Keep optimistic value — server hasn't caught up yet
         return { ...item, checked: pending.checked, checked_by: pending.checked_by };
       }

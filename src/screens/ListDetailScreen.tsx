@@ -109,16 +109,19 @@ export function ListDetailScreen() {
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
   return (
-    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden">
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {/* Top bar */}
       {!isAddMode && (
         <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-2 flex-shrink-0">
-          <button onClick={() => navigate('/lists')} className="p-1 text-gray-400">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <polyline points="15 18 9 12 15 6" />
+          {/* RTL order: + button (right) → search → title → back (left) */}
+          <button
+            onClick={() => setIsAddMode(true)}
+            className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0"
+          >
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
-          <span className="font-semibold text-base text-gray-900 whitespace-nowrap">🕯️ List</span>
           <div className="flex-1 bg-gray-100 rounded-lg px-3 py-1.5 flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -130,12 +133,10 @@ export function ListDetailScreen() {
               className="bg-transparent text-base outline-none flex-1 text-gray-700 placeholder:text-gray-300"
             />
           </div>
-          <button
-            onClick={() => setIsAddMode(true)}
-            className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0"
-          >
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          <span className="font-semibold text-base text-gray-900 whitespace-nowrap">🕯️ List</span>
+          <button onClick={() => navigate('/lists')} className="p-1 text-gray-400">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
         </header>
@@ -144,16 +145,25 @@ export function ListDetailScreen() {
       {/* Items */}
       <div className="flex-1 overflow-y-auto">
         {/* Add zone overlay at top */}
-        {isAddMode && listId && user && group && (
-          <AddZone
-            listId={listId}
-            userId={user.id}
-            groupId={group.id}
-            existingItemNames={existingItemNames}
-            onDone={handleAddDone}
-            onItemAdded={optimisticAdd}
-          />
-        )}
+        <div
+          className="overflow-hidden"
+          style={{
+            maxHeight: isAddMode ? '600px' : '0',
+            opacity: isAddMode ? 1 : 0,
+            transition: 'max-height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.25s ease',
+          }}
+        >
+          {isAddMode && listId && user && group && (
+            <AddZone
+              listId={listId}
+              userId={user.id}
+              groupId={group.id}
+              existingItemNames={existingItemNames}
+              onDone={handleAddDone}
+              onItemAdded={optimisticAdd}
+            />
+          )}
+        </div>
 
         <div className="p-4">
           {loading ? (

@@ -37,8 +37,9 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     });
     fetchItemImages(itemId).then(setImages);
 
-    // Animate in
-    requestAnimationFrame(() => setIsOpen(true));
+    // Animate in — slight delay lets React render the sheet before transitioning
+    const openTimer = setTimeout(() => setIsOpen(true), 16);
+    return () => clearTimeout(openTimer);
   }, [itemId]);
 
   useEffect(() => {
@@ -120,8 +121,8 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
       {/* Sheet */}
       <div
         ref={sheetRef}
-        className={`fixed left-0 right-0 bottom-0 z-[51] bg-white rounded-t-2xl transition-transform duration-300 ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}
-        style={{ minHeight: '70vh', maxHeight: '90vh', overflowY: 'auto' }}
+        className={`fixed left-0 right-0 bottom-0 z-[51] bg-white rounded-t-2xl ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}
+        style={{ transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)', minHeight: '70vh', maxHeight: '90vh', overflowY: 'auto' }}
         onPointerDown={handleSheetPointerDown}
         onPointerMove={handleSheetPointerMove}
         onPointerUp={handleSheetPointerUp}
@@ -138,8 +139,8 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
             <span className="text-xs text-gray-300">{timeStr}</span>
           </div>
           <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item.name}</h2>
-          <button onClick={handleClose} className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <button onClick={handleClose} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>

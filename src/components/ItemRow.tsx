@@ -102,8 +102,8 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     s.pressing = true;
     s.pointerId = e.pointerId;
 
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    rowRef.current?.classList.add('bg-amber-50');
+    rowRef.current?.setPointerCapture(e.pointerId);
+    if (rowRef.current) rowRef.current.style.backgroundColor = '#f5f0e5';
 
     s.longTimer = setTimeout(() => {
       if (!s.pressing || s.isH) return;
@@ -121,7 +121,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
 
     if (Math.abs(s.dx) > 5 || Math.abs(s.dy) > 5) {
       if (s.longTimer) { clearTimeout(s.longTimer); s.longTimer = null; }
-      rowRef.current?.classList.remove('bg-amber-50');
+      if (rowRef.current) rowRef.current.style.backgroundColor = '';
     }
 
     if (s.isH === null && s.isV === null && (Math.abs(s.dx) > 8 || Math.abs(s.dy) > 8)) {
@@ -174,7 +174,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     const s = pointerState.current;
     if (s.longTimer) { clearTimeout(s.longTimer); s.longTimer = null; }
     s.pressing = false;
-    rowRef.current?.classList.remove('bg-amber-50');
+    if (rowRef.current) rowRef.current.style.backgroundColor = '';
 
     if (s.isH && rowRef.current) {
       const swipeDx = Math.max(0, s.dx);
@@ -183,10 +183,20 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       const wrap = row.closest('[data-swipe-wrap]') as HTMLElement;
 
       if (swipeDx > screenW * 0.55) {
-        // Delete
+        // Delete — slide out then collapse height
         row.style.transition = 'transform 0.2s ease';
         row.style.transform = `translateX(${screenW}px)`;
-        setTimeout(() => onDelete(), 200);
+        setTimeout(() => {
+          const swipeWrap = row.closest('[data-swipe-wrap]') as HTMLElement;
+          if (swipeWrap) {
+            swipeWrap.style.transition = 'max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease';
+            swipeWrap.style.maxHeight = '0';
+            swipeWrap.style.opacity = '0';
+            swipeWrap.style.marginBottom = '0';
+            swipeWrap.style.overflow = 'hidden';
+          }
+          setTimeout(() => onDelete(), 300);
+        }, 200);
       } else {
         // Snap back
         row.style.transition = 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
@@ -245,7 +255,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       {/* Row content */}
       <div
         ref={rowRef}
-        className="relative z-[1] bg-gray-50 flex items-center gap-3 px-4 py-3.5 transition-colors duration-100"
+        className="relative z-[1] bg-white border border-gray-100 flex items-center gap-3 px-4 py-3.5 transition-colors duration-100"
         style={{ ...rowFadeStyle, touchAction: 'pan-y' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -271,13 +281,13 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
         </div>
 
         {/* Item name */}
-        <span className={`text-[17px] text-gray-900 flex-1 ${textClass}`}>
+        <span className={`text-[17px] text-gray-900 ${textClass}`}>
           {item.name}
         </span>
 
-        {/* Quantity pill */}
+        {/* Quantity pill — sits right next to the name */}
         {item.quantity > 1 && (
-          <span className="bg-gray-200 text-gray-600 text-sm px-2.5 py-0.5 rounded-lg font-medium">
+          <span className="bg-gray-200 text-gray-600 text-sm px-2.5 py-0.5 rounded-lg font-medium flex-shrink-0">
             x{item.quantity}
           </span>
         )}
@@ -288,6 +298,9 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
             <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
           </svg>
         )}
+
+        {/* Flex spacer */}
+        <div className="flex-1" />
       </div>
     </div>
   );
