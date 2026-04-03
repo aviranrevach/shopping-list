@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { useGroup } from './hooks/useGroup';
 import { LoginScreen } from './screens/LoginScreen';
+import { ListsScreen } from './screens/ListsScreen';
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
@@ -26,7 +27,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/lists" element={<div>Lists — Group: {group?.name}</div>} />
+      <Route path="/lists" element={<ListsScreen />} />
       <Route path="/lists/:listId" element={<div>List Detail</div>} />
       <Route path="/lists/:listId/add" element={<div>Rapid Add</div>} />
       <Route path="/lists/:listId/items/:itemId" element={<div>Item Detail</div>} />
