@@ -198,7 +198,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
                   className={`flex items-center justify-center gap-2 py-3 px-3 rounded-2xl text-[15px] font-medium min-h-[48px] ${
                     cat.key === item.category
                       ? 'bg-amber-500 text-white'
-                      : 'bg-gray-50 text-gray-600 active:bg-gray-100'
+                      : 'bg-gray-50 border border-gray-100 text-gray-600 active:bg-gray-100'
                   }`}
                 >
                   <span className="text-xl">{cat.emoji}</span>

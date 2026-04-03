@@ -241,7 +241,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       {/* Row content */}
       <div
         ref={rowRef}
-        className="relative z-[1] bg-white border border-gray-100 flex items-center gap-3 px-4 py-3.5 transition-colors duration-100"
+        className="relative z-[1] bg-white flex items-center gap-3 px-4 py-3.5 transition-colors duration-100"
         style={{ touchAction: 'pan-y' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
