@@ -208,12 +208,18 @@ export function ListsScreen() {
                 }}
               >
                 <div className="flex gap-2 items-center">
-                  <button
-                    onClick={() => setNewIcon(newIcon === '📋' ? '🛒' : '📋')}
-                    className="text-2xl w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0"
-                  >
-                    {newIcon}
-                  </button>
+                  <input
+                    type="text"
+                    value={newIcon}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (!val) return;
+                      const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
+                      if (segments.length > 0) setNewIcon(segments[segments.length - 1].segment);
+                    }}
+                    className="w-10 h-10 bg-gray-100 rounded-lg text-2xl text-center flex-shrink-0 outline-none focus:bg-gray-50 caret-transparent border-none"
+                  />
                   <input
                     autoFocus
                     value={newName}

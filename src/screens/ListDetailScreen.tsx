@@ -389,30 +389,18 @@ export function ListDetailScreen() {
           <div className="fixed top-1/3 left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5">
             <h3 className="text-[17px] font-semibold text-center mb-4">שנה שם רשימה</h3>
             <div className="flex items-center gap-3 mb-3">
-              <button
-                onClick={() => {
-                  const emojiInput = document.getElementById('edit-list-emoji-input') as HTMLInputElement;
-                  emojiInput?.focus();
+              <input
+                type="text"
+                value={editIconValue}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!val) return;
+                  const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
+                  if (segments.length > 0) setEditIconValue(segments[segments.length - 1].segment);
                 }}
-                className="w-[52px] h-[52px] bg-gray-50 border border-gray-200 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 active:bg-gray-100 relative"
-              >
-                {editIconValue}
-                <input
-                  id="edit-list-emoji-input"
-                  type="text"
-                  inputMode="none"
-                  value=""
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val) {
-                      const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
-                      if (segments.length > 0) setEditIconValue(segments[0].segment);
-                    }
-                  }}
-                  className="absolute inset-0 opacity-0 text-3xl"
-                  style={{ fontSize: '32px', caretColor: 'transparent' }}
-                />
-              </button>
+                className="w-[52px] h-[52px] bg-gray-50 border border-gray-200 rounded-2xl text-3xl text-center flex-shrink-0 outline-none focus:border-amber-400 caret-transparent"
+              />
               <input
                 autoFocus
                 value={editNameValue}
