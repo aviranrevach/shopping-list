@@ -165,6 +165,16 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
           </div>
         ) : (
           <>
+          {/* Item name — editable */}
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">שם פריט</label>
+            <input
+              value={item.name}
+              onChange={(e) => handleUpdate({ name: e.target.value })}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 text-gray-900 font-medium"
+            />
+          </div>
+
           {/* Quantity + Unit */}
           <div className="flex gap-3">
             <div className="flex-1">
