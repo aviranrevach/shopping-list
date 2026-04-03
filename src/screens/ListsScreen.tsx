@@ -40,7 +40,7 @@ export function ListsScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50">
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden">
       {/* Header */}
       <header className="bg-white px-4 py-3.5 border-b border-gray-200 flex items-center">
         <h1 className="text-lg font-bold text-gray-900 flex-1">{t('lists.title')}</h1>

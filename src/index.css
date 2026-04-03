@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
-html, body, #root {
-  overscroll-behavior: none;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  position: fixed;
-  width: 100%;
+html {
+  overflow: hidden;
   height: 100%;
 }
 
+body {
+  overflow: hidden;
+  height: 100%;
+  position: relative;
+}
+
 #root {
-  overflow-y: auto;
+  height: 100%;
+  overflow: hidden;
 }

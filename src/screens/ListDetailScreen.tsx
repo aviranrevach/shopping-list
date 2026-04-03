@@ -53,7 +53,7 @@ export function ListDetailScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50">
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden">
       {/* Top bar */}
       <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-2">
         <button onClick={() => navigate('/lists')} className="p-1 text-gray-400">

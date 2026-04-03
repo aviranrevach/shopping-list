@@ -66,7 +66,7 @@ export function ItemDetailScreen() {
 
   if (!item) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+      <div className="h-screen flex items-center justify-center bg-stone-50">
         <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -76,7 +76,7 @@ export function ItemDetailScreen() {
   const timeStr = createdDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50">
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden">
       {/* Header */}
       <header className="bg-white px-4 py-3 border-b border-gray-200 flex items-center">
         <div className="flex items-center gap-1.5 min-w-[60px]">

@@ -72,7 +72,7 @@ export function RapidAddScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50">
+    <div className="h-screen flex flex-col bg-stone-50 overflow-hidden">
       {/* Header */}
       <header className="bg-white px-4 py-3 border-b border-gray-200 flex items-center">
         <h1 className="text-base font-semibold text-gray-900 flex-1">{t('rapid_add.title')}</h1>
