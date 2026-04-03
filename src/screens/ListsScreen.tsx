@@ -63,7 +63,7 @@ export function ListsScreen() {
               <button
                 key={list.id}
                 onClick={() => navigate(`/lists/${list.id}`)}
-                className="w-full bg-white rounded-xl p-4 flex items-center gap-3 shadow-sm border border-gray-100 active:bg-gray-50 text-start"
+                className="w-full bg-white rounded-xl p-4 flex items-center gap-3 shadow-sm active:bg-gray-50 text-start"
               >
                 <span className="text-2xl">{list.icon}</span>
                 <div className="flex-1 min-w-0">

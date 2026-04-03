@@ -7,7 +7,8 @@ import { supabase } from '../lib/supabase';
 import { updateItem } from '../data/items';
 import { fetchItemImages, uploadItemImage, deleteItemImage, getImageUrl } from '../data/images';
 import { Avatar } from './Avatar';
-import { CATEGORIES, UNITS } from '../types';
+import { UNITS } from '../types';
+import { useCategories } from '../hooks/useCategories';
 import type { Item, ItemImage, GroupMember } from '../types';
 
 interface ItemDetailSheetProps {
@@ -19,6 +20,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   const { t } = useI18n();
   const { user } = useAuth();
   const { group } = useGroup(user?.id);
+  const { allCategories } = useCategories(group?.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
 
@@ -84,7 +86,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     setImages((prev) => prev.filter((i) => i.id !== img.id));
   }
 
-  // Drag-to-dismiss: swipe right (positive dx) to close — sheet slides back to the right
+  // Drag-to-dismiss: swipe left (negative dx) to close — sheet slides back to the left
   function handleSheetPointerDown(e: React.PointerEvent) {
     if ((e.target as HTMLElement).closest('[data-sheet-body]')) return;
     dragStart.current = e.clientX;
@@ -95,8 +97,8 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   function handleSheetPointerMove(e: React.PointerEvent) {
     if (!dragging.current || !sheetRef.current) return;
     const dx = e.clientX - dragStart.current;
-    // Positive dx = dragging right = closing direction (sheet slides right to exit)
-    if (dx > 0) {
+    // Negative dx = dragging left = closing direction (sheet slides left to exit)
+    if (dx < 0) {
       sheetRef.current.style.transform = `translateX(${dx}px)`;
     }
   }
@@ -105,7 +107,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     if (!dragging.current || !sheetRef.current) return;
     dragging.current = false;
     const dx = e.clientX - dragStart.current;
-    if (dx > 100) {
+    if (dx < -100) {
       handleClose();
     } else {
       sheetRef.current.style.transition = 'transform 0.25s ease';
@@ -124,12 +126,12 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
         onClick={handleClose}
       />
 
-      {/* Full-screen sheet — slides in from the right (start side in RTL) */}
+      {/* Full-screen sheet — slides in from the LEFT */}
       <div
         ref={sheetRef}
         className="fixed inset-0 z-[51] bg-white"
         style={{
-          transform: isOpen ? 'translateX(0%)' : 'translateX(100%)',
+          transform: isOpen ? 'translateX(0%)' : 'translateX(-100%)',
           transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           overflowY: 'auto',
           paddingTop: 'env(safe-area-inset-top, 20px)',
@@ -185,12 +187,25 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
             </div>
           </div>
 
-          {/* Category */}
+          {/* Category — pills grid */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.category')}</label>
-            <select value={item.category} onChange={(e) => handleUpdate({ category: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-700">
-              {CATEGORIES.map((cat) => (<option key={cat} value={cat}>{t(`categories.${cat}`)}</option>))}
-            </select>
+            <label className="text-xs text-gray-400 mb-2 block">{t('item_detail.category')}</label>
+            <div className="grid grid-cols-2 gap-2">
+              {allCategories.map((cat) => (
+                <button
+                  key={cat.key}
+                  onClick={() => handleUpdate({ category: cat.key })}
+                  className={`flex items-center justify-center gap-2 py-3 px-3 rounded-2xl text-[15px] font-medium min-h-[48px] ${
+                    cat.key === item.category
+                      ? 'bg-amber-500 text-white border-2 border-amber-500'
+                      : 'bg-gray-50 border-2 border-gray-100 text-gray-600 active:bg-gray-100'
+                  }`}
+                >
+                  <span className="text-xl">{cat.emoji}</span>
+                  {cat.isCustom ? cat.key : t(`categories.${cat.key}`)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Note */}
