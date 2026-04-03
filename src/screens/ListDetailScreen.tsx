@@ -27,6 +27,7 @@ export function ListDetailScreen() {
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
   const [recentlyTransitionedIds, setRecentlyTransitionedIds] = useState<Set<string>>(new Set());
   const transitionTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const [hideChecked, setHideChecked] = useState(() => localStorage.getItem('hideChecked') === 'true');
 
   const filteredItems = useMemo(() => {
     if (!search) return items;
@@ -233,15 +234,32 @@ export function ListDetailScreen() {
                 />
               ))}
               {checked.length > 0 && (
-                <CategoryGroup
-                  category="checked_section"
-                  items={checked}
-                  onToggleCheck={handleToggleCheck}
-                  onDelete={handleDelete}
-                  onOpenDetail={handleOpenDetail}
-                  transitioningIds={transitioningIds}
-                  recentlyTransitionedIds={recentlyTransitionedIds}
-                />
+                <>
+                  <button
+                    onClick={() => {
+                      const next = !hideChecked;
+                      setHideChecked(next);
+                      localStorage.setItem('hideChecked', String(next));
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-400"
+                  >
+                    <svg className={`w-4 h-4 transition-transform ${hideChecked ? '' : 'rotate-90'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                    <span>✓ {t('lists.checked_count', { count: checked.length })}</span>
+                  </button>
+                  {!hideChecked && (
+                    <CategoryGroup
+                      category="checked_section"
+                      items={checked}
+                      onToggleCheck={handleToggleCheck}
+                      onDelete={handleDelete}
+                      onOpenDetail={handleOpenDetail}
+                      transitioningIds={transitioningIds}
+                      recentlyTransitionedIds={recentlyTransitionedIds}
+                    />
+                  )}
+                </>
               )}
               {items.length === 0 && !isAddMode && (
                 <div className="text-center py-12 text-gray-400 text-sm">

@@ -28,7 +28,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   const [uploading, setUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Drag-to-dismiss (swipe right to close, since sheet slides in from left)
+  // Drag-to-dismiss: swipe right (positive dx) to close — sheet slides back to the right (where it came from)
   const dragStart = useRef(0);
   const dragging = useRef(false);
 
@@ -56,7 +56,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
 
   function handleClose() {
     setIsOpen(false);
-    // Let the CSS transition play (translateX(100%)) before unmounting
+    // Let the CSS transition play (sheet slides back to translateX(100%)) before unmounting
     setTimeout(onClose, 350);
   }
 
@@ -84,7 +84,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     setImages((prev) => prev.filter((i) => i.id !== img.id));
   }
 
-  // Drag-to-dismiss: swipe towards right (positive dx) to close — sheet slides back out
+  // Drag-to-dismiss: swipe right (positive dx) to close — sheet slides back to the right
   function handleSheetPointerDown(e: React.PointerEvent) {
     if ((e.target as HTMLElement).closest('[data-sheet-body]')) return;
     dragStart.current = e.clientX;
