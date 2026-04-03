@@ -53,3 +53,21 @@ export interface GroupInvite {
   expires_at: string;
   created_at: string;
 }
+
+export interface ListInvite {
+  id: string;
+  list_id: string;
+  token: string;
+  created_by: string;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface ListMember {
+  id: string;
+  list_id: string;
+  user_id: string;
+  display_name: string;
+  role: 'owner' | 'member';
+  joined_at: string;
+}

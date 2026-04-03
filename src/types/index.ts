@@ -1,4 +1,4 @@
-export type { Group, GroupMember, List, Item, ItemImage, GroupInvite } from './database';
+export type { Group, GroupMember, List, Item, ItemImage, GroupInvite, ListInvite, ListMember } from './database';
 
 export const CATEGORIES = [
   'produce',
