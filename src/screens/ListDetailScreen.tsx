@@ -13,6 +13,7 @@ import { ItemDetailSheet } from '../components/ItemDetailSheet';
 import { InviteSheet } from '../components/InviteSheet';
 import { EmojiPicker } from '../components/EmojiPicker';
 import { CATEGORIES } from '../types';
+import { parseAppleNotes, parsePlainList } from '../lib/importParser';
 
 export function ListDetailScreen() {
   const { t } = useI18n();
@@ -33,6 +34,7 @@ export function ListDetailScreen() {
   const [editIconValue, setEditIconValue] = useState('');
   const [showEditEmojiPicker, setShowEditEmojiPicker] = useState(false);
   const [importText, setImportText] = useState('');
+  const [importAppleNotes, setImportAppleNotes] = useState(true);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
   const [recentlyTransitionedIds, setRecentlyTransitionedIds] = useState<Set<string>>(new Set());
@@ -441,42 +443,85 @@ export function ListDetailScreen() {
       )}
 
       {/* Import list modal */}
-      {showImport && listId && user && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowImport(false)} />
-          <div className="fixed top-[15%] left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5">
-            <h3 className="text-[17px] font-semibold text-center mb-2">ייבוא רשימה</h3>
-            <p className="text-sm text-gray-400 text-center mb-4">הדבק רשימת פריטים — כל שורה פריט אחד</p>
-            <textarea
-              autoFocus
-              value={importText}
-              onChange={(e) => setImportText(e.target.value)}
-              placeholder={"עגבניות\nמלפפונים\nחלב\nלחם"}
-              rows={6}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 resize-none"
-            />
-            <div className="flex gap-2 mt-4">
-              <button onClick={() => setShowImport(false)} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
-                ביטול
-              </button>
+      {showImport && listId && user && (() => {
+        const parsed = importAppleNotes ? parseAppleNotes(importText) : parsePlainList(importText);
+        const itemCount = parsed.length;
+        const categoryCount = new Set(parsed.map(i => i.category).filter(c => c !== 'other')).size;
+
+        return (
+          <>
+            <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowImport(false)} />
+            <div className="fixed top-[10%] left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5 max-h-[80vh] overflow-y-auto">
+              <h3 className="text-[17px] font-semibold text-center mb-2">ייבוא רשימה</h3>
+              <p className="text-sm text-gray-400 text-center mb-4">הדבק רשימה מ-Apple Notes או טקסט רגיל</p>
+
+              {/* Apple Notes toggle */}
               <button
-                onClick={async () => {
-                  const lines = importText.split('\n').map(l => l.trim()).filter(Boolean);
-                  if (lines.length === 0 || !listId || !user) return;
-                  for (const name of lines) {
-                    const item = await createItem(listId, user.id, name);
-                    optimisticAdd(item);
-                  }
-                  setShowImport(false);
-                }}
-                className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white"
+                onClick={() => setImportAppleNotes(!importAppleNotes)}
+                className="w-full flex items-center gap-3 mb-4 px-3 py-2.5 rounded-xl bg-gray-50 active:bg-gray-100"
               >
-                ייבא {importText.split('\n').filter(l => l.trim()).length} פריטים
+                <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${importAppleNotes ? 'bg-amber-500' : 'border-2 border-gray-300'}`}>
+                  {importAppleNotes && (
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12" /></svg>
+                  )}
+                </div>
+                <div className="flex-1 text-start">
+                  <div className="text-[15px] font-medium text-gray-700">זיהוי Apple Notes</div>
+                  <div className="text-xs text-gray-400">מסיר סימנים, מזהה קטגוריות וכמויות</div>
+                </div>
               </button>
+
+              <textarea
+                autoFocus
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                placeholder={importAppleNotes
+                  ? "- [x] 2 חלב\n- [ ] עגבניות\n\nנקיון\n- [ ] סבון"
+                  : "עגבניות\nמלפפונים\nחלב"}
+                rows={8}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[15px] outline-none focus:border-amber-400 resize-none font-mono leading-relaxed"
+                dir="auto"
+              />
+
+              {/* Preview */}
+              {itemCount > 0 && (
+                <div className="mt-3 text-sm text-gray-400 text-center">
+                  {itemCount} פריטים
+                  {importAppleNotes && categoryCount > 0 && ` · ${categoryCount} קטגוריות`}
+                  {importAppleNotes && (() => {
+                    const checkedCount = parsed.filter(i => i.checked).length;
+                    return checkedCount > 0 ? ` · ${checkedCount} סומנו` : '';
+                  })()}
+                </div>
+              )}
+
+              <div className="flex gap-2 mt-4">
+                <button onClick={() => setShowImport(false)} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
+                  ביטול
+                </button>
+                <button
+                  onClick={async () => {
+                    if (parsed.length === 0 || !listId || !user) return;
+                    for (const p of parsed) {
+                      const item = await createItem(listId, user.id, p.name, p.category, p.quantity);
+                      if (p.checked) {
+                        await toggleItemChecked(item.id, true, user.id);
+                      }
+                      optimisticAdd({ ...item, checked: p.checked, quantity: p.quantity, category: p.category });
+                    }
+                    setShowImport(false);
+                    setImportText('');
+                  }}
+                  disabled={itemCount === 0}
+                  className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white disabled:opacity-40"
+                >
+                  ייבא {itemCount} פריטים
+                </button>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        );
+      })()}
     </div>
   );
 }
