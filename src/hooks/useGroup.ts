@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { Group, GroupMember } from '../types';
 import { getOrCreateGroup } from '../data/groups';
 
@@ -17,24 +17,27 @@ export function useGroup(userId: string | undefined) {
     error: null,
   });
 
+  const load = useCallback((uid: string) => {
+    getOrCreateGroup(uid, 'User')
+      .then(({ group, member }) => {
+        setState({ group, member, loading: false, error: null });
+      })
+      .catch((error) => {
+        setState({ group: null, member: null, loading: false, error });
+      });
+  }, []);
+
   useEffect(() => {
     if (!userId) {
       setState({ group: null, member: null, loading: false, error: null });
       return;
     }
+    load(userId);
+  }, [userId, load]);
 
-    let cancelled = false;
+  const refreshMember = useCallback(() => {
+    if (userId) load(userId);
+  }, [userId, load]);
 
-    getOrCreateGroup(userId, 'User')
-      .then(({ group, member }) => {
-        if (!cancelled) setState({ group, member, loading: false, error: null });
-      })
-      .catch((error) => {
-        if (!cancelled) setState({ group: null, member: null, loading: false, error });
-      });
-
-    return () => { cancelled = true; };
-  }, [userId]);
-
-  return state;
+  return { ...state, refreshMember };
 }

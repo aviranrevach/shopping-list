@@ -125,7 +125,8 @@ export function InviteSheet({ listId, listName, listIcon, onClose }: InviteSheet
               <span className="flex-1 text-sm text-gray-400 truncate" dir="ltr">{inviteUrl}</span>
               <button
                 onClick={handleCopy}
-                className="bg-amber-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg flex-shrink-0"
+                className="text-white text-sm font-semibold px-3 py-1.5 rounded-lg flex-shrink-0"
+                style={{ background: 'var(--color-primary)' }}
               >
                 {copied ? t('invite.link_copied') : t('invite.copy_link')}
               </button>

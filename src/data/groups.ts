@@ -1,6 +1,14 @@
 import { supabase } from '../lib/supabase';
 import type { Group, GroupMember } from '../types';
 
+export async function updateMemberName(memberId: string, displayName: string): Promise<void> {
+  const { error } = await supabase
+    .from('group_members')
+    .update({ display_name: displayName })
+    .eq('id', memberId);
+  if (error) throw error;
+}
+
 export async function getOrCreateGroup(userId: string, displayName: string): Promise<{
   group: Group;
   member: GroupMember;

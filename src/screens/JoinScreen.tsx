@@ -55,7 +55,6 @@ export function JoinScreen() {
     if (!email.trim()) return;
     setSubmitting(true);
 
-    // Store token in localStorage so we can accept after auth redirect
     localStorage.setItem('pending_invite_token', token!);
 
     const { error } = await supabase.auth.signInWithOtp({
@@ -78,7 +77,6 @@ export function JoinScreen() {
     if (!guestName.trim() || !token) return;
     setSubmitting(true);
 
-    // Sign in anonymously
     const { error: anonError } = await supabase.auth.signInAnonymously();
     if (anonError) {
       console.error('Anonymous sign-in error:', anonError);
@@ -86,7 +84,6 @@ export function JoinScreen() {
       return;
     }
 
-    // Accept the invite
     const result = await acceptInvite(token, guestName.trim());
     navigate(`/lists/${result.list_id}`);
   }
@@ -94,7 +91,7 @@ export function JoinScreen() {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-stone-50">
-        <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'transparent' }} />
       </div>
     );
   }
@@ -113,7 +110,7 @@ export function JoinScreen() {
     <div className="h-screen flex flex-col bg-stone-50">
       {/* Header */}
       <div className="text-center pt-12 pb-6 px-6">
-        <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3">🛒</div>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3" style={{ background: 'var(--color-primary-bg50)' }}>🛒</div>
         <h1 className="text-lg font-bold text-gray-900">
           {t('invite.join_title', { name: listInfo?.creatorName ?? '' })}
         </h1>
@@ -129,7 +126,8 @@ export function JoinScreen() {
           <>
             <button
               onClick={() => setMode('email')}
-              className="w-full bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 mb-3 text-start active:bg-amber-100"
+              className="w-full border rounded-2xl p-4 flex items-center gap-3 mb-3 text-start"
+              style={{ background: 'var(--color-primary-bg50)', borderColor: 'var(--color-primary-light)' }}
             >
               <span className="text-2xl">✉️</span>
               <div>
@@ -165,13 +163,16 @@ export function JoinScreen() {
                 placeholder={t('login.email_placeholder')}
                 required
                 autoFocus
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base outline-none"
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-light)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 dir="ltr"
               />
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full mt-3 bg-amber-500 text-white font-semibold rounded-xl px-4 py-3 text-base disabled:opacity-50"
+                className="w-full mt-3 text-white font-semibold rounded-xl px-4 py-3 text-base disabled:opacity-50"
+                style={{ background: 'var(--color-primary)' }}
               >
                 {t('login.send_link')}
               </button>
@@ -196,12 +197,15 @@ export function JoinScreen() {
               placeholder={t('invite.guest_name_placeholder')}
               required
               autoFocus
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 text-center"
+              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-center"
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-light)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
             />
             <button
               type="submit"
               disabled={submitting}
-              className="w-full mt-3 bg-amber-500 text-white font-semibold rounded-xl px-4 py-3 text-base disabled:opacity-50"
+              className="w-full mt-3 text-white font-semibold rounded-xl px-4 py-3 text-base disabled:opacity-50"
+              style={{ background: 'var(--color-primary)' }}
             >
               {t('invite.join_button')}
             </button>

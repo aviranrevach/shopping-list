@@ -85,9 +85,9 @@ body {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Row with amber glow that settles */
+/* Row with primary color glow that settles */
 .row-glow {
-  background: rgba(245, 158, 11, 0.08);
+  background: var(--color-primary-bg, rgba(245, 158, 11, 0.08));
   transition: background 0.8s ease 0.3s;
 }
 .row-glow.settled {

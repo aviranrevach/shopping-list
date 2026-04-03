@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n';
+import { useTheme } from '../theme/ThemeContext';
 import { EmojiPicker } from './EmojiPicker';
 import type { CategoryInfo } from '../hooks/useCategories';
 
@@ -12,6 +13,7 @@ interface CategoryPickerProps {
 
 export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: CategoryPickerProps) {
   const { t } = useI18n();
+  const { scheme } = useTheme();
   const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmoji, setNewEmoji] = useState('📦');
@@ -24,7 +26,8 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className={`w-[52px] h-[52px] bg-white border-2 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 ${showEmojiPicker ? 'border-amber-400' : 'border-gray-200'}`}
+            className="w-[52px] h-[52px] bg-white border-2 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0"
+            style={{ borderColor: showEmojiPicker ? scheme.primaryLight : '#e5e7eb' }}
           >
             {newEmoji}
           </button>
@@ -41,7 +44,9 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
               }
             }}
             placeholder={t('categories_ui.category_name_placeholder')}
-            className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-[17px] outline-none focus:border-amber-400"
+            className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-[17px] outline-none"
+            onFocus={(e) => { e.currentTarget.style.borderColor = scheme.primaryLight; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
           />
         </div>
         {showEmojiPicker && (
@@ -61,7 +66,8 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
               setNewEmoji('📦');
             }
           }}
-          className="w-full mt-3 bg-amber-500 text-white font-semibold rounded-2xl py-3.5 text-base active:bg-amber-600"
+          className="w-full mt-3 text-white font-semibold rounded-2xl py-3.5 text-base"
+          style={{ background: scheme.primary }}
         >
           {t('categories_ui.save_category')}
         </button>
@@ -81,11 +87,12 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
         <button
           key={cat.key}
           onClick={() => onSelect(cat.key)}
-          className={`flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl text-base font-medium min-h-[50px] ${
+          className={`flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl text-base font-medium min-h-[50px] border-2 ${
             cat.key === selected
-              ? 'bg-amber-500 text-white border-2 border-amber-500'
-              : 'bg-white border-2 border-gray-100 text-gray-600 active:bg-gray-50'
+              ? 'text-white'
+              : 'bg-white border-gray-100 text-gray-600 active:bg-gray-50'
           }`}
+          style={cat.key === selected ? { background: scheme.primary, borderColor: scheme.primary } : undefined}
         >
           <span className="text-[22px]">{cat.emoji}</span>
           {cat.isCustom ? cat.key : t(`categories.${cat.key}`)}

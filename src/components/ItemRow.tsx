@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../theme/ThemeContext';
 import type { Item } from '../types';
 
 interface ItemRowProps {
@@ -12,6 +13,7 @@ interface ItemRowProps {
 }
 
 export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransitioning: _isTransitioning, shouldAnimateEntrance, skipExitAnimation }: ItemRowProps) {
+  const { scheme } = useTheme();
   const hasNote = !!item.note;
 
   // Refs for DOM manipulation
@@ -59,7 +61,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       position:absolute; border-radius:50%; pointer-events:none; z-index:1;
       width:${size}px; height:${size}px;
       left:${cx - size / 2}px; top:${cy - size / 2}px;
-      background: radial-gradient(circle, rgba(245,158,11,0.4) 0%, rgba(245,158,11,0) 70%);
+      background: radial-gradient(circle, ${scheme.primaryRipple} 0%, transparent 70%);
       animation: ripple-expand 0.5s ease-out forwards;
     `;
     row.appendChild(ripple);
@@ -259,13 +261,13 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
           onClick={handleCheckboxClick}
         >
           {item.checked ? (
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: scheme.primary }}>
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
           ) : (
-            <div className="w-7 h-7 border-2 border-gray-300 rounded-lg hover:border-amber-400 transition-colors duration-100" />
+            <div className="w-7 h-7 border-2 border-gray-300 rounded-lg transition-colors duration-100" />
           )}
         </div>
 

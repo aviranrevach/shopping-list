@@ -9,6 +9,9 @@ export const DEFAULT_CATEGORY_EMOJIS: Record<string, string> = {
   canned: '🥫',
   snacks: '🍿',
   household: '🧹',
+  hygiene: '🧴',
+  spices: '🌶️',
+  baking: '🧁',
   other: '📦',
 };
 
@@ -21,6 +24,9 @@ export const CATEGORIES = [
   'canned',
   'snacks',
   'household',
+  'hygiene',
+  'spices',
+  'baking',
   'other',
 ] as const;
 

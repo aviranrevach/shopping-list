@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
+import { useTheme } from '../theme/ThemeContext';
 import { CATEGORIES } from '../types';
 
 interface CategoryPillProps {
@@ -12,6 +13,7 @@ interface CategoryPillProps {
 
 export function CategoryPill({ category, onChange, expanded = false, onExpand, onCollapse }: CategoryPillProps) {
   const { t } = useI18n();
+  const { scheme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,9 +58,10 @@ export function CategoryPill({ category, onChange, expanded = false, onExpand, o
               onClick={() => { onChange(cat); onCollapse?.(); }}
               className={`text-sm px-3.5 py-2 rounded-lg transition ${
                 cat === category
-                  ? 'bg-amber-500 text-white'
+                  ? 'text-white'
                   : 'bg-white text-gray-600 border border-gray-200 active:bg-gray-50'
               }`}
+              style={cat === category ? { background: scheme.primary } : undefined}
             >
               {t(`categories.${cat}`)}
             </button>

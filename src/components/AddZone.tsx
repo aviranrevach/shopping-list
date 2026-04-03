@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useI18n } from '../i18n';
+import { useTheme } from '../theme/ThemeContext';
 import { useItemSuggestions } from '../hooks/useItemSuggestions';
 import { useCategories } from '../hooks/useCategories';
 import { createItem, updateItem } from '../data/items';
@@ -25,6 +26,7 @@ interface AddZoneProps {
 
 export function AddZone({ listId, userId, groupId, existingItemNames, onDone, onItemAdded }: AddZoneProps) {
   const { t } = useI18n();
+  const { scheme } = useTheme();
   const [input, setInput] = useState('');
   const [addedItems, setAddedItems] = useState<AddedItem[]>([]);
   const [isCollapsing, setIsCollapsing] = useState(false);
@@ -121,11 +123,12 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
     <>
       <div
         ref={zoneRef}
-        className={`bg-amber-50/30 border-b-2 border-amber-100 add-zone-exit ${isCollapsing ? 'collapsing' : ''}`}
+        className={`border-b-2 add-zone-exit ${isCollapsing ? 'collapsing' : ''}`}
+        style={{ background: scheme.primaryBg50 + '4d', borderColor: scheme.primaryBg50 }}
       >
         {/* Header */}
-        <div className="flex items-center px-4 py-3 border-b border-amber-100/50">
-          <button onClick={handleDone} className="text-amber-600 font-semibold text-[15px]">
+        <div className="flex items-center px-4 py-3 border-b" style={{ borderColor: scheme.primaryBg50 + '80' }}>
+          <button onClick={handleDone} className="font-semibold text-[15px]" style={{ color: scheme.primaryDark }}>
             {t('rapid_add.done')}
           </button>
           <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">
@@ -159,8 +162,9 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
                 className={`text-sm px-2.5 py-0.5 rounded-lg flex items-center gap-1 ${
                   item.category === 'other'
                     ? 'bg-gray-200 text-gray-400'
-                    : 'bg-amber-100 text-amber-700'
+                    : ''
                 }`}
+                style={item.category !== 'other' ? { background: scheme.primaryBg50, color: scheme.primaryDark } : undefined}
               >
                 <span>{getCategoryEmoji(item.category)}</span>
                 <span>{getCategoryLabel(item.category)}</span>

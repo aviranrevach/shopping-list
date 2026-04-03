@@ -15,7 +15,8 @@
     "items_count": "{{count}} items",
     "checked_count": "{{count}} checked",
     "remaining": "{{count}} remaining",
-    "greeting": "Hello {{name}} 👋"
+    "greeting": "Hello {{name}} 👋",
+    "just_now": "now"
   },
   "list_detail": {
     "search_placeholder": "Search...",
@@ -41,9 +42,12 @@
     "meat_fish": "Meat & Fish",
     "bakery": "Bakery",
     "frozen": "Frozen",
-    "canned": "Canned Goods",
-    "snacks": "Snacks",
-    "household": "Household",
+    "canned": "Canned, Legumes & Pasta",
+    "snacks": "Snacks & Sweets",
+    "household": "Household Cleaning",
+    "hygiene": "Hygiene & Body Care",
+    "spices": "Spices & Sauces",
+    "baking": "Baking & Cooking",
     "other": "Other"
   },
   "units": {

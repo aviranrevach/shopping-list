@@ -28,8 +28,8 @@ export function LoginScreen() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-stone-50">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--color-primary-bg50)' }}>
+            <svg className="w-8 h-8" style={{ color: 'var(--color-primary-dark)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -50,14 +50,17 @@ export function LoginScreen() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('login.email_placeholder')}
               required
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
+              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base outline-none transition"
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-light)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
               dir="ltr"
             />
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl px-4 py-3 text-base transition disabled:opacity-50"
+              className="w-full mt-4 text-white font-semibold rounded-xl px-4 py-3 text-base transition disabled:opacity-50"
+              style={{ background: 'var(--color-primary)' }}
             >
               {loading ? '...' : t('login.send_link')}
             </button>

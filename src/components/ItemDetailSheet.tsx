@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '../i18n';
+import { useTheme } from '../theme/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
 import { supabase } from '../lib/supabase';
-import { updateItem } from '../data/items';
+import { updateItem, deleteItem } from '../data/items';
 import { fetchItemImages, uploadItemImage, deleteItemImage, getImageUrl } from '../data/images';
 import { Avatar } from './Avatar';
 import { UNITS } from '../types';
@@ -14,10 +15,12 @@ import type { Item, ItemImage, GroupMember } from '../types';
 interface ItemDetailSheetProps {
   itemId: string;
   onClose: () => void;
+  onDelete?: () => void;
 }
 
-export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
+export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetProps) {
   const { t } = useI18n();
+  const { scheme } = useTheme();
   const { user } = useAuth();
   const { group } = useGroup(user?.id);
   const { allCategories } = useCategories(group?.id);
@@ -30,13 +33,21 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
   const [uploading, setUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  // Local state for text fields — sync to Supabase on blur, not on every keystroke
+  const [localName, setLocalName] = useState('');
+  const [localNote, setLocalNote] = useState('');
+
   // Drag-to-dismiss: swipe right (positive dx) to close — sheet slides back to the right (where it came from)
   const dragStart = useRef(0);
   const dragging = useRef(false);
 
   useEffect(() => {
     supabase.from('items').select('*').eq('id', itemId).single().then(({ data }) => {
-      if (data) setItem(data as Item);
+      if (data) {
+        setItem(data as Item);
+        setLocalName(data.name);
+        setLocalNote(data.note ?? '');
+      }
     });
     fetchItemImages(itemId).then(setImages);
 
@@ -60,6 +71,12 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
     setIsOpen(false);
     // Let the CSS transition play (sheet slides back to translateX(-100%)) before unmounting
     setTimeout(onClose, 350);
+  }
+
+  async function handleDelete() {
+    await deleteItem(itemId);
+    setIsOpen(false);
+    setTimeout(() => { onClose(); onDelete?.(); }, 350);
   }
 
   async function handleUpdate(updates: Partial<Item>) {
@@ -154,6 +171,12 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
           <div className="flex items-center gap-1.5 min-w-[60px] justify-end">
             {addedBy && <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />}
             <span className="text-xs text-gray-300">{timeStr}</span>
+            <button onClick={handleDelete} className="w-8 h-8 rounded-full flex items-center justify-center text-red-400 active:bg-red-50">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -161,7 +184,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
         <div data-sheet-body className="p-4 space-y-4 overflow-y-auto" style={{ touchAction: 'pan-y' }}>
         {!item ? (
           <div className="flex justify-center py-12">
-            <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: scheme.primaryLight, borderTopColor: 'transparent' }} />
           </div>
         ) : (
           <>
@@ -169,9 +192,11 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
           <div>
             <label className="text-xs text-gray-400 mb-1 block">שם פריט</label>
             <input
-              value={item.name}
-              onChange={(e) => handleUpdate({ name: e.target.value })}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 text-gray-900 font-medium"
+              value={localName}
+              onChange={(e) => setLocalName(e.target.value)}
+              onFocus={(e) => { e.currentTarget.style.borderColor = scheme.primaryLight; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; if (localName !== item.name) handleUpdate({ name: localName }); }}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-900 font-medium"
             />
           </div>
 
@@ -207,9 +232,10 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
                   onClick={() => handleUpdate({ category: cat.key })}
                   className={`flex items-center justify-center gap-2 py-3 px-3 rounded-2xl text-[15px] font-medium min-h-[48px] ${
                     cat.key === item.category
-                      ? 'bg-amber-500 text-white'
+                      ? 'text-white'
                       : 'bg-gray-50 border border-gray-100 text-gray-600 active:bg-gray-100'
                   }`}
+                  style={cat.key === item.category ? { background: scheme.primary } : undefined}
                 >
                   <span className="text-xl">{cat.emoji}</span>
                   {cat.isCustom ? cat.key : t(`categories.${cat.key}`)}
@@ -221,7 +247,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
           {/* Note */}
           <div>
             <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.note')}</label>
-            <textarea value={item.note ?? ''} onChange={(e) => handleUpdate({ note: e.target.value || null })} placeholder="..." rows={3} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-700 resize-none" />
+            <textarea value={localNote} onChange={(e) => setLocalNote(e.target.value)} onBlur={() => { const val = localNote || null; if (val !== (item.note ?? null)) handleUpdate({ note: val }); }} placeholder="..." rows={3} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-700 resize-none" />
           </div>
 
           {/* Images */}
@@ -238,7 +264,7 @@ export function ItemDetailSheet({ itemId, onClose }: ItemDetailSheetProps) {
               ))}
               <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="w-full h-14 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-gray-400 text-sm">
                 {uploading ? (
-                  <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: scheme.primaryLight, borderTopColor: 'transparent' }} />
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>

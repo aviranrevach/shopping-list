@@ -40,7 +40,8 @@ export function EmojiPicker({ value, onChange, onClose }: EmojiPickerProps) {
           <button
             key={i}
             onClick={() => setActiveGroup(i)}
-            className={`flex-1 py-2 text-xl ${i === activeGroup ? 'bg-amber-50' : ''}`}
+            className="flex-1 py-2 text-xl"
+            style={i === activeGroup ? { background: 'var(--color-primary-bg50)' } : undefined}
           >
             {group.label}
           </button>
@@ -54,8 +55,9 @@ export function EmojiPicker({ value, onChange, onClose }: EmojiPickerProps) {
             key={emoji}
             onClick={() => { onChange(emoji); onClose?.(); }}
             className={`w-full aspect-square flex items-center justify-center text-2xl rounded-lg ${
-              emoji === value ? 'bg-amber-100' : 'active:bg-gray-100'
+              emoji === value ? '' : 'active:bg-gray-100'
             }`}
+            style={emoji === value ? { background: 'var(--color-primary-bg50)' } : undefined}
           >
             {emoji}
           </button>

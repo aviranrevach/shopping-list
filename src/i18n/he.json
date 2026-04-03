@@ -15,7 +15,8 @@
     "items_count": "{{count}} פריטים",
     "checked_count": "{{count}} סומנו",
     "remaining": "{{count}} נותרו",
-    "greeting": "שלום {{name}} 👋"
+    "greeting": "שלום {{name}} 👋",
+    "just_now": "עכשיו"
   },
   "list_detail": {
     "search_placeholder": "חיפוש...",
@@ -41,9 +42,12 @@
     "meat_fish": "בשר ודגים",
     "bakery": "מאפים",
     "frozen": "קפואים",
-    "canned": "שימורים",
-    "snacks": "חטיפים",
-    "household": "משק בית",
+    "canned": "שימורים קטניות ופסטה",
+    "snacks": "חטיפים ומתוקים",
+    "household": "נקיון בית",
+    "hygiene": "הגיינה טיפוח וגוף",
+    "spices": "תבלינים ורטבים",
+    "baking": "אפיה ובישול",
     "other": "אחר"
   },
   "units": {

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { useGroup } from './hooks/useGroup';
+import { ThemeProvider } from './theme/ThemeContext';
 import { LoginScreen } from './screens/LoginScreen';
 import { ListsScreen } from './screens/ListsScreen';
 import { ListDetailScreen } from './screens/ListDetailScreen';
@@ -17,7 +18,7 @@ function AppRoutes() {
   if (authLoading || (user && groupLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
-        <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'transparent' }} />
       </div>
     );
   }
@@ -45,8 +46,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

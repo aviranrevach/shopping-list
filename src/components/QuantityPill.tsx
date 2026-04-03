@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../theme/ThemeContext';
 
 interface QuantityPillProps {
   quantity: number;
@@ -9,6 +10,7 @@ interface QuantityPillProps {
 }
 
 export function QuantityPill({ quantity, onChange, expanded = false, onExpand, onCollapse }: QuantityPillProps) {
+  const { scheme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,11 +42,12 @@ export function QuantityPill({ quantity, onChange, expanded = false, onExpand, o
       <div ref={containerRef} className="flex flex-col gap-1.5">
         <button
           onClick={() => onCollapse?.()}
-          className="bg-amber-500 text-white text-sm px-3 py-1 rounded-lg font-medium"
+          className="text-white text-sm px-3 py-1 rounded-lg font-medium"
+          style={{ background: scheme.primary }}
         >
           x{quantity}
         </button>
-        <div className="flex items-center justify-between bg-gray-100 border border-amber-400 rounded-xl px-4 py-3">
+        <div className="flex items-center justify-between bg-gray-100 border rounded-xl px-4 py-3" style={{ borderColor: scheme.primaryLight }}>
           <button
             onClick={() => onChange(Math.max(1, quantity - 1))}
             className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm active:bg-gray-50"

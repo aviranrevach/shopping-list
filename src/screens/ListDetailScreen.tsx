@@ -4,6 +4,7 @@ import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
 import { useRealtimeItems } from '../hooks/useRealtimeItems';
+import { useTheme } from '../theme/ThemeContext';
 import { toggleItemChecked, deleteItem, createItem } from '../data/items';
 import { updateList, fetchListById, deleteList as deleteListApi } from '../data/lists';
 import type { List } from '../types';
@@ -21,6 +22,7 @@ export function ListDetailScreen() {
   const { user } = useAuth();
   const { group } = useGroup(user?.id);
   const { items, loading, optimisticToggle, optimisticDelete, optimisticAdd } = useRealtimeItems(listId);
+  const { scheme } = useTheme();
   const navigate = useNavigate();
   const [list, setList] = useState<List | null>(null);
   const [search, setSearch] = useState('');
@@ -169,7 +171,8 @@ export function ListDetailScreen() {
             />
             <button
               onClick={() => { setIsSearchMode(false); setSearch(''); }}
-              className="text-amber-600 font-semibold text-sm whitespace-nowrap"
+              className="font-semibold text-sm whitespace-nowrap"
+              style={{ color: scheme.primaryDark }}
             >
               {t('invite.search_cancel')}
             </button>
@@ -185,7 +188,8 @@ export function ListDetailScreen() {
                   input?.focus();
                 }, 50);
               }}
-              className="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0"
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: scheme.primary }}
             >
               <svg className="w-[18px] h-[18px] text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -249,7 +253,7 @@ export function ListDetailScreen() {
         <div className="p-4" onClick={() => { if (isAddMode) { setIsAddMode(false); } }}>
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: scheme.primaryLight, borderTopColor: 'transparent' }} />
             </div>
           ) : (
             <>
@@ -306,7 +310,11 @@ export function ListDetailScreen() {
 
       {/* Item detail sheet */}
       {detailItemId && (
-        <ItemDetailSheet itemId={detailItemId} onClose={() => setDetailItemId(null)} />
+        <ItemDetailSheet
+          itemId={detailItemId}
+          onClose={() => setDetailItemId(null)}
+          onDelete={() => { optimisticDelete(detailItemId); setDetailItemId(null); }}
+        />
       )}
 
       {showInviteSheet && listId && (
@@ -329,13 +337,15 @@ export function ListDetailScreen() {
               <div className="flex gap-2 mb-2">
                 <button
                   onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
-                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${!viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${!viewAll ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
+                  style={!viewAll ? { background: scheme.primary } : undefined}
                 >
                   🛒 לקנות
                 </button>
                 <button
                   onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
-                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${viewAll ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${viewAll ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
+                  style={viewAll ? { background: scheme.primary } : undefined}
                 >
                   📋 הכל
                 </button>
@@ -447,7 +457,8 @@ export function ListDetailScreen() {
             <div className="flex items-center gap-3 mb-3">
               <button
                 onClick={() => setShowEditEmojiPicker(!showEditEmojiPicker)}
-                className={`w-[52px] h-[52px] bg-gray-50 border-2 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 ${showEditEmojiPicker ? 'border-amber-400' : 'border-gray-200'}`}
+                className={`w-[52px] h-[52px] bg-gray-50 border-2 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 ${showEditEmojiPicker ? '' : 'border-gray-200'}`}
+                style={showEditEmojiPicker ? { borderColor: scheme.primaryLight } : undefined}
               >
                 {editIconValue}
               </button>
@@ -462,7 +473,10 @@ export function ListDetailScreen() {
                   }
                 }}
                 placeholder="שם חדש"
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400"
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none"
+                style={{ '--tw-ring-color': scheme.primaryLight } as React.CSSProperties}
+                onFocus={(e) => e.currentTarget.style.borderColor = scheme.primaryLight}
+                onBlur={(e) => e.currentTarget.style.borderColor = ''}
               />
             </div>
             {showEditEmojiPicker && (
@@ -485,7 +499,8 @@ export function ListDetailScreen() {
                     setShowEditEmojiPicker(false);
                   }
                 }}
-                className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white"
+                className="flex-1 py-3 rounded-xl text-[15px] font-semibold text-white"
+                style={{ background: scheme.primary }}
               >
                 שמור
               </button>
@@ -512,7 +527,8 @@ export function ListDetailScreen() {
                 onClick={() => setImportAppleNotes(!importAppleNotes)}
                 className="w-full flex items-center gap-3 mb-4 px-3 py-2.5 rounded-xl bg-gray-50 active:bg-gray-100"
               >
-                <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${importAppleNotes ? 'bg-amber-500' : 'border-2 border-gray-300'}`}>
+                <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${importAppleNotes ? '' : 'border-2 border-gray-300'}`}
+                  style={importAppleNotes ? { background: scheme.primary } : undefined}>
                   {importAppleNotes && (
                     <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12" /></svg>
                   )}
@@ -531,7 +547,9 @@ export function ListDetailScreen() {
                   ? "- [x] 2 חלב\n- [ ] עגבניות\n\nנקיון\n- [ ] סבון"
                   : "עגבניות\nמלפפונים\nחלב"}
                 rows={8}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[15px] outline-none focus:border-amber-400 resize-none font-mono leading-relaxed"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[15px] outline-none resize-none font-mono leading-relaxed"
+                onFocus={(e) => e.currentTarget.style.borderColor = scheme.primaryLight}
+                onBlur={(e) => e.currentTarget.style.borderColor = ''}
                 dir="auto"
               />
 
@@ -565,7 +583,8 @@ export function ListDetailScreen() {
                     setImportText('');
                   }}
                   disabled={itemCount === 0}
-                  className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white disabled:opacity-40"
+                  className="flex-1 py-3 rounded-xl text-[15px] font-semibold text-white disabled:opacity-40"
+                  style={{ background: scheme.primary }}
                 >
                   ייבא {itemCount} פריטים
                 </button>
