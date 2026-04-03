@@ -3,6 +3,9 @@ import { useAuth } from './hooks/useAuth';
 import { useGroup } from './hooks/useGroup';
 import { LoginScreen } from './screens/LoginScreen';
 import { ListsScreen } from './screens/ListsScreen';
+import { ListDetailScreen } from './screens/ListDetailScreen';
+import { RapidAddScreen } from './screens/RapidAddScreen';
+import { ItemDetailScreen } from './screens/ItemDetailScreen';
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
@@ -28,9 +31,9 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/lists" element={<ListsScreen />} />
-      <Route path="/lists/:listId" element={<div>List Detail</div>} />
-      <Route path="/lists/:listId/add" element={<div>Rapid Add</div>} />
-      <Route path="/lists/:listId/items/:itemId" element={<div>Item Detail</div>} />
+      <Route path="/lists/:listId" element={<ListDetailScreen />} />
+      <Route path="/lists/:listId/add" element={<RapidAddScreen />} />
+      <Route path="/lists/:listId/items/:itemId" element={<ItemDetailScreen />} />
       <Route path="*" element={<Navigate to="/lists" replace />} />
     </Routes>
   );
