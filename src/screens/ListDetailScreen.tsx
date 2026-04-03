@@ -302,12 +302,12 @@ export function ListDetailScreen() {
         />
       )}
 
-      {/* Three-dot menu — slides down from top */}
+      {/* Three-dot menu — modal below top bar */}
       {showMenu && (
         <>
           <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowMenu(false)} />
-          <div className="fixed top-0 left-0 right-0 z-[51] bg-white rounded-b-2xl shadow-2xl safe-area-top"
-            style={{ animation: 'menu-slide-down 0.25s ease-out' }}>
+          <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl"
+            style={{ top: '70px', animation: 'menu-fade-in 0.2s ease-out' }}>
             <div className="p-4 space-y-1">
               {/* View toggle */}
               <div className="flex gap-2 mb-2">
