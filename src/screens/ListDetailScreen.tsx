@@ -11,6 +11,7 @@ import { CategoryGroup } from '../components/CategoryGroup';
 import { AddZone } from '../components/AddZone';
 import { ItemDetailSheet } from '../components/ItemDetailSheet';
 import { InviteSheet } from '../components/InviteSheet';
+import { EmojiPicker } from '../components/EmojiPicker';
 import { CATEGORIES } from '../types';
 
 export function ListDetailScreen() {
@@ -30,6 +31,7 @@ export function ListDetailScreen() {
   const [showImport, setShowImport] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   const [editIconValue, setEditIconValue] = useState('');
+  const [showEditEmojiPicker, setShowEditEmojiPicker] = useState(false);
   const [importText, setImportText] = useState('');
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
@@ -389,18 +391,12 @@ export function ListDetailScreen() {
           <div className="fixed top-1/3 left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5">
             <h3 className="text-[17px] font-semibold text-center mb-4">שנה שם רשימה</h3>
             <div className="flex items-center gap-3 mb-3">
-              <input
-                type="text"
-                value={editIconValue}
-                onFocus={(e) => e.target.select()}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (!val) return;
-                  const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
-                  if (segments.length > 0) setEditIconValue(segments[segments.length - 1].segment);
-                }}
-                className="w-[52px] h-[52px] bg-gray-50 border border-gray-200 rounded-2xl text-3xl text-center flex-shrink-0 outline-none focus:border-amber-400 caret-transparent"
-              />
+              <button
+                onClick={() => setShowEditEmojiPicker(!showEditEmojiPicker)}
+                className={`w-[52px] h-[52px] bg-gray-50 border-2 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 ${showEditEmojiPicker ? 'border-amber-400' : 'border-gray-200'}`}
+              >
+                {editIconValue}
+              </button>
               <input
                 autoFocus
                 value={editNameValue}
@@ -415,8 +411,16 @@ export function ListDetailScreen() {
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400"
               />
             </div>
+            {showEditEmojiPicker && (
+              <div className="mb-3">
+                <EmojiPicker
+                  value={editIconValue}
+                  onChange={(emoji) => { setEditIconValue(emoji); setShowEditEmojiPicker(false); }}
+                />
+              </div>
+            )}
             <div className="flex gap-2">
-              <button onClick={() => setShowEditName(false)} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
+              <button onClick={() => { setShowEditName(false); setShowEditEmojiPicker(false); }} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
                 ביטול
               </button>
               <button
@@ -424,6 +428,7 @@ export function ListDetailScreen() {
                   if (editNameValue.trim() && listId) {
                     updateList(listId, { name: editNameValue.trim(), icon: editIconValue }).then((updated) => setList(updated));
                     setShowEditName(false);
+                    setShowEditEmojiPicker(false);
                   }
                 }}
                 className="flex-1 py-3 rounded-xl text-[15px] font-semibold bg-amber-500 text-white"

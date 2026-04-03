@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useGroup } from '../hooks/useGroup';
 import { useRealtimeLists } from '../hooks/useRealtimeLists';
 import { createList } from '../data/lists';
+import { EmojiPicker } from '../components/EmojiPicker';
 
 export function ListsScreen() {
   const { t } = useI18n();
@@ -15,6 +16,7 @@ export function ListsScreen() {
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newIcon, setNewIcon] = useState('📋');
+  const [showNewEmojiPicker, setShowNewEmojiPicker] = useState(false);
 
   const displayName = member?.display_name ?? user?.email?.split('@')[0] ?? '';
   const isSingleList = lists.length === 1;
@@ -208,18 +210,12 @@ export function ListsScreen() {
                 }}
               >
                 <div className="flex gap-2 items-center">
-                  <input
-                    type="text"
-                    value={newIcon}
-                    onFocus={(e) => e.target.select()}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (!val) return;
-                      const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
-                      if (segments.length > 0) setNewIcon(segments[segments.length - 1].segment);
-                    }}
-                    className="w-10 h-10 bg-gray-100 rounded-lg text-2xl text-center flex-shrink-0 outline-none focus:bg-gray-50 caret-transparent border-none"
-                  />
+                  <button
+                    onClick={() => setShowNewEmojiPicker(!showNewEmojiPicker)}
+                    className={`w-10 h-10 bg-gray-100 rounded-lg text-2xl flex items-center justify-center flex-shrink-0 ${showNewEmojiPicker ? 'ring-2 ring-amber-400' : ''}`}
+                  >
+                    {newIcon}
+                  </button>
                   <input
                     autoFocus
                     value={newName}
@@ -229,15 +225,23 @@ export function ListsScreen() {
                     className="flex-1 bg-gray-50 rounded-lg px-3 py-2 text-sm outline-none border border-gray-200 focus:border-amber-400"
                   />
                 </div>
+                {showNewEmojiPicker && (
+                  <div className="mt-2">
+                    <EmojiPicker
+                      value={newIcon}
+                      onChange={(emoji) => { setNewIcon(emoji); setShowNewEmojiPicker(false); }}
+                    />
+                  </div>
+                )}
                 <div className="flex gap-2 justify-start">
                   <button
-                    onClick={handleCreateList}
+                    onClick={() => { setShowNewEmojiPicker(false); handleCreateList(); }}
                     className="px-4 py-2 text-sm bg-amber-500 text-white rounded-lg font-medium"
                   >
                     {t('lists.new_list')}
                   </button>
                   <button
-                    onClick={() => { setShowNew(false); setNewName(''); setNewIcon('📋'); }}
+                    onClick={() => { setShowNew(false); setNewName(''); setNewIcon('📋'); setShowNewEmojiPicker(false); }}
                     className="px-3 py-2 text-sm text-gray-400"
                   >
                     ביטול

@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useI18n } from '../i18n';
+import { EmojiPicker } from './EmojiPicker';
 import type { CategoryInfo } from '../hooks/useCategories';
 
 interface CategoryPickerProps {
@@ -14,26 +15,19 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
   const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmoji, setNewEmoji] = useState('📦');
-  const emojiInputRef = useRef<HTMLInputElement>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   if (isCreating) {
     return (
       <div className="p-4 bg-gray-50 border-t border-gray-100">
         <div className="text-sm text-gray-400 text-center mb-3">{t('categories_ui.new_category')}</div>
         <div className="flex items-center gap-3">
-          <input
-            ref={emojiInputRef}
-            type="text"
-            value={newEmoji}
-            onFocus={(e) => e.target.select()}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!val) return;
-              const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
-              if (segments.length > 0) setNewEmoji(segments[segments.length - 1].segment);
-            }}
-            className="w-[52px] h-[52px] bg-white border-2 border-gray-200 rounded-2xl text-3xl text-center flex-shrink-0 outline-none focus:border-amber-400 caret-transparent"
-          />
+          <button
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className={`w-[52px] h-[52px] bg-white border-2 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 ${showEmojiPicker ? 'border-amber-400' : 'border-gray-200'}`}
+          >
+            {newEmoji}
+          </button>
           <input
             autoFocus
             value={newName}
@@ -50,6 +44,14 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
             className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-[17px] outline-none focus:border-amber-400"
           />
         </div>
+        {showEmojiPicker && (
+          <div className="mt-3">
+            <EmojiPicker
+              value={newEmoji}
+              onChange={(emoji) => { setNewEmoji(emoji); setShowEmojiPicker(false); }}
+            />
+          </div>
+        )}
         <button
           onClick={() => {
             if (newName.trim()) {
@@ -64,7 +66,7 @@ export function CategoryPicker({ categories, selected, onSelect, onCreateNew }: 
           {t('categories_ui.save_category')}
         </button>
         <button
-          onClick={() => { setIsCreating(false); setNewName(''); }}
+          onClick={() => { setIsCreating(false); setNewName(''); setShowEmojiPicker(false); }}
           className="w-full mt-2 text-sm text-gray-400 py-2"
         >
           {t('categories_ui.cancel')}
