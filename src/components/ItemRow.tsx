@@ -213,14 +213,23 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
     s.isV = null;
   }
 
-  // Row style based on animation phase
-  const rowExitStyle: React.CSSProperties = phase === 'row-exit'
-    ? { opacity: 0, maxHeight: 0, paddingTop: 0, paddingBottom: 0, marginBottom: 0, overflow: 'hidden',
-        transition: 'opacity 0.2s ease, max-height 0.25s ease, padding 0.25s ease, margin 0.25s ease' }
-    : {};
-
-  const rowFadeStyle: React.CSSProperties =
-    (phase === 'text-strike' && item.checked) ? { opacity: 0.2, transition: 'opacity 0.3s ease' } : {};
+  // Row wrapper style based on animation phase
+  const wrapStyle: React.CSSProperties = (() => {
+    const base: React.CSSProperties = {
+      maxHeight: 100,
+      opacity: 1,
+      marginBottom: 2,
+      transition: 'opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease',
+      overflow: 'hidden',
+    };
+    if (phase === 'text-strike' && item.checked) {
+      return { ...base, opacity: 0.2 };
+    }
+    if (phase === 'row-exit') {
+      return { ...base, opacity: 0, maxHeight: 0, marginBottom: 0 };
+    }
+    return base;
+  })();
 
   const textClass =
     phase === 'text-strike' || phase === 'row-exit'
@@ -234,8 +243,8 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
   return (
     <div
       data-swipe-wrap
-      className={`relative overflow-hidden rounded-xl mb-0.5 ${isEntering ? 'row-entering' : ''}`}
-      style={rowExitStyle}
+      className={`relative rounded-xl ${isEntering ? 'row-entering' : ''}`}
+      style={wrapStyle}
     >
       {/* Delete background */}
       <div className="absolute inset-0 bg-red-500/0">
@@ -256,7 +265,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
       <div
         ref={rowRef}
         className="relative z-[1] bg-white border border-gray-100 flex items-center gap-3 px-4 py-3.5 transition-colors duration-100"
-        style={{ ...rowFadeStyle, touchAction: 'pan-y' }}
+        style={{ touchAction: 'pan-y' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
