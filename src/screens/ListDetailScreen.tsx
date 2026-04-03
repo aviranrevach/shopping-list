@@ -183,10 +183,10 @@ export function ListDetailScreen() {
               </svg>
             </button>
 
-            {/* Center: list name */}
-            <span className="flex-1 text-center font-semibold text-[17px] text-gray-900 truncate">
+            {/* Center: list name — tap to open menu */}
+            <button onClick={() => setShowMenu(true)} className="flex-1 text-center font-semibold text-[17px] text-gray-900 truncate">
               🕯️ List
-            </span>
+            </button>
 
             {/* RTL end (left side): menu and back */}
             <button
