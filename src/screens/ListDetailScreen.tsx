@@ -29,6 +29,7 @@ export function ListDetailScreen() {
   const [showEditName, setShowEditName] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
+  const [editIconValue, setEditIconValue] = useState('');
   const [importText, setImportText] = useState('');
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [transitioningIds, setTransitioningIds] = useState<Set<string>>(new Set());
@@ -349,7 +350,7 @@ export function ListDetailScreen() {
 
               {/* Edit name */}
               <button
-                onClick={() => { setShowMenu(false); setEditNameValue(listName); setShowEditName(true); }}
+                onClick={() => { setShowMenu(false); setEditNameValue(listName); setEditIconValue(listIcon); setShowEditName(true); }}
                 className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
               >
                 <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -381,33 +382,59 @@ export function ListDetailScreen() {
         </>
       )}
 
-      {/* Edit list name modal */}
+      {/* Edit list name + emoji modal */}
       {showEditName && listId && (
         <>
           <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowEditName(false)} />
           <div className="fixed top-1/3 left-4 right-4 z-[51] bg-white rounded-2xl shadow-2xl p-5">
             <h3 className="text-[17px] font-semibold text-center mb-4">שנה שם רשימה</h3>
-            <input
-              autoFocus
-              value={editNameValue}
-              onChange={(e) => setEditNameValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && editNameValue.trim()) {
-                  updateList(listId, { name: editNameValue.trim() });
-                  setShowEditName(false);
-                }
-              }}
-              placeholder="שם חדש"
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400 text-center"
-            />
-            <div className="flex gap-2 mt-4">
+            <div className="flex items-center gap-3 mb-3">
+              <button
+                onClick={() => {
+                  const emojiInput = document.getElementById('edit-list-emoji-input') as HTMLInputElement;
+                  emojiInput?.focus();
+                }}
+                className="w-[52px] h-[52px] bg-gray-50 border border-gray-200 rounded-2xl text-3xl flex items-center justify-center flex-shrink-0 active:bg-gray-100 relative"
+              >
+                {editIconValue}
+                <input
+                  id="edit-list-emoji-input"
+                  type="text"
+                  inputMode="none"
+                  value=""
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val) {
+                      const segments = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(val)];
+                      if (segments.length > 0) setEditIconValue(segments[0].segment);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 text-3xl"
+                  style={{ fontSize: '32px', caretColor: 'transparent' }}
+                />
+              </button>
+              <input
+                autoFocus
+                value={editNameValue}
+                onChange={(e) => setEditNameValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && editNameValue.trim()) {
+                    updateList(listId, { name: editNameValue.trim(), icon: editIconValue }).then((updated) => setList(updated));
+                    setShowEditName(false);
+                  }
+                }}
+                placeholder="שם חדש"
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus:border-amber-400"
+              />
+            </div>
+            <div className="flex gap-2">
               <button onClick={() => setShowEditName(false)} className="flex-1 py-3 rounded-xl text-[15px] text-gray-400">
                 ביטול
               </button>
               <button
                 onClick={() => {
                   if (editNameValue.trim() && listId) {
-                    updateList(listId, { name: editNameValue.trim() }).then((updated) => setList(updated));
+                    updateList(listId, { name: editNameValue.trim(), icon: editIconValue }).then((updated) => setList(updated));
                     setShowEditName(false);
                   }
                 }}
