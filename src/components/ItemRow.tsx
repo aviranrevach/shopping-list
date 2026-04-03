@@ -280,7 +280,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
             </span>
           )}
           {hasNote && (
-            <span className="text-sm text-gray-300 truncate min-w-0">
+            <span className="text-[17px] text-gray-400 truncate min-w-0 mr-3">
               {item.note}
             </span>
           )}
