@@ -24,44 +24,31 @@ export async function getInviteByToken(token: string): Promise<ListInvite | null
 }
 
 export async function getInviteWithList(token: string): Promise<{
-  invite: ListInvite;
+  invite: { id: string; token: string; expires_at: string; list_id: string };
   list: { id: string; name: string; icon: string; group_id: string };
   itemCount: number;
   creatorName: string;
 } | null> {
-  const { data: invite } = await supabase
-    .from('list_invites')
-    .select('*')
-    .eq('token', token)
-    .single();
+  // Use RPC to bypass RLS — invitees are not authenticated yet
+  const { data, error } = await supabase.rpc('get_invite_info', { invite_token: token });
 
-  if (!invite) return null;
-
-  const { data: list } = await supabase
-    .from('lists')
-    .select('id, name, icon, group_id')
-    .eq('id', invite.list_id)
-    .single();
-
-  if (!list) return null;
-
-  const { count } = await supabase
-    .from('items')
-    .select('*', { count: 'exact', head: true })
-    .eq('list_id', invite.list_id);
-
-  const { data: creator } = await supabase
-    .from('group_members')
-    .select('display_name')
-    .eq('user_id', invite.created_by)
-    .limit(1)
-    .single();
+  if (error || !data) return null;
 
   return {
-    invite: invite as ListInvite,
-    list: list as { id: string; name: string; icon: string; group_id: string },
-    itemCount: count ?? 0,
-    creatorName: creator?.display_name ?? 'Someone',
+    invite: {
+      id: data.invite_id,
+      token: data.token,
+      expires_at: data.expires_at,
+      list_id: data.list_id,
+    },
+    list: {
+      id: data.list_id,
+      name: data.list_name,
+      icon: data.list_icon,
+      group_id: data.group_id,
+    },
+    itemCount: data.item_count ?? 0,
+    creatorName: data.creator_name ?? 'Someone',
   };
 }
 
