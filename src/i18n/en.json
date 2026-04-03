@@ -59,5 +59,27 @@
   "actions": {
     "delete": "Delete",
     "check": "Check"
+  },
+  "invite": {
+    "share_list": "Share \"{{name}}\"",
+    "share_subtitle": "Anyone with the link can view and edit",
+    "copy_link": "Copy",
+    "link_copied": "Link copied",
+    "valid_for": "Valid for 7 days",
+    "whatsapp": "WhatsApp",
+    "message": "Message",
+    "more": "More",
+    "join_title": "{{name}} shared a list with you",
+    "join_email": "Sign in with email",
+    "join_email_desc": "Full account with your own lists",
+    "join_guest": "Join as guest",
+    "join_guest_desc": "Just a name — for kids",
+    "join_button": "Join list",
+    "guest_name_placeholder": "Your name",
+    "expired": "Link expired",
+    "expired_desc": "Ask the inviter for a new link",
+    "items_count": "{{count}} items",
+    "cancel": "Cancel",
+    "search_cancel": "Cancel"
   }
 }

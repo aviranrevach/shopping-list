@@ -59,5 +59,27 @@
   "actions": {
     "delete": "מחיקה",
     "check": "סימון"
+  },
+  "invite": {
+    "share_list": "שתף את \"{{name}}\"",
+    "share_subtitle": "כל מי שמקבל יוכל לראות ולערוך",
+    "copy_link": "העתק",
+    "link_copied": "הקישור הועתק",
+    "valid_for": "תקף ל-7 ימים",
+    "whatsapp": "WhatsApp",
+    "message": "הודעה",
+    "more": "עוד",
+    "join_title": "{{name}} שיתף איתך רשימה",
+    "join_email": "כניסה עם אימייל",
+    "join_email_desc": "חשבון מלא עם רשימות משלך",
+    "join_guest": "כניסה כאורח",
+    "join_guest_desc": "רק שם — לילדים",
+    "join_button": "הצטרף לרשימה",
+    "guest_name_placeholder": "השם שלך",
+    "expired": "הקישור פג תוקף",
+    "expired_desc": "בקש קישור חדש מהמזמין",
+    "items_count": "{{count}} פריטים",
+    "cancel": "ביטול",
+    "search_cancel": "ביטול"
   }
 }
