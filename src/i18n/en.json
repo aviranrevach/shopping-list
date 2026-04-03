@@ -1,0 +1,63 @@
+{
+  "app_name": "Shopping List",
+  "login": {
+    "title": "Shopping List",
+    "subtitle": "רשימת קניות",
+    "email_label": "Email",
+    "email_placeholder": "your@email.com",
+    "send_link": "Send me a link",
+    "link_sent": "Link sent to your email",
+    "link_hint": "A one-time link will be sent to your email"
+  },
+  "lists": {
+    "title": "My Lists",
+    "new_list": "New list",
+    "items_count": "{{count}} items",
+    "checked_count": "{{count}} checked"
+  },
+  "list_detail": {
+    "search_placeholder": "Search...",
+    "checked_section": "✓ Checked"
+  },
+  "rapid_add": {
+    "title": "Add Items",
+    "done": "Done",
+    "input_placeholder": "Type an item..."
+  },
+  "item_detail": {
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "category": "Category",
+    "category_hint": "Type or pick from list",
+    "note": "Note",
+    "images": "Images",
+    "add_image": "Add image"
+  },
+  "categories": {
+    "produce": "Produce",
+    "dairy": "Dairy",
+    "meat_fish": "Meat & Fish",
+    "bakery": "Bakery",
+    "frozen": "Frozen",
+    "canned": "Canned Goods",
+    "snacks": "Snacks",
+    "household": "Household",
+    "other": "Other"
+  },
+  "units": {
+    "unit": "pcs",
+    "kg": "kg",
+    "g": "g",
+    "liter": "L",
+    "ml": "mL",
+    "pack": "pack"
+  },
+  "nav": {
+    "lists": "Lists",
+    "settings": "Settings"
+  },
+  "actions": {
+    "delete": "Delete",
+    "check": "Check"
+  }
+}

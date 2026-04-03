@@ -1,0 +1,63 @@
+{
+  "app_name": "רשימת קניות",
+  "login": {
+    "title": "רשימת קניות",
+    "subtitle": "Shopping List",
+    "email_label": "אימייל",
+    "email_placeholder": "your@email.com",
+    "send_link": "שלח לי קישור",
+    "link_sent": "קישור נשלח למייל שלך",
+    "link_hint": "קישור חד-פעמי יישלח למייל שלך"
+  },
+  "lists": {
+    "title": "הרשימות שלי",
+    "new_list": "רשימה חדשה",
+    "items_count": "{{count}} פריטים",
+    "checked_count": "{{count}} סומנו"
+  },
+  "list_detail": {
+    "search_placeholder": "חיפוש...",
+    "checked_section": "✓ סומנו"
+  },
+  "rapid_add": {
+    "title": "הוספת פריטים",
+    "done": "סיום",
+    "input_placeholder": "הקלד פריט..."
+  },
+  "item_detail": {
+    "quantity": "כמות",
+    "unit": "יחידה",
+    "category": "קטגוריה",
+    "category_hint": "הקלד או בחר מהרשימה",
+    "note": "הערה",
+    "images": "תמונות",
+    "add_image": "הוסף תמונה"
+  },
+  "categories": {
+    "produce": "ירקות ופירות",
+    "dairy": "מוצרי חלב",
+    "meat_fish": "בשר ודגים",
+    "bakery": "מאפים",
+    "frozen": "קפואים",
+    "canned": "שימורים",
+    "snacks": "חטיפים",
+    "household": "משק בית",
+    "other": "אחר"
+  },
+  "units": {
+    "unit": "יח׳",
+    "kg": "ק״ג",
+    "g": "גרם",
+    "liter": "ליטר",
+    "ml": "מ״ל",
+    "pack": "חבילה"
+  },
+  "nav": {
+    "lists": "רשימות",
+    "settings": "הגדרות"
+  },
+  "actions": {
+    "delete": "מחיקה",
+    "check": "סימון"
+  }
+}
