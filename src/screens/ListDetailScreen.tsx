@@ -73,6 +73,13 @@ export function ListDetailScreen() {
     fetchListById(listId).then(setList).catch(console.error);
   }, [listId]);
 
+  // Load members eagerly so owner/member info is ready for the settings menu
+  useEffect(() => {
+    if (!listId) return;
+    getListMembers(listId).then(setListMembers).catch(console.error);
+  }, [listId]);
+
+  // Refresh members when menu or members sheet opens
   useEffect(() => {
     if ((!showMenu && !showMembersSheet) || !listId) return;
     getListMembers(listId).then(setListMembers).catch(console.error);

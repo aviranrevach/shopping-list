@@ -12,22 +12,26 @@ export async function fetchLists(groupId: string): Promise<List[]> {
   return data as List[];
 }
 
-export async function fetchListWithCounts(groupId: string): Promise<
+export async function fetchListWithCounts(groupId: string | undefined): Promise<
   (List & { item_count: number; checked_count: number; last_activity: string | null })[]
 > {
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: groupLists, error }, { data: memberRows }] = await Promise.all([
-    supabase.from('lists').select('*').eq('group_id', groupId).order('created_at', { ascending: false }),
+  // Fetch group lists (if the user has a group) and shared lists from list_members in parallel
+  const [groupResult, { data: memberRows }] = await Promise.all([
+    groupId
+      ? supabase.from('lists').select('*').eq('group_id', groupId).order('created_at', { ascending: false })
+      : Promise.resolve({ data: [] as List[], error: null }),
     user?.id
       ? supabase.from('list_members').select('list_id').eq('user_id', user.id)
       : Promise.resolve({ data: [] as { list_id: string }[] }),
   ]);
 
-  if (error) throw error;
+  if (groupResult.error) throw groupResult.error;
+  const groupLists = (groupResult.data ?? []) as List[];
 
   // Find lists the user joined via invite that belong to another group
-  const ownIds = new Set((groupLists as List[] ?? []).map((l) => l.id));
+  const ownIds = new Set(groupLists.map((l) => l.id));
   const sharedIds = (memberRows ?? [])
     .map((r) => r.list_id as string)
     .filter((id) => !ownIds.has(id));
@@ -38,7 +42,7 @@ export async function fetchListWithCounts(groupId: string): Promise<
     sharedLists = (data ?? []) as List[];
   }
 
-  const lists = [...(groupLists as List[] ?? []), ...sharedLists].sort(
+  const lists = [...groupLists, ...sharedLists].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 
@@ -102,11 +106,13 @@ export async function createList(
   if (error) throw error;
 
   const list = data as List;
-  await supabase
+  const { error: memberError } = await supabase
     .from('list_members')
     .insert({ list_id: list.id, user_id: userId, display_name: displayName, role: 'owner' })
     .select()
     .single();
+
+  if (memberError) console.error('[createList] failed to add owner to list_members:', memberError);
 
   return list;
 }
