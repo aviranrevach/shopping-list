@@ -166,6 +166,25 @@ export function ListDetailScreen() {
     setIsAddMode(false);
   }
 
+  const handleAddToCategory = useCallback((category: string) => {
+    setIsAddMode(true);
+    setTimeout(() => {
+      const input = document.querySelector('[data-add-input]') as HTMLInputElement;
+      input?.focus();
+    }, 50);
+  }, []);
+
+  const handleDeleteCategory = useCallback((category: string) => {
+    const catItems = items.filter(i => i.category === category && !i.checked);
+    if (catItems.length === 0) return;
+    if (window.confirm(`למחוק את כל ${catItems.length} הפריטים ב${t(`categories.${category}`)}?`)) {
+      for (const item of catItems) {
+        optimisticDelete(item.id);
+        deleteItem(item.id).catch(console.error);
+      }
+    }
+  }, [items, optimisticDelete, t]);
+
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
   return (
@@ -191,34 +210,19 @@ export function ListDetailScreen() {
           </header>
         ) : (
           <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-1.5 flex-shrink-0">
-            {/* RTL start (right side): + and search */}
-            <button
-              onClick={() => {
-                setIsAddMode(true);
-                setTimeout(() => {
-                  const input = document.querySelector('[data-add-input]') as HTMLInputElement;
-                  input?.focus();
-                }, 50);
-              }}
-              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: scheme.primary }}
-            >
-              <svg className="w-[18px] h-[18px] text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
+            {/* RTL start (right side): search */}
             <button
               onClick={() => setIsSearchMode(true)}
-              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400"
+              className="w-9 h-9 rounded-lg border border-gray-300 flex items-center justify-center flex-shrink-0 text-gray-400"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </button>
 
-            {/* Center: list name — tap to open menu */}
+            {/* Center: list name only — tap to open menu */}
             <button onClick={() => setShowMenu(true)} className="flex-1 text-center font-semibold text-[17px] text-gray-900 truncate">
-              {listIcon} {listName}
+              {listName}
             </button>
 
             {/* RTL end (left side): menu and back */}
@@ -262,6 +266,23 @@ export function ListDetailScreen() {
           )}
         </div>
 
+        {/* Always-visible dashed add trigger */}
+        {!isAddMode && (
+          <button
+            onClick={() => {
+              setIsAddMode(true);
+              setTimeout(() => {
+                const input = document.querySelector('[data-add-input]') as HTMLInputElement;
+                input?.focus();
+              }, 50);
+            }}
+            className="mx-4 mt-4 mb-2 py-3.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 text-[15px] font-medium text-center active:bg-gray-50 transition-colors"
+            style={{ width: 'calc(100% - 2rem)' }}
+          >
+            {t('list_detail.add_new_item')}
+          </button>
+        )}
+
         <div className="p-4" onClick={() => { if (isAddMode) { setIsAddMode(false); } }}>
           {loading ? (
             <div className="flex justify-center py-12">
@@ -281,6 +302,8 @@ export function ListDetailScreen() {
                   recentlyTransitionedIds={recentlyTransitionedIds}
                   skipExitAnimation={viewAll}
                   onHeaderClick={() => toggleSortMode(sortMode === 'added' ? 'alpha' : 'added')}
+                  onAddToCategory={handleAddToCategory}
+                  onDeleteCategory={handleDeleteCategory}
                 />
               ))}
               {!viewAll && checked.length > 0 && (

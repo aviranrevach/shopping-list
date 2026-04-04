@@ -12,7 +12,8 @@
     "code_label": "Verification code (6 digits)",
     "verify_code": "Sign in",
     "code_hint": "A sign-in link was also included in the email",
-    "change_email": "Change email address"
+    "change_email": "Change email address",
+    "invalid_code": "Invalid code, please try again"
   },
   "lists": {
     "title": "My Lists",
@@ -25,7 +26,8 @@
   },
   "list_detail": {
     "search_placeholder": "Search...",
-    "checked_section": "✓ Checked"
+    "checked_section": "✓ Checked",
+    "add_new_item": "+ Add New"
   },
   "rapid_add": {
     "title": "Add Items",

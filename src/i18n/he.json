@@ -12,7 +12,8 @@
     "code_label": "קוד אימות (6 ספרות)",
     "verify_code": "כניסה",
     "code_hint": "בדוק גם קישור ישיר שנשלח למייל",
-    "change_email": "שנה כתובת מייל"
+    "change_email": "שנה כתובת מייל",
+    "invalid_code": "קוד שגוי, נסה שוב"
   },
   "lists": {
     "title": "הרשימות שלי",
@@ -25,7 +26,8 @@
   },
   "list_detail": {
     "search_placeholder": "חיפוש...",
-    "checked_section": "✓ סומנו"
+    "checked_section": "✓ סומנו",
+    "add_new_item": "+ הוספת חדש"
   },
   "rapid_add": {
     "title": "הוספת פריטים",
