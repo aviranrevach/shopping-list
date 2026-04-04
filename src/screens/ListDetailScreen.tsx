@@ -345,39 +345,45 @@ export function ListDetailScreen() {
           <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl"
             style={{ top: '70px', animation: 'menu-fade-in 0.2s ease-out' }}>
             <div className="p-4 space-y-1">
-              {/* Sort mode */}
-              <div className="bg-gray-100 rounded-xl p-1 flex gap-1 mb-2">
-                <button
-                  onClick={() => toggleSortMode('added')}
-                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'added' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-                >
-                  🕐 סדר הוספה
-                </button>
-                <button
-                  onClick={() => toggleSortMode('alpha')}
-                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'alpha' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-                >
-                  א→ב אלפבית
-                </button>
+              {/* View */}
+              <div className="mb-3">
+                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5 px-1">תצוגה</p>
+                <div className="bg-gray-100 rounded-xl p-1 flex gap-1">
+                  <button
+                    onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
+                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${!viewAll ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                  >
+                    🛒 לקנות
+                  </button>
+                  <button
+                    onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
+                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${viewAll ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                  >
+                    📋 הכל
+                  </button>
+                </div>
               </div>
 
-              {/* Show all / shopping only toggle */}
-              <div className="flex gap-2 mb-2">
-                <button
-                  onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
-                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${!viewAll ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
-                  style={!viewAll ? { background: scheme.primary } : undefined}
-                >
-                  🛒 לקנות
-                </button>
-                <button
-                  onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
-                  className={`flex-1 py-3 rounded-xl text-[15px] font-medium ${viewAll ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
-                  style={viewAll ? { background: scheme.primary } : undefined}
-                >
-                  📋 הכל
-                </button>
+              {/* Sort */}
+              <div className="mb-3">
+                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5 px-1">מיון</p>
+                <div className="bg-gray-100 rounded-xl p-1 flex gap-1">
+                  <button
+                    onClick={() => toggleSortMode('added')}
+                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'added' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                  >
+                    סדר הוספה
+                  </button>
+                  <button
+                    onClick={() => toggleSortMode('alpha')}
+                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'alpha' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                  >
+                    א→ב אלפבית
+                  </button>
+                </div>
               </div>
+
+              <div className="border-t border-gray-100 mt-1 mb-1" />
 
               {/* Share */}
               <button
