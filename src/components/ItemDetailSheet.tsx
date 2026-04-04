@@ -10,7 +10,27 @@ import { fetchItemImages, uploadItemImage, deleteItemImage, getImageUrl } from '
 import { Avatar } from './Avatar';
 import { UNITS } from '../types';
 import { useCategories } from '../hooks/useCategories';
+import { createCustomCategory } from '../data/categories';
 import type { Item, ItemImage, GroupMember } from '../types';
+
+const CATEGORY_TINTS: Record<string, { bg: string; color: string; activeBg: string }> = {
+  produce:   { bg: '#f0fdf4', color: '#166534', activeBg: '#bbf7d0' },
+  dairy:     { bg: '#eff6ff', color: '#1d4ed8', activeBg: '#bfdbfe' },
+  meat_fish: { bg: '#fef2f2', color: '#b91c1c', activeBg: '#fecaca' },
+  bakery:    { bg: '#fffbeb', color: '#92400e', activeBg: '#fde68a' },
+  frozen:    { bg: '#f0f9ff', color: '#0369a1', activeBg: '#bae6fd' },
+  canned:    { bg: '#fff7ed', color: '#c2410c', activeBg: '#fed7aa' },
+  snacks:    { bg: '#fdf4ff', color: '#7e22ce', activeBg: '#e9d5ff' },
+  household: { bg: '#f0fdfa', color: '#0f766e', activeBg: '#99f6e4' },
+  hygiene:   { bg: '#fdf2f8', color: '#be185d', activeBg: '#fbcfe8' },
+  spices:    { bg: '#fefce8', color: '#a16207', activeBg: '#fef08a' },
+  baking:    { bg: '#fff1f2', color: '#be123c', activeBg: '#fda4af' },
+  other:     { bg: '#f8fafc', color: '#475569', activeBg: '#cbd5e1' },
+};
+
+function getTint(key: string) {
+  return CATEGORY_TINTS[key] ?? { bg: '#f5f5f5', color: '#555', activeBg: '#e0e0e0' };
+}
 
 interface ItemDetailSheetProps {
   itemId: string;
@@ -23,7 +43,7 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
   const { scheme } = useTheme();
   const { user } = useAuth();
   const { group } = useGroup(user?.id);
-  const { allCategories } = useCategories(group?.id);
+  const { allCategories, addCategory } = useCategories(group?.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
 
@@ -37,6 +57,12 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
   // Local state for text fields — sync to Supabase on blur, not on every keystroke
   const [localName, setLocalName] = useState('');
   const [localNote, setLocalNote] = useState('');
+
+  // Category pills
+  const [catExpanded, setCatExpanded] = useState(false);
+  const catPillsRef = useRef<HTMLDivElement>(null);
+  const [catCollapseHeight, setCatCollapseHeight] = useState<number | null>(null);
+  const [newCatName, setNewCatName] = useState('');
 
   // Drag-to-dismiss: swipe right (positive dx) to close — sheet slides back to the right (where it came from)
   const dragStart = useRef(0);
@@ -67,6 +93,24 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
       if (data) setAddedBy(data as GroupMember);
     });
   }, [item?.added_by]);
+
+  useEffect(() => {
+    if (!catPillsRef.current) return;
+    const pills = Array.from(catPillsRef.current.children) as HTMLElement[];
+    if (pills.length < 3) return;
+    let rowCount = 1;
+    let lastTop = pills[0].offsetTop;
+    for (const pill of pills) {
+      if (pill.offsetTop > lastTop + 4) {
+        rowCount++;
+        lastTop = pill.offsetTop;
+        if (rowCount === 3) {
+          setCatCollapseHeight(pill.offsetTop - 2);
+          break;
+        }
+      }
+    }
+  }, [allCategories, item]);
 
   function handleClose() {
     setIsOpen(false);
@@ -272,26 +316,78 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
             )}
           </div>
 
-          {/* Category — pills grid */}
+          {/* Category */}
           <div>
-            <label className="text-xs text-gray-400 mb-2 block">{t('item_detail.category')}</label>
-            <div className="grid grid-cols-2 gap-2">
-              {allCategories.map((cat) => (
-                <button
-                  key={cat.key}
-                  onClick={() => handleUpdate({ category: cat.key })}
-                  className={`flex items-center justify-center gap-2 py-3 px-3 rounded-2xl text-[15px] font-medium min-h-[48px] ${
-                    cat.key === item.category
-                      ? 'text-white'
-                      : 'bg-gray-50 border border-gray-100 text-gray-600 active:bg-gray-100'
-                  }`}
-                  style={cat.key === item.category ? { background: scheme.primary } : undefined}
+            <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5 block" style={{ letterSpacing: '0.06em' }}>קטגוריה</label>
+
+            <div
+              ref={catPillsRef}
+              className="flex flex-wrap"
+              style={{
+                gap: '5px',
+                maxHeight: catExpanded || catCollapseHeight === null ? 'none' : `${catCollapseHeight}px`,
+                overflow: catExpanded || catCollapseHeight === null ? 'visible' : 'hidden',
+              }}
+            >
+              {allCategories.map((cat) => {
+                const active = cat.key === item.category;
+                const tint = getTint(cat.key);
+                return (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    onClick={() => handleUpdate({ category: cat.key })}
+                    className="flex items-center justify-center gap-1 px-2.5 py-2 rounded-[10px] text-[13px] whitespace-nowrap"
+                    style={{
+                      flex: '1 1 auto',
+                      background: active ? tint.activeBg : tint.bg,
+                      color: tint.color,
+                      border: active ? '1.5px solid rgba(0,0,0,0.28)' : '1px solid rgba(0,0,0,0.10)',
+                      fontWeight: active ? 700 : 500,
+                    }}
+                  >
+                    <span style={{ fontSize: 14 }}>{cat.emoji}</span>
+                    {cat.isCustom ? cat.key : t(`categories.${cat.key}`)}
+                  </button>
+                );
+              })}
+
+              {catExpanded && (
+                <div
+                  className="flex items-center gap-1 px-2.5 py-2 rounded-[10px]"
+                  style={{ flex: '1 1 auto', border: '1.5px dashed #d1d5db', minWidth: 120 }}
                 >
-                  <span className="text-xl">{cat.emoji}</span>
-                  {cat.isCustom ? cat.key : t(`categories.${cat.key}`)}
-                </button>
-              ))}
+                  <span style={{ fontSize: 14, color: '#9ca3af' }}>＋</span>
+                  <input
+                    value={newCatName}
+                    onChange={(e) => setNewCatName(e.target.value)}
+                    onKeyDown={async (e) => {
+                      if (e.key === 'Enter' && newCatName.trim() && group) {
+                        const created = await createCustomCategory(group.id, newCatName.trim(), '📦');
+                        addCategory(created);
+                        handleUpdate({ category: created.name });
+                        setNewCatName('');
+                        setCatExpanded(false);
+                      }
+                    }}
+                    placeholder="קטגוריה חדשה"
+                    className="flex-1 bg-transparent outline-none text-[13px] text-gray-400 placeholder:text-gray-300 min-w-0"
+                    style={{ direction: 'rtl' }}
+                  />
+                </div>
+              )}
             </div>
+
+            {catCollapseHeight !== null && (
+              <button
+                type="button"
+                onClick={() => setCatExpanded(p => !p)}
+                className="mt-1.5 w-full text-center text-xs font-semibold"
+                style={{ color: scheme.primary }}
+              >
+                {catExpanded ? '▴ פחות' : '+ עוד ▾'}
+              </button>
+            )}
           </div>
 
 {/* Images */}
