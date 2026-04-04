@@ -13,7 +13,25 @@ export async function getOrCreateGroup(userId: string, displayName: string): Pro
   group: Group;
   member: GroupMember;
 }> {
-  // Check if user already belongs to a group
+  // Prefer a group the user owns (created themselves).
+  // A user may be in multiple groups if they were added to group_members via invite
+  // before migration 006 fixed accept_list_invite. Always use their own group.
+  const { data: ownedMember } = await supabase
+    .from('group_members')
+    .select('*, group:groups(*)')
+    .eq('user_id', userId)
+    .eq('role', 'owner')
+    .limit(1)
+    .maybeSingle();
+
+  if (ownedMember) {
+    return {
+      group: ownedMember.group as Group,
+      member: ownedMember as GroupMember,
+    };
+  }
+
+  // Fall back to any group membership (e.g. first-time user who only joined via invite)
   const { data: existingMember, error: fetchError } = await supabase
     .from('group_members')
     .select('*, group:groups(*)')

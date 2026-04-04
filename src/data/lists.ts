@@ -15,10 +15,13 @@ export async function fetchLists(groupId: string): Promise<List[]> {
 export async function fetchListWithCounts(groupId: string): Promise<
   (List & { item_count: number; checked_count: number; last_activity: string | null })[]
 > {
-  const [{ data: groupLists, error }, { data: { user } }, { data: memberRows }] = await Promise.all([
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const [{ data: groupLists, error }, { data: memberRows }] = await Promise.all([
     supabase.from('lists').select('*').eq('group_id', groupId).order('created_at', { ascending: false }),
-    supabase.auth.getUser(),
-    supabase.from('list_members').select('list_id'),
+    user?.id
+      ? supabase.from('list_members').select('list_id').eq('user_id', user.id)
+      : Promise.resolve({ data: [] as { list_id: string }[] }),
   ]);
 
   if (error) throw error;
@@ -38,8 +41,6 @@ export async function fetchListWithCounts(groupId: string): Promise<
   const lists = [...(groupLists as List[] ?? []), ...sharedLists].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
-
-  void user; // user available for future use
 
   // Fetch counts and last activity for each list
   const results = await Promise.all(
