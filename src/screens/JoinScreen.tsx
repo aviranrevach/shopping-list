@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { useAuth } from '../hooks/useAuth';
@@ -11,9 +11,10 @@ export function JoinScreen() {
   const { t } = useI18n();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, verifyOtp } = useAuth();
 
   const [loading, setLoading] = useState(true);
+  const [accepting, setAccepting] = useState(false);
   const [expired, setExpired] = useState(false);
   const [listInfo, setListInfo] = useState<{
     name: string; icon: string; itemCount: number; creatorName: string;
@@ -23,6 +24,9 @@ export function JoinScreen() {
   const [guestName, setGuestName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const codeInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -44,8 +48,11 @@ export function JoinScreen() {
   // If user is already logged in, auto-accept
   useEffect(() => {
     if (user && token && listInfo) {
+      setAccepting(true);
       acceptInvite(token, user.email ?? 'User').then((result) => {
         navigate(`/lists/${result.list_id}`);
+      }).catch(() => {
+        setAccepting(false);
       });
     }
   }, [user, token, listInfo, navigate]);
@@ -70,6 +77,21 @@ export function JoinScreen() {
 
     setEmailSent(true);
     setSubmitting(false);
+    setTimeout(() => codeInputRef.current?.focus(), 100);
+  }
+
+  async function handleOtpVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (otpCode.length !== 6) return;
+    setOtpError('');
+    setSubmitting(true);
+    try {
+      await verifyOtp(email, otpCode);
+      // onAuthStateChange → user set → auto-accept useEffect fires
+    } catch {
+      setOtpError(t('login.invalid_code') ?? 'קוד שגוי');
+      setSubmitting(false);
+    }
   }
 
   async function handleGuestSubmit(e: React.FormEvent) {
@@ -88,7 +110,7 @@ export function JoinScreen() {
     navigate(`/lists/${result.list_id}`);
   }
 
-  if (loading) {
+  if (loading || accepting) {
     return (
       <div className="h-screen flex items-center justify-center bg-stone-50">
         <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'transparent' }} />
@@ -150,9 +172,45 @@ export function JoinScreen() {
 
         {mode === 'email' && (
           emailSent ? (
-            <div className="text-center bg-green-50 border border-green-200 rounded-xl p-4">
-              <p className="text-green-800 font-medium">{t('login.link_sent')}</p>
-            </div>
+            <form onSubmit={handleOtpVerify}>
+              <p className="text-sm text-gray-500 mb-4 text-center">
+                {t('login.code_sent_to')} <span className="font-medium text-gray-800" dir="ltr">{email}</span>
+              </p>
+              <label className="block text-sm text-gray-500 mb-1.5">{t('login.code_label')}</label>
+              <input
+                ref={codeInputRef}
+                type="tel"
+                inputMode="numeric"
+                value={otpCode}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                  setOtpCode(val);
+                  if (val.length === 6) setOtpError('');
+                }}
+                placeholder="000000"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-4 text-3xl font-bold tracking-[0.4em] outline-none text-center"
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-light)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                dir="ltr"
+                autoComplete="one-time-code"
+              />
+              {otpError && <p className="text-red-500 text-sm mt-2 text-center">{otpError}</p>}
+              <button
+                type="submit"
+                disabled={submitting || otpCode.length !== 6}
+                className="w-full mt-3 text-white font-semibold rounded-xl px-4 py-3 text-base disabled:opacity-50"
+                style={{ background: 'var(--color-primary)' }}
+              >
+                {submitting ? '...' : t('login.verify_code')}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEmailSent(false); setOtpCode(''); setOtpError(''); }}
+                className="w-full mt-2 text-sm text-gray-400 py-2"
+              >
+                {t('login.change_email')}
+              </button>
+            </form>
           ) : (
             <form onSubmit={handleEmailSubmit}>
               <label className="block text-sm text-gray-500 mb-1.5">{t('login.email_label')}</label>
