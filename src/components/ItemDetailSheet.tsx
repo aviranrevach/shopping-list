@@ -158,26 +158,24 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
         onPointerUp={handleSheetPointerUp}
       >
         {/* Header */}
-        <div className="flex items-center px-4 py-3 border-b border-gray-100 sticky top-0 bg-white z-10">
-          {/* Close button (left side, acts as "back") */}
-          <button onClick={handleClose} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center px-4 py-3 border-b border-gray-100 sticky top-0 bg-white z-10" style={{ direction: 'rtl' }}>
+          {/* Back */}
+          <button type="button" onClick={handleClose} className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
             <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
 
+          {/* Title */}
           <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item?.name ?? ''}</h2>
 
-          <div className="flex items-center gap-1.5 min-w-[60px] justify-end">
-            {addedBy && <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />}
-            <span className="text-xs text-gray-300">{timeStr}</span>
-            <button onClick={handleDelete} className="w-8 h-8 rounded-full flex items-center justify-center text-red-400 active:bg-red-50">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-              </svg>
-            </button>
-          </div>
+          {/* Avatar + time stacked, top-aligned */}
+          {addedBy && (
+            <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ alignSelf: 'flex-start', paddingTop: 2 }}>
+              <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />
+              <span className="text-[9px] text-gray-300">{timeStr}</span>
+            </div>
+          )}
         </div>
 
         {/* Body */}
