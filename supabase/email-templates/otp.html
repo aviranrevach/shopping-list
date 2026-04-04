@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>כניסה לרשימת קניות</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f5f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f0;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;">
+
+          <!-- Logo / Header -->
+          <tr>
+            <td align="center" style="padding-bottom:28px;">
+              <div style="display:inline-block;background:#fff8ed;border-radius:20px;padding:16px 20px;font-size:32px;line-height:1;">🛒</div>
+              <div style="margin-top:12px;font-size:20px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px;">רשימת קניות</div>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:24px;box-shadow:0 2px 16px rgba(0,0,0,0.07);overflow:hidden;">
+
+                <!-- Top accent bar -->
+                <tr>
+                  <td style="background:linear-gradient(135deg,#f59e0b,#f97316);height:4px;"></td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                  <td style="padding:36px 36px 28px;">
+
+                    <p style="margin:0 0 6px;font-size:15px;color:#888;font-weight:500;">שלום 👋</p>
+                    <h1 style="margin:0 0 24px;font-size:22px;font-weight:700;color:#1a1a1a;line-height:1.3;">
+                      הקוד שלך לכניסה
+                    </h1>
+
+                    <!-- OTP Code Box -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td align="center">
+                          <div style="background:#fffbf0;border:2px solid #fde68a;border-radius:16px;padding:24px 20px;display:inline-block;min-width:240px;">
+                            <div style="font-size:11px;font-weight:600;color:#b45309;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">קוד אימות</div>
+                            <div style="font-size:42px;font-weight:800;letter-spacing:0.25em;color:#1a1a1a;font-variant-numeric:tabular-nums;line-height:1;">{{ .Token }}</div>
+                            <div style="font-size:12px;color:#aaa;margin-top:10px;">תקף ל-60 דקות</div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0 0 28px;font-size:14px;color:#555;line-height:1.6;text-align:center;">
+                      הקלד את הקוד באפליקציה כדי להיכנס לחשבון שלך
+                    </p>
+
+                    <!-- Divider -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="border-top:1px solid #f0f0ea;"></td>
+                        <td style="padding:0 12px;white-space:nowrap;font-size:12px;color:#bbb;">או</td>
+                        <td style="border-top:1px solid #f0f0ea;"></td>
+                      </tr>
+                    </table>
+
+                    <!-- Magic Link Button -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                      <tr>
+                        <td align="center">
+                          <a href="{{ .ConfirmationURL }}"
+                             style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#f97316);color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;letter-spacing:0.01em;">
+                            לחץ כאן להיכנס ישירות ›
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0;font-size:12px;color:#aaa;text-align:center;line-height:1.6;">
+                      לא ביקשת לכנוס? אפשר להתעלם מהמייל הזה בבטחה.
+                    </p>
+
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:24px;">
+              <p style="margin:0;font-size:12px;color:#bbb;line-height:1.6;">
+                נשלח לכתובת {{ .Email }}<br/>
+                רשימת קניות &middot; Family Shopping List
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
