@@ -198,11 +198,12 @@ export function ListDetailScreen() {
             </button>
           </header>
         ) : (
-          <header className="bg-white px-4 py-2.5 flex items-center gap-2 flex-shrink-0">
+          <header className="px-4 py-2.5 flex items-center gap-2 flex-shrink-0">
             {/* RTL start (right side): search */}
             <button
               onClick={() => setIsSearchMode(true)}
-              style={{ width: 44, height: 44, background: '#f0f0ea', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#bbb' }}
+              className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 44, height: 44, color: '#bbb' }}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -225,13 +226,14 @@ export function ListDetailScreen() {
               </button>
             </div>
 
-            {/* RTL end (left side): back */}
+            {/* RTL end (left side): back arrow */}
             <button
               onClick={() => navigate('/lists')}
-              style={{ width: 44, height: 44, background: '#f0f0ea', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#bbb' }}
+              className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 44, height: 44, color: '#bbb' }}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <polyline points="15 18 9 12 15 6" />
+                <path d="M15 19l-7-7 7-7" /><line x1="8" y1="12" x2="20" y2="12" />
               </svg>
             </button>
           </header>
@@ -264,7 +266,8 @@ export function ListDetailScreen() {
         {/* Always-visible notebook-line add input */}
         {!isAddMode && (
           <div
-            className="mx-4 mt-3 mb-1 cursor-text"
+            className="cursor-text"
+            style={{ paddingRight: 16, paddingLeft: 16 }}
             onClick={() => {
               setIsAddMode(true);
               setTimeout(() => {
@@ -273,11 +276,14 @@ export function ListDetailScreen() {
               }, 50);
             }}
           >
-            <div className="flex items-center gap-2 py-2.5 border-b border-dashed border-gray-300">
-              <span className="text-gray-300 text-[15px]">+</span>
-              <span className="text-gray-300 text-[15px]">{t('list_detail.add_new_item').replace('+ ', '')}</span>
+            <div
+              className="flex items-center gap-2 py-3"
+              style={{ marginRight: 48, borderBottom: '2px dashed #d1d5db' }}
+            >
+              <span className="text-gray-300 text-[17px] font-medium">+</span>
+              <span className="text-gray-300 text-[17px]">{t('list_detail.add_new_item').replace('+ ', '')}</span>
             </div>
-            <div className="border-b border-dashed border-gray-200 py-3" />
+            <div style={{ marginRight: 48, borderBottom: '2px dashed #e5e7eb', paddingTop: 14 }} />
           </div>
         )}
 

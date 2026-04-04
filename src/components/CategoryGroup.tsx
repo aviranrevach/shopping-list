@@ -35,8 +35,17 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
         ) : (
           <div
             className="flex items-center -mx-4 px-4 py-1.5"
-            style={{ background: colors.bg, color: colors.text }}
+            style={{ background: colors.bg, color: colors.text, marginTop: 4, marginBottom: 4 }}
           >
+            {/* RTL end (right): emoji + category name */}
+            <span
+              className="flex-1 text-end text-[14px] font-semibold"
+              onClick={onHeaderClick}
+              style={onHeaderClick ? { cursor: 'pointer' } : undefined}
+            >
+              {emoji ? emoji + ' ' : ''}{t(`categories.${category}`)}
+            </span>
+
             {/* RTL start (left): + add button */}
             {onAddToCategory && (
               <button
@@ -49,15 +58,6 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
                 </svg>
               </button>
             )}
-
-            {/* RTL end (right): category name + emoji */}
-            <span
-              className="flex-1 text-end text-[14px] font-semibold"
-              onClick={onHeaderClick}
-              style={onHeaderClick ? { cursor: 'pointer' } : undefined}
-            >
-              {t(`categories.${category}`)} {emoji}
-            </span>
           </div>
         )
       )}
