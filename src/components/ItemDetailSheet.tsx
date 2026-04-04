@@ -186,16 +186,32 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
           </div>
         ) : (
           <>
-          {/* Item name — editable */}
+          {/* Name + Note — combined box */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">שם פריט</label>
-            <input
-              value={localName}
-              onChange={(e) => setLocalName(e.target.value)}
-              onFocus={(e) => { e.currentTarget.style.borderColor = scheme.primaryLight; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; if (localName !== item.name) handleUpdate({ name: localName }); }}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-900 font-medium"
-            />
+            <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5 block" style={{ letterSpacing: '0.06em' }}>פריט</label>
+            <div className="bg-gray-50 border border-gray-200 rounded-[13px] overflow-hidden">
+              <input
+                value={localName}
+                onChange={(e) => setLocalName(e.target.value)}
+                onBlur={() => {
+                  if (localName !== item.name) handleUpdate({ name: localName });
+                }}
+                className="w-full bg-transparent px-4 py-3 text-base font-semibold text-gray-900 outline-none border-b border-gray-200"
+                style={{ direction: 'rtl' }}
+              />
+              <textarea
+                value={localNote}
+                onChange={(e) => setLocalNote(e.target.value)}
+                onBlur={() => {
+                  const val = localNote || null;
+                  if (val !== (item.note ?? null)) handleUpdate({ note: val });
+                }}
+                placeholder="הוסף הערה..."
+                rows={2}
+                className="w-full bg-transparent px-4 py-2.5 text-sm text-gray-500 outline-none resize-none placeholder:text-gray-300"
+                style={{ direction: 'rtl' }}
+              />
+            </div>
           </div>
 
           {/* Quantity + Unit */}
@@ -242,13 +258,7 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
             </div>
           </div>
 
-          {/* Note */}
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.note')}</label>
-            <textarea value={localNote} onChange={(e) => setLocalNote(e.target.value)} onBlur={() => { const val = localNote || null; if (val !== (item.note ?? null)) handleUpdate({ note: val }); }} placeholder="..." rows={3} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-700 resize-none" />
-          </div>
-
-          {/* Images */}
+{/* Images */}
           <div>
             <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.images')}</label>
             <div className="space-y-2">
