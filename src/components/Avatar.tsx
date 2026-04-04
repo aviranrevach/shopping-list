@@ -1,7 +1,7 @@
 interface AvatarProps {
   name: string;
   avatarUrl?: string | null;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const COLORS = ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#EF4444'];
@@ -15,7 +15,13 @@ function getColor(name: string): string {
 }
 
 export function Avatar({ name, avatarUrl, size = 'sm' }: AvatarProps) {
-  const sizeClass = size === 'sm' ? 'w-6 h-6 text-xs' : 'w-8 h-8 text-sm';
+  const sizeMap: Record<string, string> = {
+    sm: 'w-6 h-6 text-xs',
+    md: 'w-8 h-8 text-sm',
+    lg: 'w-[42px] h-[42px] text-base',
+    xl: 'w-[46px] h-[46px] text-lg',
+  };
+  const sizeClass = sizeMap[size ?? 'sm'] ?? sizeMap.sm;
   const initial = name.charAt(0).toUpperCase();
 
   if (avatarUrl) {
