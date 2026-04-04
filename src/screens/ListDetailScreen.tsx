@@ -641,6 +641,30 @@ export function ListDetailScreen() {
             <span className="text-[10px] font-medium text-gray-500 text-center" style={{ maxWidth: 54 }}>הסר כפילויות</span>
           </button>
 
+          {/* ייצא רשימה */}
+          <button
+            type="button"
+            onClick={async () => {
+              const lines = items.map((item) => {
+                const qty = item.quantity > 1 ? ` ×${item.quantity}` : '';
+                const done = item.checked ? ' ✓' : '';
+                return `• ${item.name}${qty}${done}`;
+              });
+              const text = `${listIcon} ${listName}\n${lines.join('\n')}`;
+              await navigator.clipboard.writeText(text);
+              setShowMenu(false);
+              alert('הרשימה הועתקה ללוח');
+            }}
+            className="flex flex-col items-center gap-1.5"
+          >
+            <div className="w-[52px] h-[52px] rounded-full bg-gray-100 flex items-center justify-center">
+              <svg className="w-[22px] h-[22px] text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-medium text-gray-500 text-center" style={{ maxWidth: 54 }}>ייצא רשימה</span>
+          </button>
+
           {/* מחק רשימה */}
           <button
             type="button"
