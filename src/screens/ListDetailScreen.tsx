@@ -202,7 +202,7 @@ export function ListDetailScreen() {
     const fromMembers = listMembers.find((m) => m.role === 'owner') ?? null;
     if (fromMembers) return fromMembers;
     // Fallback for existing lists where owner was never added to list_members
-    if (list?.created_by === user?.id && member?.display_name) {
+    if (user && list?.created_by === user.id && member?.display_name) {
       return { display_name: member.display_name, user_id: user.id, role: 'owner' as const } as ListMember;
     }
     return null;
