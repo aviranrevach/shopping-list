@@ -18,6 +18,7 @@ import { parseAppleNotes, parsePlainList } from '../lib/importParser';
 import { getListMembers } from '../data/invites';
 import type { ListMember } from '../types/database';
 import { Avatar } from '../components/Avatar';
+import { MembersSheet } from '../components/MembersSheet';
 
 function relativeTime(iso: string): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -59,6 +60,7 @@ export function ListDetailScreen() {
     (localStorage.getItem('sortMode') as 'added' | 'alpha') ?? 'added'
   );
   const [listMembers, setListMembers] = useState<ListMember[]>([]);
+  const [showMembersSheet, setShowMembersSheet] = useState(false);
 
   const toggleSortMode = useCallback((mode: 'added' | 'alpha') => {
     setSortMode(mode);
@@ -411,6 +413,17 @@ export function ListDetailScreen() {
         />
       )}
 
+      {showMembersSheet && listId && (
+        <MembersSheet
+          listId={listId}
+          listName={listName}
+          listIcon={listIcon}
+          members={listMembers}
+          onClose={() => setShowMembersSheet(false)}
+          onMembersChange={setListMembers}
+        />
+      )}
+
       {/* Three-dot menu — modal below top bar */}
       {showMenu && (
   <>
@@ -469,31 +482,31 @@ export function ListDetailScreen() {
       <div className="p-4 flex flex-col gap-3">
 
         {/* שותפים */}
-        <div>
-          <p
-            className="text-[9px] font-bold uppercase tracking-wider mb-2"
-            style={{ color: '#c0c0bc' }}
-          >
-            שותפים
-          </p>
-          <div className="flex gap-2.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
-            {/* Add button */}
-            <button
-              type="button"
-              onClick={() => { setShowMenu(false); setShowInviteSheet(true); }}
-              className="flex flex-col items-center gap-1 flex-shrink-0"
+        <button
+          type="button"
+          onClick={() => setShowMembersSheet(true)}
+          className="w-full text-right"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <p
+              className="text-[9px] font-bold uppercase tracking-wider"
+              style={{ color: '#c0c0bc' }}
             >
-              <div
-                className="w-[46px] h-[46px] rounded-full flex items-center justify-center"
-                style={{ border: '2px dashed #d1d5db', background: '#fafaf8' }}
-              >
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </div>
-              <span className="text-[10px]" style={{ color: '#b0b0b0' }}>הוסף</span>
-            </button>
-            {/* Member avatars */}
+              שותפים
+            </p>
+            <svg className="w-3.5 h-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
+          <div className="flex gap-2.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
+            <div
+              className="w-[46px] h-[46px] rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ border: '2px dashed #d1d5db', background: '#fafaf8' }}
+            >
+              <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </div>
             {nonOwnerMembers.map((m) => (
               <div key={m.id} className="flex flex-col items-center gap-1 flex-shrink-0">
                 <Avatar name={m.display_name} size="xl" />
@@ -506,7 +519,7 @@ export function ListDetailScreen() {
               </div>
             ))}
           </div>
-        </div>
+        </button>
 
         <div className="h-px bg-gray-100" />
 
