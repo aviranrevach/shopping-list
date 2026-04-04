@@ -276,7 +276,7 @@ export function ListDetailScreen() {
             }}
           >
             <div
-              className="flex items-center justify-end gap-1.5"
+              className="flex items-center justify-start gap-1.5"
               style={{ paddingTop: 14, paddingBottom: 14, borderBottom: '1.5px dashed #d1d5db' }}
             >
               <span className="text-gray-300 text-[17px]">{t('list_detail.add_new_item').replace('+ ', '')}</span>
