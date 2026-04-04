@@ -14,9 +14,10 @@ interface CategoryGroupProps {
   categoryEmoji?: string;
   skipExitAnimation?: boolean;
   showHeader?: boolean;
+  onHeaderClick?: () => void;
 }
 
-export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds, categoryEmoji, skipExitAnimation, showHeader = true }: CategoryGroupProps) {
+export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpenDetail, transitioningIds, recentlyTransitionedIds, categoryEmoji, skipExitAnimation, showHeader = true, onHeaderClick }: CategoryGroupProps) {
   const { t } = useI18n();
 
   const emoji = categoryEmoji ?? DEFAULT_CATEGORY_EMOJIS[category];
@@ -24,7 +25,11 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
   return (
     <div className="mb-4">
       {showHeader && (
-        <div className="text-[15px] text-gray-400 font-medium mb-2 px-1">
+        <div
+          className="text-[15px] text-gray-400 font-medium mb-2 px-1"
+          onClick={onHeaderClick}
+          style={onHeaderClick ? { cursor: 'pointer' } : undefined}
+        >
           {category === 'checked_section'
             ? t('list_detail.checked_section')
             : `${emoji ? emoji + ' ' : ''}${t(`categories.${category}`)}`}

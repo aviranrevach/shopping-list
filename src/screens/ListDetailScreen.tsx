@@ -280,6 +280,7 @@ export function ListDetailScreen() {
                   transitioningIds={transitioningIds}
                   recentlyTransitionedIds={recentlyTransitionedIds}
                   skipExitAnimation={viewAll}
+                  onHeaderClick={() => toggleSortMode(sortMode === 'added' ? 'alpha' : 'added')}
                 />
               ))}
               {!viewAll && checked.length > 0 && (
