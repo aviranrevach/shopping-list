@@ -15,13 +15,31 @@ export async function fetchLists(groupId: string): Promise<List[]> {
 export async function fetchListWithCounts(groupId: string): Promise<
   (List & { item_count: number; checked_count: number; last_activity: string | null })[]
 > {
-  const { data: lists, error } = await supabase
-    .from('lists')
-    .select('*')
-    .eq('group_id', groupId)
-    .order('created_at', { ascending: false });
+  const [{ data: groupLists, error }, { data: { user } }, { data: memberRows }] = await Promise.all([
+    supabase.from('lists').select('*').eq('group_id', groupId).order('created_at', { ascending: false }),
+    supabase.auth.getUser(),
+    supabase.from('list_members').select('list_id'),
+  ]);
 
   if (error) throw error;
+
+  // Find lists the user joined via invite that belong to another group
+  const ownIds = new Set((groupLists as List[] ?? []).map((l) => l.id));
+  const sharedIds = (memberRows ?? [])
+    .map((r) => r.list_id as string)
+    .filter((id) => !ownIds.has(id));
+
+  let sharedLists: List[] = [];
+  if (sharedIds.length > 0) {
+    const { data } = await supabase.from('lists').select('*').in('id', sharedIds);
+    sharedLists = (data ?? []) as List[];
+  }
+
+  const lists = [...(groupLists as List[] ?? []), ...sharedLists].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+
+  void user; // user available for future use
 
   // Fetch counts and last activity for each list
   const results = await Promise.all(
