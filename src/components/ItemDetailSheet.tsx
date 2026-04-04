@@ -32,6 +32,7 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
   const [addedBy, setAddedBy] = useState<GroupMember | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showUnitPicker, setShowUnitPicker] = useState(false);
 
   // Local state for text fields — sync to Supabase on blur, not on every keystroke
   const [localName, setLocalName] = useState('');
@@ -215,25 +216,60 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
           </div>
 
           {/* Quantity + Unit */}
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.quantity')}</label>
-              <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 flex items-center justify-between">
-                <button onClick={() => handleUpdate({ quantity: Math.max(1, item.quantity - 1) })} className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                  <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                </button>
-                <span className="text-xl font-bold text-gray-900">{item.quantity}</span>
-                <button onClick={() => handleUpdate({ quantity: item.quantity + 1 })} className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                  <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                </button>
+          <div>
+            <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5 block" style={{ letterSpacing: '0.06em' }}>{t('item_detail.quantity')}</label>
+
+            {/* Main row */}
+            <div className="bg-gray-50 border border-gray-200 rounded-[13px] px-3 py-2.5 flex items-center">
+              <button
+                type="button"
+                onClick={() => handleUpdate({ quantity: Math.max(1, item.quantity - 1) })}
+                className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
+              >
+                <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="5" y1="12" x2="19" y2="12" /></svg>
+              </button>
+              <span className="text-2xl font-black text-gray-900 min-w-[44px] text-center">{item.quantity}</span>
+              <button
+                type="button"
+                onClick={() => setShowUnitPicker(p => !p)}
+                className="px-3 py-1.5 rounded-lg text-sm font-bold text-white flex-shrink-0 mx-2"
+                style={{ background: scheme.primary }}
+              >
+                {t(`units.${item.unit ?? 'unit'}`)} {showUnitPicker ? '▴' : '▾'}
+              </button>
+              <div className="flex-1" />
+              <button
+                type="button"
+                onClick={() => handleUpdate({ quantity: item.quantity + 1 })}
+                className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
+              >
+                <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+              </button>
+            </div>
+
+            {/* Unit picker — appears below when open */}
+            {showUnitPicker && (
+              <div
+                className="mt-1.5 rounded-[13px] p-2 grid grid-cols-3 gap-1.5"
+                style={{ border: `1.5px solid ${scheme.primaryLight}`, background: '#fafaf8' }}
+              >
+                {UNITS.map((u) => (
+                  <button
+                    key={u}
+                    type="button"
+                    onClick={() => { handleUpdate({ unit: u }); setShowUnitPicker(false); }}
+                    className="py-2 rounded-xl text-sm font-semibold text-center"
+                    style={
+                      (item.unit ?? 'unit') === u
+                        ? { background: scheme.primary, color: '#fff' }
+                        : { background: '#fff', color: '#666', border: '1px solid #e5e7eb' }
+                    }
+                  >
+                    {t(`units.${u}`)}
+                  </button>
+                ))}
               </div>
-            </div>
-            <div className="flex-1">
-              <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.unit')}</label>
-              <select value={item.unit ?? 'unit'} onChange={(e) => handleUpdate({ unit: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base outline-none text-gray-700">
-                {UNITS.map((u) => (<option key={u} value={u}>{t(`units.${u}`)}</option>))}
-              </select>
-            </div>
+            )}
           </div>
 
           {/* Category — pills grid */}
