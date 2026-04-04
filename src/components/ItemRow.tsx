@@ -99,6 +99,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
   //   Swipe LEFT  (dx < 0) → open detail when threshold reached (-80px)
   function handlePointerDown(e: React.PointerEvent) {
     if ((e.target as HTMLElement).closest('[data-checkbox]')) return;
+    if ((e.target as HTMLElement).closest('[data-nodrag]')) return;
     const s = pointerState.current;
     s.startX = e.clientX;
     s.startY = e.clientY;
@@ -286,6 +287,18 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
               {item.note}
             </span>
           )}
+          {/* Three-dot detail trigger */}
+          <button
+            data-nodrag
+            onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 active:text-gray-500"
+            style={{ touchAction: 'manipulation' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
