@@ -43,13 +43,13 @@ export function ListDetailScreen() {
   const transitionTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [hideChecked, setHideChecked] = useState(() => localStorage.getItem('hideChecked') === 'true');
   const [viewAll, setViewAll] = useState(() => localStorage.getItem('viewAll') === 'true');
-  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>(() =>
-    (localStorage.getItem('viewMode') as 'grouped' | 'flat') ?? 'grouped'
+  const [sortMode, setSortMode] = useState<'added' | 'alpha'>(() =>
+    (localStorage.getItem('sortMode') as 'added' | 'alpha') ?? 'added'
   );
 
-  function toggleViewMode(mode: 'grouped' | 'flat') {
-    setViewMode(mode);
-    localStorage.setItem('viewMode', mode);
+  function toggleSortMode(mode: 'added' | 'alpha') {
+    setSortMode(mode);
+    localStorage.setItem('sortMode', mode);
   }
 
   // Fetch list metadata
@@ -88,19 +88,23 @@ export function ListDetailScreen() {
   const groupedByCategory = useMemo(() => {
     const groups = new Map<string, typeof unchecked>();
     const sourceItems = viewAll ? filteredItems : unchecked;
+    const sort = (arr: typeof unchecked) =>
+      sortMode === 'alpha'
+        ? [...arr].sort((a, b) => a.name.localeCompare(b.name, 'he'))
+        : arr;
     for (const cat of CATEGORIES) {
       const catItems = sourceItems.filter((i) => i.category === cat);
-      if (catItems.length > 0) groups.set(cat, catItems);
+      if (catItems.length > 0) groups.set(cat, sort(catItems));
     }
     // Also include custom categories
     const knownCats = new Set(CATEGORIES as readonly string[]);
     const customCats = new Set(sourceItems.map(i => i.category).filter(c => !knownCats.has(c)));
     for (const cat of customCats) {
       const catItems = sourceItems.filter((i) => i.category === cat);
-      if (catItems.length > 0) groups.set(cat, catItems);
+      if (catItems.length > 0) groups.set(cat, sort(catItems));
     }
     return groups;
-  }, [unchecked, filteredItems, viewAll]);
+  }, [unchecked, filteredItems, viewAll, sortMode]);
 
   const handleToggleCheck = useCallback((itemId: string) => {
     if (!user) return;
@@ -265,35 +269,19 @@ export function ListDetailScreen() {
             </div>
           ) : (
             <>
-              {viewMode === 'flat' ? (
+              {Array.from(groupedByCategory.entries()).map(([category, catItems]) => (
                 <CategoryGroup
-                  key="_flat"
-                  category="_flat"
-                  items={viewAll ? filteredItems : unchecked}
+                  key={category}
+                  category={category}
+                  items={catItems}
                   onToggleCheck={handleToggleCheck}
                   onDelete={handleDelete}
                   onOpenDetail={handleOpenDetail}
                   transitioningIds={transitioningIds}
                   recentlyTransitionedIds={recentlyTransitionedIds}
                   skipExitAnimation={viewAll}
-                  showHeader={false}
                 />
-              ) : (
-                Array.from(groupedByCategory.entries()).map(([category, catItems]) => (
-                  <CategoryGroup
-                    key={category}
-                    category={category}
-                    items={catItems}
-                    onToggleCheck={handleToggleCheck}
-                    onDelete={handleDelete}
-                    onOpenDetail={handleOpenDetail}
-                    transitioningIds={transitioningIds}
-                    recentlyTransitionedIds={recentlyTransitionedIds}
-                    skipExitAnimation={viewAll}
-
-                  />
-                ))
-              )}
+              ))}
               {!viewAll && checked.length > 0 && (
                 <>
                   <button
@@ -357,19 +345,19 @@ export function ListDetailScreen() {
           <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl"
             style={{ top: '70px', animation: 'menu-fade-in 0.2s ease-out' }}>
             <div className="p-4 space-y-1">
-              {/* View mode: grouped / flat */}
+              {/* Sort mode */}
               <div className="bg-gray-100 rounded-xl p-1 flex gap-1 mb-2">
                 <button
-                  onClick={() => toggleViewMode('grouped')}
-                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${viewMode === 'grouped' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                  onClick={() => toggleSortMode('added')}
+                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'added' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
                 >
-                  📦 מקובץ
+                  🕐 סדר הוספה
                 </button>
                 <button
-                  onClick={() => toggleViewMode('flat')}
-                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${viewMode === 'flat' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                  onClick={() => toggleSortMode('alpha')}
+                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'alpha' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
                 >
-                  ☰ רשימה
+                  א→ב אלפבית
                 </button>
               </div>
 
