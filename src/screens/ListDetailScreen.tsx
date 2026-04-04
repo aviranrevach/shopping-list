@@ -27,6 +27,7 @@ export function ListDetailScreen() {
   const [list, setList] = useState<List | null>(null);
   const [search, setSearch] = useState('');
   const [isAddMode, setIsAddMode] = useState(false);
+  const [addTargetCategory, setAddTargetCategory] = useState<string | null>(null);
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [showInviteSheet, setShowInviteSheet] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -164,9 +165,11 @@ export function ListDetailScreen() {
 
   function handleAddDone(_newItems: { id: string; name: string; category: string }[]) {
     setIsAddMode(false);
+    setAddTargetCategory(null);
   }
 
   const handleAddToCategory = useCallback((category: string) => {
+    setAddTargetCategory(category);
     setIsAddMode(true);
     setTimeout(() => {
       const input = document.querySelector('[data-add-input]') as HTMLInputElement;
@@ -259,6 +262,7 @@ export function ListDetailScreen() {
               existingItemNames={existingItemNames}
               onDone={handleAddDone}
               onItemAdded={optimisticAdd}
+              defaultCategory={addTargetCategory}
             />
           )}
         </div>
@@ -268,6 +272,7 @@ export function ListDetailScreen() {
           <div
             className="cursor-text px-4 pt-4 pb-2"
             onClick={() => {
+              setAddTargetCategory(null);
               setIsAddMode(true);
               setTimeout(() => {
                 const input = document.querySelector('[data-add-input]') as HTMLInputElement;

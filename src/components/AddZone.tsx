@@ -22,9 +22,10 @@ interface AddZoneProps {
   existingItemNames: string[];
   onDone: (newItems: AddedItem[]) => void;
   onItemAdded: (item: Item) => void;
+  defaultCategory?: string | null;
 }
 
-export function AddZone({ listId, userId, groupId, existingItemNames, onDone, onItemAdded }: AddZoneProps) {
+export function AddZone({ listId, userId, groupId, existingItemNames, onDone, onItemAdded, defaultCategory }: AddZoneProps) {
   const { t } = useI18n();
   const { scheme } = useTheme();
   const [input, setInput] = useState('');
@@ -39,16 +40,17 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
   // Focus is triggered by the parent button handler for iOS compatibility
   // (synchronous from user gesture context, not from a child useEffect).
 
-  // Live category based on best match
+  // Live category based on best match, falling back to defaultCategory
+  const fallbackCategory = defaultCategory ?? 'לא ממוין';
   const liveCategory = (() => {
-    if (!input.trim()) return 'לא ממוין';
+    if (!input.trim()) return fallbackCategory;
     const exact = suggestions.find((s) => s.name === input.trim());
-    if (exact) return exact.category === 'other' ? 'לא ממוין' : exact.category;
+    if (exact) return exact.category === 'other' ? fallbackCategory : exact.category;
     if (suggestions.length === 1) {
       const cat = suggestions[0].category;
-      return cat === 'other' ? 'לא ממוין' : cat;
+      return cat === 'other' ? fallbackCategory : cat;
     }
-    return 'לא ממוין';
+    return fallbackCategory;
   })();
 
   const liveCategoryLabel = liveCategory === 'לא ממוין' ? 'לא ממוין' : t(`categories.${liveCategory}`);
@@ -57,7 +59,7 @@ export function AddZone({ listId, userId, groupId, existingItemNames, onDone, on
     if (!input.trim()) return;
     const name = input.trim();
     const match = suggestions.find((s) => s.name === name);
-    const category = match?.category ?? 'other';
+    const category = match?.category ?? defaultCategory ?? 'other';
 
     const item = await createItem(listId, userId, name, category);
     const added = { id: item.id, name: item.name, category: item.category };
