@@ -17,6 +17,7 @@ import { CATEGORIES } from '../types';
 import { parseAppleNotes, parsePlainList } from '../lib/importParser';
 import { getListMembers } from '../data/invites';
 import type { ListMember } from '../types/database';
+import { Avatar } from '../components/Avatar';
 
 function relativeTime(iso: string): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -401,147 +402,256 @@ export function ListDetailScreen() {
 
       {/* Three-dot menu — modal below top bar */}
       {showMenu && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black/30" style={{ animation: 'overlay-fade-in 0.25s ease-out forwards' }} onClick={() => setShowMenu(false)} />
-          <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl mx-auto"
-            style={{ top: '70px', animation: 'menu-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards', transformOrigin: 'top center', maxWidth: '480px', left: '50%', right: 'auto', width: 'calc(100% - 24px)' }}>
-            <div className="p-4 space-y-1">
-              {/* View */}
-              <div className="mb-3">
-                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5 px-1">תצוגה</p>
-                <div className="bg-gray-100 rounded-xl p-1 flex gap-1">
-                  <button
-                    onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
-                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${!viewAll ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-                  >
-                    🛒 לקנות
-                  </button>
-                  <button
-                    onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
-                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${viewAll ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-                  >
-                    📋 הכל
-                  </button>
-                </div>
-              </div>
+  <>
+    {/* Backdrop */}
+    <div
+      className="fixed inset-0 z-50 bg-black/30"
+      style={{ animation: 'overlay-fade-in 0.25s ease-out forwards' }}
+      onClick={() => setShowMenu(false)}
+    />
 
-              {/* Sort */}
-              <div className="mb-3">
-                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5 px-1">מיון</p>
-                <div className="bg-gray-100 rounded-xl p-1 flex gap-1">
-                  <button
-                    onClick={() => toggleSortMode('added')}
-                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'added' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-                  >
-                    סדר הוספה
-                  </button>
-                  <button
-                    onClick={() => toggleSortMode('alpha')}
-                    className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${sortMode === 'alpha' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-                  >
-                    א→ב אלפבית
-                  </button>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-100 mt-1 mb-1" />
-
-              {/* Share */}
-              <button
-                onClick={() => { setShowMenu(false); setShowInviteSheet(true); }}
-                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
-              >
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
-                </svg>
-                שתף רשימה
-              </button>
-
-              {/* Edit name */}
-              <button
-                onClick={() => { setShowMenu(false); setEditNameValue(listName); setEditIconValue(listIcon); setShowEditName(true); }}
-                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
-              >
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-                שנה שם רשימה
-              </button>
-
-              {/* Import */}
-              <button
-                onClick={() => { setShowMenu(false); setImportText(''); setShowImport(true); }}
-                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
-              >
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                ייבוא רשימה
-              </button>
-
-              {/* Remove duplicates */}
-              <button
-                onClick={async () => {
-                  if (!listId || !user) return;
-                  const seen = new Map<string, string>(); // name → first item id
-                  const dupeIds: string[] = [];
-                  for (const item of items) {
-                    const key = item.name.trim().toLowerCase();
-                    if (seen.has(key)) {
-                      dupeIds.push(item.id);
-                    } else {
-                      seen.set(key, item.id);
-                    }
-                  }
-                  if (dupeIds.length === 0) {
-                    alert('אין כפילויות');
-                    return;
-                  }
-                  if (window.confirm(`נמצאו ${dupeIds.length} כפילויות. למחוק?`)) {
-                    for (const id of dupeIds) {
-                      optimisticDelete(id);
-                      deleteItem(id).catch(console.error);
-                    }
-                    setShowMenu(false);
-                  }
-                }}
-                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-gray-700 active:bg-gray-50"
-              >
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2" /><rect x="8" y="8" width="12" height="12" rx="2" />
-                </svg>
-                הסר כפילויות
-              </button>
-
-              {/* Delete list */}
-              <button
-                onClick={() => {
-                  if (window.confirm('למחוק את הרשימה? הפעולה לא ניתנת לביטול.')) {
-                    setShowMenu(false);
-                    if (listId) {
-                      deleteListApi(listId).then(() => navigate('/lists'));
-                    }
-                  }
-                }}
-                className="w-full flex items-center gap-3 py-3.5 px-3 rounded-xl text-[16px] text-red-500 active:bg-red-50"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                </svg>
-                מחק רשימה
-              </button>
-
-              {/* Close */}
-              <button
-                onClick={() => setShowMenu(false)}
-                className="w-full py-3 rounded-xl text-[15px] font-medium text-gray-400 mt-1"
-              >
-                סגור
-              </button>
+    {/* Modal */}
+    <div
+      className="fixed z-[51] bg-white rounded-2xl shadow-2xl"
+      style={{
+        top: '70px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 'calc(100% - 24px)',
+        maxWidth: '480px',
+        animation: 'menu-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        transformOrigin: 'top center',
+      }}
+    >
+      {/* ── Top strip: owner + last updated ── */}
+      <div
+        className="flex items-start gap-3 px-4 py-3 border-b border-gray-100"
+        style={{ background: '#fafaf8', borderRadius: '16px 16px 0 0' }}
+      >
+        {ownerMember ? (
+          <Avatar name={ownerMember.display_name} size="lg" />
+        ) : (
+          <div className="w-[42px] h-[42px] rounded-full bg-gray-200 flex-shrink-0" />
+        )}
+        <div className="flex flex-col gap-0.5 pt-0.5">
+          <span className="text-[13px] font-bold text-gray-900">
+            {ownerMember?.display_name ?? ''}
+          </span>
+          <span
+            className="text-[9px] font-bold uppercase tracking-wider"
+            style={{ color: '#c0c0bc' }}
+          >
+            עודכן לאחרונה
+          </span>
+          {lastUpdatedInfo && (
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <Avatar name={lastUpdatedInfo.name} size="sm" />
+              <span className="text-[10px]" style={{ color: '#aaa' }}>
+                {lastUpdatedInfo.name} · {lastUpdatedInfo.time}
+              </span>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div className="p-4 flex flex-col gap-3">
+
+        {/* שותפים */}
+        <div>
+          <p
+            className="text-[9px] font-bold uppercase tracking-wider mb-2"
+            style={{ color: '#c0c0bc' }}
+          >
+            שותפים
+          </p>
+          <div className="flex gap-2.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
+            {/* Add button */}
+            <button
+              type="button"
+              onClick={() => { setShowMenu(false); setShowInviteSheet(true); }}
+              className="flex flex-col items-center gap-1 flex-shrink-0"
+            >
+              <div
+                className="w-[46px] h-[46px] rounded-full flex items-center justify-center"
+                style={{ border: '2px dashed #d1d5db', background: '#fafaf8' }}
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+              <span className="text-[10px]" style={{ color: '#b0b0b0' }}>הוסף</span>
+            </button>
+            {/* Member avatars */}
+            {nonOwnerMembers.map((m) => (
+              <div key={m.id} className="flex flex-col items-center gap-1 flex-shrink-0">
+                <Avatar name={m.display_name} size="xl" />
+                <span
+                  className="text-[10px] font-medium text-center"
+                  style={{ color: '#555', maxWidth: 52 }}
+                >
+                  {m.display_name.split(' ')[0]}
+                </span>
+              </div>
+            ))}
           </div>
-        </>
-      )}
+        </div>
+
+        <div className="h-px bg-gray-100" />
+
+        {/* תצוגה */}
+        <div>
+          <p
+            className="text-[9px] font-bold uppercase tracking-wider mb-1.5"
+            style={{ color: '#c0c0bc' }}
+          >
+            תצוגה
+          </p>
+          <div className="flex bg-gray-100 rounded-[13px] p-1 gap-1">
+            <button
+              type="button"
+              onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
+              className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-[9px] transition-all"
+              style={!viewAll ? { background: 'white', boxShadow: '0 1px 5px rgba(0,0,0,0.10)', color: '#1a1a1a' } : { color: '#999' }}
+            >
+              <span style={{ fontSize: 20, lineHeight: 1 }}>🛒</span>
+              <span className="text-[11px] font-semibold whitespace-nowrap">פריטים לקנות</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => { setViewAll(true); localStorage.setItem('viewAll', 'true'); }}
+              className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-[9px] transition-all"
+              style={viewAll ? { background: 'white', boxShadow: '0 1px 5px rgba(0,0,0,0.10)', color: '#1a1a1a' } : { color: '#999' }}
+            >
+              <span style={{ fontSize: 20, lineHeight: 1 }}>📋</span>
+              <span className="text-[11px] font-semibold whitespace-nowrap">כל הפריטים יחד</span>
+            </button>
+          </div>
+        </div>
+
+        {/* מיון */}
+        <div>
+          <p
+            className="text-[9px] font-bold uppercase tracking-wider mb-1.5"
+            style={{ color: '#c0c0bc' }}
+          >
+            מיון
+          </p>
+          <div className="flex bg-gray-100 rounded-[13px] p-1 gap-1">
+            <button
+              type="button"
+              onClick={() => toggleSortMode('added')}
+              className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-[9px] transition-all"
+              style={sortMode === 'added' ? { background: 'white', boxShadow: '0 1px 5px rgba(0,0,0,0.10)', color: '#1a1a1a' } : { color: '#999' }}
+            >
+              <span style={{ fontSize: 20, lineHeight: 1 }}>🕐</span>
+              <span className="text-[11px] font-semibold whitespace-nowrap">לפי סדר הוספה</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleSortMode('alpha')}
+              className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-[9px] transition-all"
+              style={sortMode === 'alpha' ? { background: 'white', boxShadow: '0 1px 5px rgba(0,0,0,0.10)', color: '#1a1a1a' } : { color: '#999' }}
+            >
+              <span style={{ fontSize: 20, lineHeight: 1 }}>🔤</span>
+              <span className="text-[11px] font-semibold whitespace-nowrap">לפי סדר אלפבית</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="h-px bg-gray-100" />
+
+        {/* Action circles */}
+        <div className="flex justify-around py-1">
+          {/* שנה שם */}
+          <button
+            type="button"
+            onClick={() => { setShowMenu(false); setEditNameValue(listName); setEditIconValue(listIcon); setShowEditName(true); }}
+            className="flex flex-col items-center gap-1.5"
+          >
+            <div className="w-[52px] h-[52px] rounded-full bg-gray-100 flex items-center justify-center">
+              <svg className="w-[22px] h-[22px] text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-medium text-gray-500 text-center" style={{ maxWidth: 54 }}>שנה שם</span>
+          </button>
+
+          {/* ייבא רשימה */}
+          <button
+            type="button"
+            onClick={() => { setShowMenu(false); setImportText(''); setShowImport(true); }}
+            className="flex flex-col items-center gap-1.5"
+          >
+            <div className="w-[52px] h-[52px] rounded-full bg-gray-100 flex items-center justify-center">
+              <svg className="w-[22px] h-[22px] text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-medium text-gray-500 text-center" style={{ maxWidth: 54 }}>ייבא רשימה</span>
+          </button>
+
+          {/* הסר כפילויות */}
+          <button
+            type="button"
+            onClick={async () => {
+              if (!listId || !user) return;
+              const seen = new Map<string, string>();
+              const dupeIds: string[] = [];
+              for (const item of items) {
+                const key = item.name.trim().toLowerCase();
+                if (seen.has(key)) { dupeIds.push(item.id); } else { seen.set(key, item.id); }
+              }
+              if (dupeIds.length === 0) { alert('אין כפילויות'); return; }
+              if (window.confirm(`נמצאו ${dupeIds.length} כפילויות. למחוק?`)) {
+                for (const id of dupeIds) { optimisticDelete(id); deleteItem(id).catch(console.error); }
+                setShowMenu(false);
+              }
+            }}
+            className="flex flex-col items-center gap-1.5"
+          >
+            <div className="w-[52px] h-[52px] rounded-full bg-gray-100 flex items-center justify-center">
+              <svg className="w-[22px] h-[22px] text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-medium text-gray-500 text-center" style={{ maxWidth: 54 }}>הסר כפילויות</span>
+          </button>
+
+          {/* מחק רשימה */}
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm('למחוק את הרשימה? הפעולה לא ניתנת לביטול.')) {
+                setShowMenu(false);
+                if (listId) { deleteListApi(listId).then(() => navigate('/lists')); }
+              }
+            }}
+            className="flex flex-col items-center gap-1.5"
+          >
+            <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center" style={{ background: '#fff0f0' }}>
+              <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke="#ef4444" strokeWidth={1.8}>
+                <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-medium text-center" style={{ color: '#ef4444', maxWidth: 54 }}>מחק רשימה</span>
+          </button>
+        </div>
+
+      </div>
+
+      {/* Close */}
+      <button
+        type="button"
+        onClick={() => setShowMenu(false)}
+        className="w-full py-3 rounded-b-2xl text-[15px] font-semibold text-gray-400 bg-gray-50"
+        style={{ borderTop: '1px solid #f0f0ea' }}
+      >
+        סגור
+      </button>
+    </div>
+  </>
+)}
 
       {/* Edit list name + emoji modal */}
       {showEditName && listId && (
