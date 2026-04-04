@@ -292,7 +292,7 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
             data-nodrag
             onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
             onPointerDown={(e) => e.stopPropagation()}
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 active:text-gray-500"
+            className="ml-auto flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 active:text-gray-500"
             style={{ touchAction: 'manipulation' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
