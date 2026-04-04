@@ -15,13 +15,13 @@ function getColor(name: string): string {
 }
 
 export function Avatar({ name, avatarUrl, size = 'sm' }: AvatarProps) {
-  const sizeMap: Record<string, string> = {
+  const sizeMap: Record<'sm' | 'md' | 'lg' | 'xl', string> = {
     sm: 'w-6 h-6 text-xs',
     md: 'w-8 h-8 text-sm',
     lg: 'w-[42px] h-[42px] text-base',
     xl: 'w-[46px] h-[46px] text-lg',
   };
-  const sizeClass = sizeMap[size ?? 'sm'] ?? sizeMap.sm;
+  const sizeClass = sizeMap[size];
   const initial = name.charAt(0).toUpperCase();
 
   if (avatarUrl) {

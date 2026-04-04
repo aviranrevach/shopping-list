@@ -60,10 +60,10 @@ export function ListDetailScreen() {
   );
   const [listMembers, setListMembers] = useState<ListMember[]>([]);
 
-  function toggleSortMode(mode: 'added' | 'alpha') {
+  const toggleSortMode = useCallback((mode: 'added' | 'alpha') => {
     setSortMode(mode);
     localStorage.setItem('sortMode', mode);
-  }
+  }, []);
 
   // Fetch list metadata
   useEffect(() => {
@@ -196,10 +196,16 @@ export function ListDetailScreen() {
 
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
-  const ownerMember = listMembers.find((m) => m.role === 'owner') ?? null;
-  const nonOwnerMembers = listMembers.filter((m) => m.role !== 'owner');
+  const ownerMember = useMemo(
+    () => listMembers.find((m) => m.role === 'owner') ?? null,
+    [listMembers]
+  );
+  const nonOwnerMembers = useMemo(
+    () => listMembers.filter((m) => m.role !== 'owner'),
+    [listMembers]
+  );
 
-  const lastUpdatedInfo = (() => {
+  const lastUpdatedInfo = useMemo(() => {
     if (!items.length || !listMembers.length) return null;
     const latest = items.reduce((a, b) =>
       new Date(a.updated_at) > new Date(b.updated_at) ? a : b
@@ -208,7 +214,7 @@ export function ListDetailScreen() {
     const member = listMembers.find((m) => m.user_id === userId);
     if (!member) return null;
     return { name: member.display_name, time: relativeTime(latest.updated_at) };
-  })();
+  }, [items, listMembers]);
 
   return (
     <div className="h-screen flex flex-col bg-stone-50 overflow-hidden safe-area-top">
