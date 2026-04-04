@@ -266,8 +266,7 @@ export function ListDetailScreen() {
         {/* Always-visible notebook-line add input */}
         {!isAddMode && (
           <div
-            className="cursor-text"
-            style={{ paddingRight: 16, paddingLeft: 16 }}
+            className="cursor-text px-4 pt-2 pb-1"
             onClick={() => {
               setIsAddMode(true);
               setTimeout(() => {
@@ -277,13 +276,13 @@ export function ListDetailScreen() {
             }}
           >
             <div
-              className="flex items-center gap-2 py-3"
-              style={{ marginRight: 48, borderBottom: '2px dashed #d1d5db' }}
+              className="flex items-center justify-end gap-1.5"
+              style={{ paddingTop: 10, paddingBottom: 10, borderBottom: '1.5px dashed #d1d5db' }}
             >
-              <span className="text-gray-300 text-[17px] font-medium">+</span>
               <span className="text-gray-300 text-[17px]">{t('list_detail.add_new_item').replace('+ ', '')}</span>
+              <span className="text-gray-300 text-[17px]">+</span>
             </div>
-            <div style={{ marginRight: 48, borderBottom: '2px dashed #e5e7eb', paddingTop: 14 }} />
+            <div style={{ borderBottom: '1.5px dashed #e5e7eb', paddingTop: 12 }} />
           </div>
         )}
 
