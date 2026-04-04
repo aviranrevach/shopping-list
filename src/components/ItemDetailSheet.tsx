@@ -110,7 +110,7 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
         }
       }
     }
-  }, [allCategories, item]);
+  }, [allCategories]);
 
   function handleClose() {
     setIsOpen(false);
@@ -215,12 +215,14 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
           <h2 className="text-[17px] font-semibold text-gray-900 flex-1 text-center">{item?.name ?? ''}</h2>
 
           {/* Avatar + time stacked, top-aligned */}
-          {addedBy && (
-            <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ alignSelf: 'flex-start', paddingTop: 2 }}>
-              <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />
-              <span className="text-[9px] text-gray-300">{timeStr}</span>
-            </div>
-          )}
+          <div className="w-9 flex-shrink-0 flex justify-center">
+            {addedBy && (
+              <div className="flex flex-col items-center gap-0.5" style={{ alignSelf: 'flex-start', paddingTop: 2 }}>
+                <Avatar name={addedBy.display_name} avatarUrl={addedBy.avatar_url} size="sm" />
+                <span className="text-[9px] text-gray-300">{timeStr}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Body */}
