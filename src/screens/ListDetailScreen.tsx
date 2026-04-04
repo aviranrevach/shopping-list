@@ -43,6 +43,14 @@ export function ListDetailScreen() {
   const transitionTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [hideChecked, setHideChecked] = useState(() => localStorage.getItem('hideChecked') === 'true');
   const [viewAll, setViewAll] = useState(() => localStorage.getItem('viewAll') === 'true');
+  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>(() =>
+    (localStorage.getItem('viewMode') as 'grouped' | 'flat') ?? 'grouped'
+  );
+
+  function toggleViewMode(mode: 'grouped' | 'flat') {
+    setViewMode(mode);
+    localStorage.setItem('viewMode', mode);
+  }
 
   // Fetch list metadata
   useEffect(() => {
@@ -257,19 +265,35 @@ export function ListDetailScreen() {
             </div>
           ) : (
             <>
-              {Array.from(groupedByCategory.entries()).map(([category, catItems]) => (
+              {viewMode === 'flat' ? (
                 <CategoryGroup
-                  key={category}
-                  category={category}
-                  items={catItems}
+                  key="_flat"
+                  category="_flat"
+                  items={viewAll ? filteredItems : unchecked}
                   onToggleCheck={handleToggleCheck}
                   onDelete={handleDelete}
                   onOpenDetail={handleOpenDetail}
                   transitioningIds={transitioningIds}
                   recentlyTransitionedIds={recentlyTransitionedIds}
                   skipExitAnimation={viewAll}
+                  showHeader={false}
                 />
-              ))}
+              ) : (
+                Array.from(groupedByCategory.entries()).map(([category, catItems]) => (
+                  <CategoryGroup
+                    key={category}
+                    category={category}
+                    items={catItems}
+                    onToggleCheck={handleToggleCheck}
+                    onDelete={handleDelete}
+                    onOpenDetail={handleOpenDetail}
+                    transitioningIds={transitioningIds}
+                    recentlyTransitionedIds={recentlyTransitionedIds}
+                    skipExitAnimation={viewAll}
+                    onHeaderClick={() => toggleViewMode('flat')}
+                  />
+                ))
+              )}
               {!viewAll && checked.length > 0 && (
                 <>
                   <button
@@ -333,7 +357,23 @@ export function ListDetailScreen() {
           <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl"
             style={{ top: '70px', animation: 'menu-fade-in 0.2s ease-out' }}>
             <div className="p-4 space-y-1">
-              {/* View toggle */}
+              {/* View mode: grouped / flat */}
+              <div className="bg-gray-100 rounded-xl p-1 flex gap-1 mb-2">
+                <button
+                  onClick={() => toggleViewMode('grouped')}
+                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${viewMode === 'grouped' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                >
+                  📦 מקובץ
+                </button>
+                <button
+                  onClick={() => toggleViewMode('flat')}
+                  className={`flex-1 py-2.5 rounded-lg text-[14px] font-medium transition-all ${viewMode === 'flat' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+                >
+                  ☰ רשימה
+                </button>
+              </div>
+
+              {/* Show all / shopping only toggle */}
               <div className="flex gap-2 mb-2">
                 <button
                   onClick={() => { setViewAll(false); localStorage.setItem('viewAll', 'false'); }}
