@@ -343,8 +343,8 @@ export function ListDetailScreen() {
       {showMenu && (
         <>
           <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowMenu(false)} />
-          <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl"
-            style={{ top: '70px', animation: 'menu-fade-in 0.2s ease-out' }}>
+          <div className="fixed left-3 right-3 z-[51] bg-white rounded-2xl shadow-2xl mx-auto"
+            style={{ top: '70px', animation: 'menu-fade-in 0.2s ease-out', maxWidth: '480px', left: '50%', transform: 'translateX(-50%)', right: 'auto', width: 'calc(100% - 24px)' }}>
             <div className="p-4 space-y-1">
               {/* View */}
               <div className="mb-3">
