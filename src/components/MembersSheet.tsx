@@ -37,16 +37,19 @@ export function MembersSheet({
   const [expandedMemberId, setExpandedMemberId] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [showInviteSheet, setShowInviteSheet] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const ownerMember = members.find((m) => m.role === 'owner') ?? null;
   const isOwner = ownerMember?.user_id === user?.id;
 
   function handleXTap(memberId: string) {
+    setRemoveError(null);
     setExpandedMemberId((prev) => (prev === memberId ? null : memberId));
   }
 
   async function handleConfirmRemove(member: ListMember) {
     setRemovingId(member.id);
+    setRemoveError(null);
     try {
       await removeListMember(listId, member.id);
       const updated = members.filter((m) => m.id !== member.id);
@@ -58,6 +61,7 @@ export function MembersSheet({
       }
     } catch (err) {
       console.error(err);
+      setRemoveError('אירעה שגיאה. נסה שוב.');
     } finally {
       setRemovingId(null);
     }
@@ -177,18 +181,30 @@ export function MembersSheet({
                     className="px-4 pb-3 pt-2.5 border-b border-red-200"
                     style={{ background: '#fff5f5' }}
                   >
-                    <p
-                      className="text-[11px] font-semibold text-center mb-2.5"
-                      style={{ color: '#7f1d1d' }}
-                    >
-                      {isCurrentUser
-                        ? 'לעזוב את הרשימה?\nלא תוכל/י לראות אותה יותר'
-                        : `להסיר את ${member.display_name} מהרשימה?`}
-                    </p>
+                    {isCurrentUser ? (
+                      <p
+                        className="text-[11px] font-semibold text-center mb-2.5"
+                        style={{ color: '#7f1d1d' }}
+                      >
+                        לעזוב את הרשימה?
+                        <br />
+                        לא תוכל/י לראות אותה יותר
+                      </p>
+                    ) : (
+                      <p
+                        className="text-[11px] font-semibold text-center mb-2.5"
+                        style={{ color: '#7f1d1d' }}
+                      >
+                        {`להסיר את ${member.display_name} מהרשימה?`}
+                      </p>
+                    )}
+                    {removeError && (
+                      <p className="text-[10px] text-red-600 text-center mb-2">{removeError}</p>
+                    )}
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        onClick={() => setExpandedMemberId(null)}
+                        onClick={() => { setRemoveError(null); setExpandedMemberId(null); }}
                         className="flex-1 py-2 rounded-[9px] text-[12px] font-semibold text-gray-600"
                         style={{ background: '#f0f0ea' }}
                       >
