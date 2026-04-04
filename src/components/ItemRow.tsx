@@ -272,21 +272,6 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
           )}
         </div>
 
-        {/* Three-dot detail trigger — far left (RTL start) */}
-        <button
-          type="button"
-          data-nodrag
-          aria-label="פתח פרטים"
-          onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
-          onPointerDown={(e) => e.stopPropagation()}
-          className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 active:text-gray-500"
-          style={{ touchAction: 'manipulation' }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
-          </svg>
-        </button>
-
         {/* Item name + note inline */}
         <div className="flex-1 min-w-0 flex items-center gap-2">
           <span className={`text-[17px] text-gray-900 flex-shrink-0 ${textClass}`}>
@@ -303,6 +288,21 @@ export function ItemRow({ item, onToggleCheck, onDelete, onOpenDetail, isTransit
             </span>
           )}
         </div>
+
+        {/* Three-dot detail trigger — far left in RTL */}
+        <button
+          type="button"
+          data-nodrag
+          aria-label="פתח פרטים"
+          onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 active:text-gray-500"
+          style={{ touchAction: 'manipulation' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+          </svg>
+        </button>
       </div>
     </div>
   );
