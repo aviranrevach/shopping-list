@@ -44,7 +44,7 @@ export function LoginScreen() {
   function handleCodeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value.replace(/\D/g, '').slice(0, 6);
     setCode(val);
-    setError('');
+    if (val.length === 6) setError('');
   }
 
   return (
