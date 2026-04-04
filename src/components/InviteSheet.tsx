@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import QRCode from 'qrcode';
 import { useI18n } from '../i18n';
@@ -22,6 +22,8 @@ export function InviteSheet({ listId, listName, listIcon, onClose }: InviteSheet
   const [copied, setCopied] = useState(false);
   const [members, setMembers] = useState<ListMember[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  const touchStartY = useRef(0);
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +46,7 @@ export function InviteSheet({ listId, listName, listIcon, onClose }: InviteSheet
   }, [listId, user]);
 
   function handleClose() {
+    setDragY(0);
     setIsOpen(false);
     setTimeout(onClose, 300);
   }
@@ -79,16 +82,27 @@ export function InviteSheet({ listId, listName, listIcon, onClose }: InviteSheet
         onClick={handleClose}
       />
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[51] bg-white rounded-t-2xl transition-transform duration-300`}
+        className="fixed left-0 right-0 bottom-0 z-[51] bg-white rounded-t-2xl"
         style={{
-          transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
+          transform: isOpen ? `translateY(${dragY}px)` : 'translateY(100%)',
+          transition: dragY !== 0 ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           maxHeight: '85vh',
           overflowY: 'auto',
           paddingBottom: 'env(safe-area-inset-bottom, 20px)',
         }}
       >
-        {/* Handle */}
-        <div className="flex justify-center pt-2 pb-1">
+        {/* Handle — drag target */}
+        <div
+          className="flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing"
+          onTouchStart={(e) => { touchStartY.current = e.touches[0].clientY; }}
+          onTouchMove={(e) => {
+            const delta = e.touches[0].clientY - touchStartY.current;
+            if (delta > 0) setDragY(delta);
+          }}
+          onTouchEnd={() => {
+            if (dragY > 80) { handleClose(); } else { setDragY(0); }
+          }}
+        >
           <div className="w-9 h-1 bg-gray-300 rounded-full" />
         </div>
 
