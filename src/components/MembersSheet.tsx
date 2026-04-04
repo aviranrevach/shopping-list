@@ -4,16 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { removeListMember } from '../data/invites';
 import { Avatar } from './Avatar';
-import { InviteSheet } from './InviteSheet';
 import type { ListMember } from '../types/database';
 
 interface MembersSheetProps {
   listId: string;
-  listName: string;
-  listIcon: string;
   members: ListMember[];
   onClose: () => void;
   onMembersChange: (members: ListMember[]) => void;
+  onInvite: () => void;
 }
 
 function relativeTime(iso: string): string {
@@ -26,17 +24,15 @@ function relativeTime(iso: string): string {
 
 export function MembersSheet({
   listId,
-  listName,
-  listIcon,
   members,
   onClose,
   onMembersChange,
+  onInvite,
 }: MembersSheetProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [expandedMemberId, setExpandedMemberId] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
-  const [showInviteSheet, setShowInviteSheet] = useState(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
 
   const ownerMember = members.find((m) => m.role === 'owner') ?? null;
@@ -102,7 +98,7 @@ export function MembersSheet({
           {isOwner ? (
             <button
               type="button"
-              onClick={() => setShowInviteSheet(true)}
+              onClick={() => onInvite()}
               className="text-[13px] font-semibold text-blue-500"
             >
               + הוסף
@@ -229,7 +225,7 @@ export function MembersSheet({
           {/* הוסף חברים row */}
           <button
             type="button"
-            onClick={() => setShowInviteSheet(true)}
+            onClick={() => onInvite()}
             className="w-full flex items-center gap-3 px-4 py-3 mt-1"
             style={{ background: '#f4f4f0' }}
           >
@@ -249,15 +245,6 @@ export function MembersSheet({
         </div>
       </div>
 
-      {/* InviteSheet stacked on top */}
-      {showInviteSheet && (
-        <InviteSheet
-          listId={listId}
-          listName={listName}
-          listIcon={listIcon}
-          onClose={() => setShowInviteSheet(false)}
-        />
-      )}
     </>,
     document.body,
   );

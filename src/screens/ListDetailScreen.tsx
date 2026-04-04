@@ -416,11 +416,10 @@ export function ListDetailScreen() {
       {showMembersSheet && listId && (
         <MembersSheet
           listId={listId}
-          listName={listName}
-          listIcon={listIcon}
           members={listMembers}
           onClose={() => setShowMembersSheet(false)}
           onMembersChange={setListMembers}
+          onInvite={() => { setShowMembersSheet(false); setShowInviteSheet(true); }}
         />
       )}
 
