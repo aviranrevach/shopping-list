@@ -80,3 +80,12 @@ export async function getListMembers(listId: string): Promise<ListMember[]> {
 export function getInviteUrl(token: string): string {
   return `${window.location.origin}/join/${token}`;
 }
+
+export async function removeListMember(listId: string, memberId: string): Promise<void> {
+  const { error } = await supabase
+    .from('list_members')
+    .delete()
+    .eq('id', memberId)
+    .eq('list_id', listId);
+  if (error) throw error;
+}
