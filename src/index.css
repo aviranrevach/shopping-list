@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@keyframes sheet-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
 html {
   overflow: hidden;
   height: 100%;
