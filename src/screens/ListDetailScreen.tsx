@@ -74,9 +74,9 @@ export function ListDetailScreen() {
   }, [listId]);
 
   useEffect(() => {
-    if (!showMenu || !listId) return;
+    if ((!showMenu && !showMembersSheet) || !listId) return;
     getListMembers(listId).then(setListMembers).catch(console.error);
-  }, [showMenu, listId]);
+  }, [showMenu, showMembersSheet, listId]);
 
   const listName = list?.name ?? 'List';
   const listIcon = list?.icon ?? '📋';
