@@ -13,7 +13,7 @@ interface SettingsSheetProps {
 
 export function SettingsSheet({ member, onClose, onMemberUpdated }: SettingsSheetProps) {
   const { scheme, setScheme } = useTheme();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const [name, setName] = useState(member?.display_name ?? '');
   const [isOpen, setIsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -71,6 +71,13 @@ export function SettingsSheet({ member, onClose, onMemberUpdated }: SettingsShee
         <div className="px-5 pb-6 space-y-6">
           {/* Title */}
           <h2 className="text-lg font-bold text-gray-900 text-center">הגדרות</h2>
+
+          {/* Email */}
+          {user?.email && (
+            <div className="text-center -mt-2">
+              <span className="text-[12px] text-gray-400">{user.email}</span>
+            </div>
+          )}
 
           {/* Display Name */}
           <div>

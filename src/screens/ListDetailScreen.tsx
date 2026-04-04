@@ -483,7 +483,7 @@ export function ListDetailScreen() {
         {/* שותפים */}
         <button
           type="button"
-          onClick={() => setShowMembersSheet(true)}
+          onClick={() => nonOwnerMembers.length > 0 ? setShowMembersSheet(true) : setShowInviteSheet(true)}
           className="w-full text-right"
         >
           <div className="flex items-center justify-between mb-2">
