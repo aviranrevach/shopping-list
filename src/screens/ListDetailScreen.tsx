@@ -15,6 +15,16 @@ import { InviteSheet } from '../components/InviteSheet';
 import { EmojiPicker } from '../components/EmojiPicker';
 import { CATEGORIES } from '../types';
 import { parseAppleNotes, parsePlainList } from '../lib/importParser';
+import { getListMembers } from '../data/invites';
+import type { ListMember } from '../types/database';
+
+function relativeTime(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60) return 'עכשיו';
+  if (diff < 3600) return `לפני ${Math.floor(diff / 60)} דקות`;
+  if (diff < 86400) return `לפני ${Math.floor(diff / 3600)} שעות`;
+  return `לפני ${Math.floor(diff / 86400)} ימים`;
+}
 
 export function ListDetailScreen() {
   const { t } = useI18n();
@@ -47,6 +57,7 @@ export function ListDetailScreen() {
   const [sortMode, setSortMode] = useState<'added' | 'alpha'>(() =>
     (localStorage.getItem('sortMode') as 'added' | 'alpha') ?? 'added'
   );
+  const [listMembers, setListMembers] = useState<ListMember[]>([]);
 
   function toggleSortMode(mode: 'added' | 'alpha') {
     setSortMode(mode);
@@ -58,6 +69,11 @@ export function ListDetailScreen() {
     if (!listId) return;
     fetchListById(listId).then(setList).catch(console.error);
   }, [listId]);
+
+  useEffect(() => {
+    if (!showMenu || !listId) return;
+    getListMembers(listId).then(setListMembers).catch(console.error);
+  }, [showMenu, listId]);
 
   const listName = list?.name ?? 'List';
   const listIcon = list?.icon ?? '📋';
@@ -178,6 +194,20 @@ export function ListDetailScreen() {
   }, []);
 
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
+
+  const ownerMember = listMembers.find((m) => m.role === 'owner') ?? null;
+  const nonOwnerMembers = listMembers.filter((m) => m.role !== 'owner');
+
+  const lastUpdatedInfo = (() => {
+    if (!items.length || !listMembers.length) return null;
+    const latest = items.reduce((a, b) =>
+      new Date(a.updated_at) > new Date(b.updated_at) ? a : b
+    );
+    const userId = latest.checked ? (latest.checked_by ?? latest.added_by) : latest.added_by;
+    const member = listMembers.find((m) => m.user_id === userId);
+    if (!member) return null;
+    return { name: member.display_name, time: relativeTime(latest.updated_at) };
+  })();
 
   return (
     <div className="h-screen flex flex-col bg-stone-50 overflow-hidden safe-area-top">
