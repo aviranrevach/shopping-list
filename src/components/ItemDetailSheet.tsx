@@ -392,29 +392,51 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
 
 {/* Images */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">{t('item_detail.images')}</label>
-            <div className="space-y-2">
+            <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5 block" style={{ letterSpacing: '0.06em' }}>תמונות</label>
+            <div className="flex gap-2 flex-wrap">
               {images.map((image) => (
-                <div key={image.id} className="relative rounded-xl overflow-hidden">
-                  <img src={getImageUrl(image.storage_path)} alt="" className="w-full h-auto rounded-xl" />
-                  <button onClick={() => handleDeleteImage(image)} className="absolute top-2 end-2 w-7 h-7 bg-black/50 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                <div key={image.id} className="relative w-[72px] h-[72px] rounded-xl overflow-hidden flex-shrink-0">
+                  <img src={getImageUrl(image.storage_path)} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteImage(image)}
+                    className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center"
+                  >
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                   </button>
                 </div>
               ))}
-              <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="w-full h-14 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-gray-400 text-sm">
-                {uploading ? (
-                  <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: scheme.primaryLight, borderTopColor: 'transparent' }} />
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                    {t('item_detail.add_image')}
-                  </>
-                )}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-[72px] h-[72px] rounded-xl flex flex-col items-center justify-center gap-1 text-gray-400 text-xs flex-shrink-0"
+                style={{ border: '1.5px dashed #d1d5db' }}
+              >
+                {uploading
+                  ? <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: scheme.primaryLight, borderTopColor: 'transparent' }} />
+                  : <>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                      הוסף
+                    </>
+                }
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
             </div>
           </div>
+
+          {/* Delete — full width at bottom */}
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-[13px] text-[15px] font-semibold text-red-500"
+            style={{ background: '#fff0f0', marginTop: 4 }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+            מחק פריט
+          </button>
           </>
         )}
         </div>
