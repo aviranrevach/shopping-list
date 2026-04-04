@@ -72,6 +72,7 @@ export async function createList(
   userId: string,
   name: string,
   icon: string = '📋',
+  displayName: string = 'User',
 ): Promise<List> {
   const { data, error } = await supabase
     .from('lists')
@@ -80,7 +81,15 @@ export async function createList(
     .single();
 
   if (error) throw error;
-  return data as List;
+
+  const list = data as List;
+  await supabase
+    .from('list_members')
+    .insert({ list_id: list.id, user_id: userId, display_name: displayName, role: 'owner' })
+    .select()
+    .single();
+
+  return list;
 }
 
 export async function updateList(listId: string, updates: { name?: string; icon?: string }): Promise<List> {

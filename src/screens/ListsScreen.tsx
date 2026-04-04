@@ -52,7 +52,7 @@ export function ListsScreen() {
 
   async function handleCreateList() {
     if (!group || !user || !newName.trim()) return;
-    await createList(group.id, user.id, newName.trim(), newIcon);
+    await createList(group.id, user.id, newName.trim(), newIcon, displayName);
     setNewName('');
     setNewIcon('📋');
     setShowNew(false);

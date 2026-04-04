@@ -31,7 +31,7 @@ export function ListDetailScreen() {
   const { t } = useI18n();
   const { listId } = useParams<{ listId: string }>();
   const { user } = useAuth();
-  const { group } = useGroup(user?.id);
+  const { group, member } = useGroup(user?.id);
   const { items, loading, optimisticToggle, optimisticDelete, optimisticAdd } = useRealtimeItems(listId);
   const { scheme } = useTheme();
   const navigate = useNavigate();
@@ -196,10 +196,15 @@ export function ListDetailScreen() {
 
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
-  const ownerMember = useMemo(
-    () => listMembers.find((m) => m.role === 'owner') ?? null,
-    [listMembers]
-  );
+  const ownerMember = useMemo(() => {
+    const fromMembers = listMembers.find((m) => m.role === 'owner') ?? null;
+    if (fromMembers) return fromMembers;
+    // Fallback for existing lists where owner was never added to list_members
+    if (list?.created_by === user?.id && member?.display_name) {
+      return { display_name: member.display_name, user_id: user.id, role: 'owner' as const } as ListMember;
+    }
+    return null;
+  }, [listMembers, list, user, member]);
   const nonOwnerMembers = useMemo(
     () => listMembers.filter((m) => m.role !== 'owner'),
     [listMembers]
