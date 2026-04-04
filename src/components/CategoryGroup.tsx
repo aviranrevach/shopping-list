@@ -56,7 +56,7 @@ export function CategoryGroup({ category, items, onToggleCheck, onDelete, onOpen
               onClick={onHeaderClick}
               style={onHeaderClick ? { cursor: 'pointer' } : undefined}
             >
-              {emoji ? emoji + ' ' : ''}{t(`categories.${category}`)}
+              {t(`categories.${category}`)}{emoji ? ' ' + emoji : ''}
             </span>
           </div>
         )
