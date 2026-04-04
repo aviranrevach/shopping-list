@@ -174,17 +174,6 @@ export function ListDetailScreen() {
     }, 50);
   }, []);
 
-  const handleDeleteCategory = useCallback((category: string) => {
-    const catItems = items.filter(i => i.category === category && !i.checked);
-    if (catItems.length === 0) return;
-    if (window.confirm(`למחוק את כל ${catItems.length} הפריטים ב${t(`categories.${category}`)}?`)) {
-      for (const item of catItems) {
-        optimisticDelete(item.id);
-        deleteItem(item.id).catch(console.error);
-      }
-    }
-  }, [items, optimisticDelete, t]);
-
   const existingItemNames = useMemo(() => items.map((i) => i.name), [items]);
 
   return (
@@ -209,32 +198,38 @@ export function ListDetailScreen() {
             </button>
           </header>
         ) : (
-          <header className="bg-white px-3 py-2.5 border-b border-gray-200 flex items-center gap-1.5 flex-shrink-0">
+          <header className="bg-white px-4 py-2.5 flex items-center gap-2 flex-shrink-0">
             {/* RTL start (right side): search */}
             <button
               onClick={() => setIsSearchMode(true)}
-              className="w-9 h-9 rounded-lg border border-gray-300 flex items-center justify-center flex-shrink-0 text-gray-400"
+              style={{ width: 44, height: 44, background: '#f0f0ea', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#bbb' }}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </button>
 
-            {/* Center: list name only — tap to open menu */}
-            <button onClick={() => setShowMenu(true)} className="flex-1 text-center font-semibold text-[17px] text-gray-900 truncate">
-              {listName}
-            </button>
+            {/* Center: title + three-dot aligned together */}
+            <div className="flex-1 flex items-center justify-center gap-1">
+              <button onClick={() => setShowMenu(true)} className="font-bold text-[20px] text-gray-900 truncate">
+                {listName}
+              </button>
+              <button
+                onClick={() => setShowMenu(true)}
+                className="flex items-center justify-center flex-shrink-0"
+                style={{ color: '#bbb' }}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none" />
+                </svg>
+              </button>
+            </div>
 
-            {/* RTL end (left side): menu and back */}
+            {/* RTL end (left side): back */}
             <button
-              onClick={() => setShowMenu(true)}
-              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400"
+              onClick={() => navigate('/lists')}
+              style={{ width: 44, height: 44, background: '#f0f0ea', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#bbb' }}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none" />
-              </svg>
-            </button>
-            <button onClick={() => navigate('/lists')} className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-gray-400">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <polyline points="15 18 9 12 15 6" />
               </svg>
@@ -266,9 +261,10 @@ export function ListDetailScreen() {
           )}
         </div>
 
-        {/* Always-visible dashed add trigger */}
+        {/* Always-visible notebook-line add input */}
         {!isAddMode && (
-          <button
+          <div
+            className="mx-4 mt-3 mb-1 cursor-text"
             onClick={() => {
               setIsAddMode(true);
               setTimeout(() => {
@@ -276,11 +272,13 @@ export function ListDetailScreen() {
                 input?.focus();
               }, 50);
             }}
-            className="mx-4 mt-4 mb-2 py-3.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 text-[15px] font-medium text-center active:bg-gray-50 transition-colors"
-            style={{ width: 'calc(100% - 2rem)' }}
           >
-            {t('list_detail.add_new_item')}
-          </button>
+            <div className="flex items-center gap-2 py-2.5 border-b border-dashed border-gray-300">
+              <span className="text-gray-300 text-[15px]">+</span>
+              <span className="text-gray-300 text-[15px]">{t('list_detail.add_new_item').replace('+ ', '')}</span>
+            </div>
+            <div className="border-b border-dashed border-gray-200 py-3" />
+          </div>
         )}
 
         <div className="p-4" onClick={() => { if (isAddMode) { setIsAddMode(false); } }}>
@@ -303,7 +301,6 @@ export function ListDetailScreen() {
                   skipExitAnimation={viewAll}
                   onHeaderClick={() => toggleSortMode(sortMode === 'added' ? 'alpha' : 'added')}
                   onAddToCategory={handleAddToCategory}
-                  onDeleteCategory={handleDeleteCategory}
                 />
               ))}
               {!viewAll && checked.length > 0 && (
