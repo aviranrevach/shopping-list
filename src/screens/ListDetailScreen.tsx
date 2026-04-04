@@ -290,7 +290,7 @@ export function ListDetailScreen() {
                     transitioningIds={transitioningIds}
                     recentlyTransitionedIds={recentlyTransitionedIds}
                     skipExitAnimation={viewAll}
-                    onHeaderClick={() => toggleViewMode('flat')}
+
                   />
                 ))
               )}
