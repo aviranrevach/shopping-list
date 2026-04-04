@@ -421,8 +421,8 @@ export function ItemDetailSheet({ itemId, onClose, onDelete }: ItemDetailSheetPr
                     </>
                 }
               </button>
-              <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
             </div>
+            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
           </div>
 
           {/* Delete — full width at bottom */}
