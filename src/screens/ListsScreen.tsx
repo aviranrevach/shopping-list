@@ -9,6 +9,7 @@ import { createList } from '../data/lists';
 import { updateMemberName } from '../data/groups';
 import { EmojiPicker } from '../components/EmojiPicker';
 import { SettingsSheet } from '../components/SettingsSheet';
+import { QRScannerSheet } from '../components/QRScannerSheet';
 
 export function ListsScreen() {
   const { t } = useI18n();
@@ -24,6 +25,7 @@ export function ListsScreen() {
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [editName, setEditName] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const nameSaved = useRef(false); // prevent re-triggering after save
 
   const displayName = member?.display_name ?? user?.email?.split('@')[0] ?? '';
@@ -100,25 +102,33 @@ export function ListsScreen() {
           </svg>
         </button>
 
-        {/* LTR end (right side): + button */}
-        <button
-          onClick={() => setShowNew(true)}
-          style={{
-            width: 44,
-            height: 44,
-            background: '#f0f0ea',
-            borderRadius: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#555" strokeWidth={2.5}>
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
+        {/* LTR end (right side): QR scan + new list buttons */}
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <button
+            onClick={() => setShowScanner(true)}
+            style={{ width: 44, height: 44, background: '#f0f0ea', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#555" strokeWidth={1.8}>
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <line x1="14" y1="14" x2="14" y2="14.01" strokeWidth={2.5} />
+              <line x1="14" y1="17" x2="14" y2="21" />
+              <line x1="17" y1="14" x2="21" y2="14" />
+              <line x1="21" y1="17" x2="21" y2="21" />
+              <line x1="17" y1="21" x2="21" y2="21" />
+            </svg>
+          </button>
+          <button
+            onClick={() => setShowNew(true)}
+            style={{ width: 44, height: 44, background: '#f0f0ea', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#555" strokeWidth={2.5}>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
       </header>
 
       {/* Title area */}
@@ -323,6 +333,9 @@ export function ListsScreen() {
           onClose={() => setShowSettings(false)}
           onMemberUpdated={refreshMember}
         />
+      )}
+      {showScanner && (
+        <QRScannerSheet onClose={() => setShowScanner(false)} />
       )}
     </div>
   );
