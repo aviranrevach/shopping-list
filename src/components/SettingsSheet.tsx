@@ -135,6 +135,11 @@ export function SettingsSheet({ member, onClose, onMemberUpdated }: SettingsShee
           >
             התנתקות
           </button>
+
+          {/* Version */}
+          <p className="text-center text-[11px] text-gray-300 -mt-2" dir="ltr">
+            {__COMMIT_HASH__}
+          </p>
         </div>
       </div>
     </>,
